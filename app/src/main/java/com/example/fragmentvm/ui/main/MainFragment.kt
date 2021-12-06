@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.fragmentvm.R
 import com.squareup.picasso.Picasso
+import timber.log.Timber
 
 class MainFragment : Fragment() {
 
@@ -19,21 +20,34 @@ class MainFragment : Fragment() {
     private lateinit var viewModel: MainViewModel
     lateinit var imageView: ImageView
 
+    override fun onDestroyView() {
+        Timber.d("onDestroyView")
+        super.onDestroyView()
+    }
+
+    override fun onDestroy() {
+        Timber.d("onDestroy")
+        super.onDestroy()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Timber.d("onCreateView")
         return inflater.inflate(R.layout.main_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Timber.d("onViewCreated")
         imageView = view.findViewById(R.id.imageView)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        Timber.d("onActivityCreated")
+        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
         viewModel.urlCat.observe(this, {
             it?.let {
