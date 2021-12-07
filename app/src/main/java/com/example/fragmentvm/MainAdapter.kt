@@ -3,9 +3,10 @@ package com.example.fragmentvm
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.fragmentvm.databinding.AdapterCatBinding
 import com.example.fragmentvm.model.CatItem
+import com.squareup.picasso.Picasso
+import timber.log.Timber
 
 class MainAdapter : RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
     inner class MainViewHolder(val bindig: AdapterCatBinding) :
@@ -28,8 +29,10 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         val cat = cats[position]
-        holder.bindig.originalFilename.text = cat.original_filename
-        Glide.with(holder.itemView.context).load(cat.url).into(holder.bindig.imageview)
+        Timber.d(cat.toString())
+        holder.bindig.originalFilename.text = "${cat.width} x ${cat.height}"
+        Picasso.get().load(cat.url).into(holder.bindig.imageview)
+//        Glide.with(holder.itemView.context).load(cat.url).into(holder.bindig.imageview)
     }
 
     override fun getItemCount(): Int {
