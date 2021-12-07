@@ -1,11 +1,11 @@
-package com.example.fragmentvm
+package com.example.fragmentvm.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.fragmentvm.databinding.AdapterCatBinding
 import com.example.fragmentvm.model.CatItem
-import com.squareup.picasso.Picasso
 import timber.log.Timber
 
 class MainAdapter : RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
@@ -31,8 +31,8 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
         val cat = cats[position]
         Timber.d(cat.toString())
         holder.bindig.originalFilename.text = "${cat.width} x ${cat.height}"
-        Picasso.get().load(cat.url).into(holder.bindig.imageview)
-//        Glide.with(holder.itemView.context).load(cat.url).into(holder.bindig.imageview)
+//        Picasso.get().load(cat.url).into(holder.bindig.imageview)
+        Glide.with(holder.itemView.context).load(cat.url).into(holder.bindig.imageview)
     }
 
     override fun getItemCount(): Int {

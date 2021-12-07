@@ -5,13 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.example.fragmentvm.Common
-import com.example.fragmentvm.MainAdapter
-import com.example.fragmentvm.MyViewModelFactory
+import com.example.fragmentvm.adapter.MainAdapter
 import com.example.fragmentvm.databinding.SecondFragmentBinding
-import com.example.fragmentvm.network.MainRepository
+import com.example.fragmentvm.repository.MainRepository
+import com.example.fragmentvm.utils.Common
+import com.example.fragmentvm.utils.MyViewModelFactory
 import timber.log.Timber
 
 class SecondFragment : Fragment() {
@@ -21,7 +20,7 @@ class SecondFragment : Fragment() {
     }
 
     //    private lateinit var viewModel: SecondViewModel
-    private lateinit var viewModel: MainViewModelTest
+    private lateinit var viewModel: SecondViewModel
     lateinit var binding: SecondFragmentBinding
     val adapter = MainAdapter()
     override fun onCreateView(
@@ -40,19 +39,19 @@ class SecondFragment : Fragment() {
 
         viewModel =
             ViewModelProvider(this, MyViewModelFactory(MainRepository(Common.retrofitService))).get(
-                MainViewModelTest::class.java
+                SecondViewModel::class.java
             )
 
 
 //        viewModel = ViewModelProvider(this).get(MainViewModelTest::class.java)
-        viewModel.catsList.observe(this, {
+        viewModel.catsList.observe(viewLifecycleOwner) {
             adapter.setCatsList(it)
             it?.forEach { item -> Timber.d(item.url) }
-        })
+        }
 
-        viewModel.errorMessage.observe(this, Observer {
+        viewModel.errorMessage.observe(viewLifecycleOwner) {
             Timber.e(it)
-        })
+        }
 
         viewModel.getFiveCats()
         /*

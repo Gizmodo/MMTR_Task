@@ -1,4 +1,4 @@
-package com.example.fragmentvm
+package com.example.fragmentvm.utils
 
 import timber.log.Timber
 

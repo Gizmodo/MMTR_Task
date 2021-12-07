@@ -2,9 +2,9 @@ package com.example.fragmentvm.ui.main
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.fragmentvm.Common
 import com.example.fragmentvm.model.CatItem
 import com.example.fragmentvm.network.RetrofitServices
+import com.example.fragmentvm.utils.Common
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

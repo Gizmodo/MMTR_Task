@@ -1,4 +1,4 @@
-package com.example.fragmentvm
+package com.example.fragmentvm.utils
 
 import com.example.fragmentvm.network.RetrofitClient
 import com.example.fragmentvm.network.RetrofitServices

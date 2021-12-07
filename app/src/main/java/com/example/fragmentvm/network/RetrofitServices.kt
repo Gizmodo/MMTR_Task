@@ -39,7 +39,7 @@ interface RetrofitServices {
         "Content-Type: application/json"
     )
     fun getFiveCats(
-        @Query("limit") limit: Int = 5,
-        @Query("size") size: String = "small"
+        @Query("limit") limit: Int = 15,
+        @Query("size") size: String = "thumb"
     ): Call<List<CatItem>>
 }
