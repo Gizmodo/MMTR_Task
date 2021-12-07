@@ -1,6 +1,6 @@
 package com.example.fragmentvm.model
 
-data class CatItem(
+data class Cat(
     val breeds: List<Any>,
     val height: Int,
     val id: String,

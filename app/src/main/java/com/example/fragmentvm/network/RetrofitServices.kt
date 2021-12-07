@@ -1,7 +1,8 @@
 package com.example.fragmentvm.network
 
 import androidx.lifecycle.LiveData
-import com.example.fragmentvm.model.CatItem
+import com.example.fragmentvm.model.Cat
+import io.reactivex.rxjava3.core.Single
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Headers
@@ -14,14 +15,14 @@ interface RetrofitServices {
         "x-api-key: 6aad15c4-b124-4ec3-846c-2c76f69cf5e8",
         "Content-Type: application/json"
     )
-    fun getCatList(): Call<MutableList<CatItem>>
+    fun getCatList(): Call<MutableList<Cat>>
 
     @GET("images/search")
     @Headers(
         "x-api-key: 6aad15c4-b124-4ec3-846c-2c76f69cf5e8",
         "Content-Type: application/json"
     )
-    fun getCatList2(): Call<LiveData<MutableList<CatItem>>>
+    fun getCatList2(): Call<LiveData<MutableList<Cat>>>
 
     @GET("images/search")
     @Headers(
@@ -31,7 +32,7 @@ interface RetrofitServices {
     fun getCatListRV(
         @Query("limit") limit: Int = 5,
         @Query("size") size: String = "small"
-    ): Call<MutableList<CatItem>>
+    ): Call<MutableList<Cat>>
 
     @GET("images/search")
     @Headers(
@@ -41,5 +42,20 @@ interface RetrofitServices {
     fun getFiveCats(
         @Query("limit") limit: Int = 15,
         @Query("size") size: String = "thumb"
-    ): Call<List<CatItem>>
+    ): Call<List<Cat>>
+
+    /**
+     * RxJava
+     */
+    @GET("images/search")
+    @Headers(
+        "x-api-key: 6aad15c4-b124-4ec3-846c-2c76f69cf5e8",
+        "Content-Type: application/json"
+    )
+    fun getFiveCatsRxJava(
+        @Query("limit") limit: Int = 15,
+        @Query("size") size: String = "thumb"
+    ): Single<List<Cat>>
+
+
 }

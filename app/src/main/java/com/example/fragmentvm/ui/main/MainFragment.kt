@@ -49,7 +49,7 @@ class MainFragment : Fragment() {
         Timber.d("onActivityCreated")
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
-        viewModel.urlCat.observe(this, {
+        viewModel.urlCat.observe(viewLifecycleOwner, {
             it?.let {
                 if (it.isNotEmpty()) {
                     Picasso.get().load(it).into(imageView)
@@ -57,7 +57,8 @@ class MainFragment : Fragment() {
             }
         })
 
-        viewModel.getCats()
+//        viewModel.getCats()
+        viewModel.getCatsWithRxJava()
     }
 
 }

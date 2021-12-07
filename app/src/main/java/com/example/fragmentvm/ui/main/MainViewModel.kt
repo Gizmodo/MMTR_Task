@@ -2,9 +2,11 @@ package com.example.fragmentvm.ui.main
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.fragmentvm.model.CatItem
+import com.example.fragmentvm.model.Cat
 import com.example.fragmentvm.network.RetrofitServices
 import com.example.fragmentvm.utils.Common
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.schedulers.Schedulers
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -12,35 +14,48 @@ import timber.log.Timber
 
 class MainViewModel : ViewModel() {
     // TODO: Implement the ViewModel
-    private var mService: RetrofitServices = Common.retrofitService
-    val catList = MutableLiveData<MutableList<CatItem>?>()
-    lateinit var oldCatList: MutableList<CatItem>
+    private var retrofit: RetrofitServices = Common.retrofitService
+    val catList = MutableLiveData<MutableList<Cat>?>()
+    lateinit var oldCatList: MutableList<Cat>
     var urlCat: MutableLiveData<String?> = MutableLiveData<String?>().apply { value = "" }
 
-   /* fun newRequest() {
-        mService.getCatList2().enqueue(object : Callback<LiveData<MutableList<CatItem>>> {
-            override fun onResponse(
-                call: Call<LiveData<MutableList<CatItem>>>,
-                response: Response<LiveData<MutableList<CatItem>>>
-            ) {
-                if (response.isSuccessful) {
-                    val res = response.body()?.value
-                    Timber.d(res.toString())
-                    catList.postValue(res)
-                }
-            }
+    /* fun newRequest() {
+         mService.getCatList2().enqueue(object : Callback<LiveData<MutableList<CatItem>>> {
+             override fun onResponse(
+                 call: Call<LiveData<MutableList<CatItem>>>,
+                 response: Response<LiveData<MutableList<CatItem>>>
+             ) {
+                 if (response.isSuccessful) {
+                     val res = response.body()?.value
+                     Timber.d(res.toString())
+                     catList.postValue(res)
+                 }
+             }
 
-            override fun onFailure(call: Call<LiveData<MutableList<CatItem>>>, t: Throwable) {
-                Timber.e(t.message.toString())
-            }
-        })
+             override fun onFailure(call: Call<LiveData<MutableList<CatItem>>>, t: Throwable) {
+                 Timber.e(t.message.toString())
+             }
+         })
+     }
+ */
+    fun getCatsWithRxJava() {
+        retrofit.getFiveCatsRxJava(10, "small")
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe({ result ->
+                val url = result.firstOrNull()?.url
+                url.let {
+                    Timber.d("RxJava result - $it")
+                    urlCat.postValue(it)
+                }
+            }, { error -> Timber.e(error) })
     }
-*/
+
     fun getCats() {
-        mService.getCatList().enqueue(object : Callback<MutableList<CatItem>> {
+        retrofit.getCatList().enqueue(object : Callback<MutableList<Cat>> {
             override fun onResponse(
-                call: Call<MutableList<CatItem>>,
-                response: Response<MutableList<CatItem>>
+                call: Call<MutableList<Cat>>,
+                response: Response<MutableList<Cat>>
             ) {
                 if (response.isSuccessful) {
                     val url = response.body()?.get(0)?.url
@@ -48,7 +63,7 @@ class MainViewModel : ViewModel() {
                 }
             }
 
-            override fun onFailure(call: Call<MutableList<CatItem>>, t: Throwable) {
+            override fun onFailure(call: Call<MutableList<Cat>>, t: Throwable) {
                 Timber.e(t.message.toString())
             }
         })

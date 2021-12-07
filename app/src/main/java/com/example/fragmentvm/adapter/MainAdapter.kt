@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.fragmentvm.databinding.AdapterCatBinding
-import com.example.fragmentvm.model.CatItem
+import com.example.fragmentvm.model.Cat
 import timber.log.Timber
 
 class MainAdapter : RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
@@ -14,8 +14,8 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
 
     }
 
-    var cats = mutableListOf<CatItem>()
-    fun setCatsList(cats: List<CatItem>) {
+    var cats = mutableListOf<Cat>()
+    fun setCatsList(cats: List<Cat>) {
         this.cats = cats.toMutableList()
         notifyDataSetChanged()
     }
