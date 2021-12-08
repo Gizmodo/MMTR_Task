@@ -37,5 +37,4 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
     override fun getItemCount(): Int {
         return cats.size
     }
-
 }
