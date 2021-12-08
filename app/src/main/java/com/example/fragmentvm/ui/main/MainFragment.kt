@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
 import com.example.fragmentvm.R
-import com.squareup.picasso.Picasso
 import timber.log.Timber
 
 class MainFragment : Fragment() {
@@ -49,13 +49,13 @@ class MainFragment : Fragment() {
         Timber.d("onActivityCreated")
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
-        viewModel.urlCat.observe(viewLifecycleOwner, {
+        viewModel.urlCat.observe(viewLifecycleOwner) {
             it?.let {
                 if (it.isNotEmpty()) {
-                    Picasso.get().load(it).into(imageView)
+                    Glide.with(imageView).load(it).into(imageView)
                 }
             }
-        })
+        }
 
         viewModel.getCatsWithRxJava()
     }
