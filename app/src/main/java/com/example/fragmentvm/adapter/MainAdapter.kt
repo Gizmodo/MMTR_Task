@@ -6,18 +6,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.fragmentvm.databinding.AdapterCatBinding
 import com.example.fragmentvm.model.Cat
-import timber.log.Timber
 
-class MainAdapter : RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
-    inner class MainViewHolder(val bindig: AdapterCatBinding) :
-        RecyclerView.ViewHolder(bindig.root) {
-
-    }
+class MainAdapter(private val onItemClickListener: OnItemClickListener) :
+    RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
+    inner class MainViewHolder(val binding: AdapterCatBinding) :
+        RecyclerView.ViewHolder(binding.root)
 
     var cats = mutableListOf<Cat>()
     fun setCatsList(cats: List<Cat>) {
         this.cats = cats.toMutableList()
         notifyDataSetChanged()
+    }
+
+    interface OnItemClickListener {
+        fun onClick(item: Cat)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
@@ -29,9 +31,10 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         val cat = cats[position]
-        Timber.d(cat.toString())
-        holder.bindig.originalFilename.text = "${cat.width} x ${cat.height}"
-        Glide.with(holder.itemView.context).load(cat.url).into(holder.bindig.imageview)
+        holder.binding.originalFilename.text = "${cat.width} x ${cat.height}"
+        Glide.with(holder.itemView.context).load(cat.url).into(holder.binding.imageview)
+
+        holder.itemView.setOnClickListener { onItemClickListener.onClick(cat) }
     }
 
     override fun getItemCount(): Int {

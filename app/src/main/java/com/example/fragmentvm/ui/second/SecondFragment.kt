@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.fragmentvm.adapter.MainAdapter
 import com.example.fragmentvm.databinding.SecondFragmentBinding
+import com.example.fragmentvm.model.Cat
 import timber.log.Timber
 
 class SecondFragment : Fragment() {
@@ -16,8 +17,8 @@ class SecondFragment : Fragment() {
     }
 
     private lateinit var viewModel: SecondViewModel
-    lateinit var binding: SecondFragmentBinding
-    val adapter = MainAdapter()
+    private lateinit var binding: SecondFragmentBinding
+    private var adapter: MainAdapter? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -28,13 +29,13 @@ class SecondFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
+        adapter = MainAdapter(onItemClick)
         binding.recyclerview.adapter = adapter
 
         viewModel = ViewModelProvider(this)[SecondViewModel::class.java]
 
         viewModel.catsList.observe(viewLifecycleOwner) {
-            adapter.setCatsList(it)
+            adapter!!.setCatsList(it)
             it?.forEach { item -> Timber.d(item.url) }
         }
 
@@ -44,4 +45,11 @@ class SecondFragment : Fragment() {
 
         viewModel.getFiveCats()
     }
+
+    private val onItemClick = object : MainAdapter.OnItemClickListener {
+        override fun onClick(item: Cat) {
+            Timber.d("Click performed on cat with url ${item.url}")
+        }
+    }
+
 }
