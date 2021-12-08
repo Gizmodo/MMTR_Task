@@ -14,12 +14,10 @@ import com.example.fragmentvm.utils.MyViewModelFactory
 import timber.log.Timber
 
 class SecondFragment : Fragment() {
-
     companion object {
         fun newInstance() = SecondFragment()
     }
 
-    //    private lateinit var viewModel: SecondViewModel
     private lateinit var viewModel: SecondViewModel
     lateinit var binding: SecondFragmentBinding
     val adapter = MainAdapter()
@@ -29,7 +27,6 @@ class SecondFragment : Fragment() {
     ): View? {
         binding = SecondFragmentBinding.inflate(inflater, container, false)
         return binding.root
-//        return inflater.inflate(R.layout.second_fragment, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -42,8 +39,6 @@ class SecondFragment : Fragment() {
                 SecondViewModel::class.java
             )
 
-
-//        viewModel = ViewModelProvider(this).get(MainViewModelTest::class.java)
         viewModel.catsList.observe(viewLifecycleOwner) {
             adapter.setCatsList(it)
             it?.forEach { item -> Timber.d(item.url) }
@@ -54,13 +49,5 @@ class SecondFragment : Fragment() {
         }
 
         viewModel.getFiveCats()
-        /*
-        viewModel = ViewModelProvider(this).get(SecondViewModel::class.java)
-        viewModel.catList.observe(this, {
-            it?.forEach { item -> Timber.d(item.url) }
-        })
-
-        viewModel.getCatsList()*/
     }
-
 }

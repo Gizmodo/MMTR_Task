@@ -31,7 +31,6 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
         val cat = cats[position]
         Timber.d(cat.toString())
         holder.bindig.originalFilename.text = "${cat.width} x ${cat.height}"
-//        Picasso.get().load(cat.url).into(holder.bindig.imageview)
         Glide.with(holder.itemView.context).load(cat.url).into(holder.bindig.imageview)
     }
 

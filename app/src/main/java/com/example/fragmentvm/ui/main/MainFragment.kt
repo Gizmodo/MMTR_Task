@@ -57,8 +57,6 @@ class MainFragment : Fragment() {
             }
         })
 
-//        viewModel.getCats()
         viewModel.getCatsWithRxJava()
     }
-
 }
