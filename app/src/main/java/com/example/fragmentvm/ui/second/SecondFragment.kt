@@ -8,9 +8,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.fragmentvm.adapter.MainAdapter
 import com.example.fragmentvm.databinding.SecondFragmentBinding
-import com.example.fragmentvm.repository.MainRepository
-import com.example.fragmentvm.utils.Common
-import com.example.fragmentvm.utils.MyViewModelFactory
 import timber.log.Timber
 
 class SecondFragment : Fragment() {
@@ -34,10 +31,7 @@ class SecondFragment : Fragment() {
 
         binding.recyclerview.adapter = adapter
 
-        viewModel =
-            ViewModelProvider(this, MyViewModelFactory(MainRepository(Common.retrofitService))).get(
-                SecondViewModel::class.java
-            )
+        viewModel = ViewModelProvider(this)[SecondViewModel::class.java]
 
         viewModel.catsList.observe(viewLifecycleOwner) {
             adapter.setCatsList(it)
