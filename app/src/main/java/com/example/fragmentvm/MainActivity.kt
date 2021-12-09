@@ -20,7 +20,6 @@ class MainActivity : AppCompatActivity() {
                 .commitNow()
         }
 
-
         binding.btnFirst.setOnClickListener {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.container, MainFragment.newInstance())

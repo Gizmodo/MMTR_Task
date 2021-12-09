@@ -5,10 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import com.example.fragmentvm.R
 import com.example.fragmentvm.adapter.MainAdapter
 import com.example.fragmentvm.databinding.SecondFragmentBinding
 import com.example.fragmentvm.model.Cat
+import com.example.fragmentvm.ui.detail.DetailFragment
+import com.example.fragmentvm.utils.SharedViewModel
 import timber.log.Timber
 
 class SecondFragment : Fragment() {
@@ -19,10 +23,12 @@ class SecondFragment : Fragment() {
     private lateinit var viewModel: SecondViewModel
     private lateinit var binding: SecondFragmentBinding
     private var adapter: MainAdapter? = null
+    private val model: SharedViewModel by activityViewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = SecondFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -48,8 +54,11 @@ class SecondFragment : Fragment() {
 
     private val onItemClick = object : MainAdapter.OnItemClickListener {
         override fun onClick(item: Cat) {
-            Timber.d("Click performed on cat with url ${item.url}")
+            model.select(item)
+            val fragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
+            fragmentTransaction.replace(R.id.container, DetailFragment.newInstance())
+            fragmentTransaction.addToBackStack(null)
+            fragmentTransaction.commit()
         }
     }
-
 }
