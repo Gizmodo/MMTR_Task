@@ -8,7 +8,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.fragmentvm.databinding.DetailFragmentBinding
 import com.example.fragmentvm.utils.SharedViewModel
@@ -19,7 +18,6 @@ class DetailFragment : Fragment() {
         fun newInstance() = DetailFragment()
     }
 
-    private lateinit var viewModel: DetailViewModel
     private lateinit var binding: DetailFragmentBinding
     private lateinit var imgDetail: ImageView
     private lateinit var txtDetailHeader: TextView
@@ -42,8 +40,6 @@ class DetailFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this)[DetailViewModel::class.java]
-
         model.selected.observe(viewLifecycleOwner) {
             Glide.with(imgDetail).load(it.url).into(imgDetail)
             txtDetailHeader.text = it.url

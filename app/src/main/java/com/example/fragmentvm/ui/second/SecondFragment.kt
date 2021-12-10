@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import com.example.fragmentvm.R
 import com.example.fragmentvm.adapter.MainAdapter
 import com.example.fragmentvm.databinding.SecondFragmentBinding
@@ -20,7 +20,7 @@ class SecondFragment : Fragment() {
         fun newInstance() = SecondFragment()
     }
 
-    private lateinit var viewModel: SecondViewModel
+    private val viewModel: SecondViewModel by viewModels()
     private lateinit var binding: SecondFragmentBinding
     private var adapter: MainAdapter? = null
     private val model: SharedViewModel by activityViewModels()
@@ -37,8 +37,6 @@ class SecondFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         adapter = MainAdapter(onItemClick)
         binding.recyclerview.adapter = adapter
-
-        viewModel = ViewModelProvider(this)[SecondViewModel::class.java]
 
         viewModel.catsList.observe(viewLifecycleOwner) {
             adapter!!.setCatsList(it)

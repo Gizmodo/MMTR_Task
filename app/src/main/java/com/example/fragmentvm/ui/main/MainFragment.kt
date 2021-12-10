@@ -6,10 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.example.fragmentvm.R
-import timber.log.Timber
 
 class MainFragment : Fragment() {
 
@@ -17,38 +16,23 @@ class MainFragment : Fragment() {
         fun newInstance() = MainFragment()
     }
 
-    private lateinit var viewModel: MainViewModel
-    lateinit var imageView: ImageView
-
-    override fun onDestroyView() {
-        Timber.d("onDestroyView")
-        super.onDestroyView()
-    }
-
-    override fun onDestroy() {
-        Timber.d("onDestroy")
-        super.onDestroy()
-    }
+    private val viewModel: MainViewModel by viewModels()
+    private lateinit var imageView: ImageView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Timber.d("onCreateView")
         return inflater.inflate(R.layout.main_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Timber.d("onViewCreated")
         imageView = view.findViewById(R.id.imageView)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        Timber.d("onActivityCreated")
-        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-
         viewModel.urlCat.observe(viewLifecycleOwner) {
             it?.let {
                 if (it.isNotEmpty()) {
@@ -56,7 +40,6 @@ class MainFragment : Fragment() {
                 }
             }
         }
-
         viewModel.getCatsWithRxJava()
     }
 }
