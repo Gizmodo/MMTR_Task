@@ -4,12 +4,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.fragmentvm.databinding.AdapterCatBinding
+import com.example.fragmentvm.databinding.RecyclerviewItemCatBinding
 import com.example.fragmentvm.model.Cat
 
-class MainAdapter(private val onItemClickListener: OnItemClickListener) :
-    RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
-    inner class MainViewHolder(val binding: AdapterCatBinding) :
+class CatAdapter(private val onItemClickListener: OnItemClickListener) :
+    RecyclerView.Adapter<CatAdapter.MainViewHolder>() {
+    inner class MainViewHolder(val binding: RecyclerviewItemCatBinding) :
         RecyclerView.ViewHolder(binding.root)
 
     var cats = mutableListOf<Cat>()
@@ -25,15 +25,13 @@ class MainAdapter(private val onItemClickListener: OnItemClickListener) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
         val inflater = LayoutInflater.from(parent.context)
 
-        val binding = AdapterCatBinding.inflate(inflater, parent, false)
+        val binding = RecyclerviewItemCatBinding.inflate(inflater, parent, false)
         return MainViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         val cat = cats[position]
-        holder.binding.originalFilename.text = "${cat.width} x ${cat.height}"
-        Glide.with(holder.itemView.context).load(cat.url).into(holder.binding.imageview)
-
+        Glide.with(holder.itemView.context).load(cat.url).into(holder.binding.imgView)
         holder.itemView.setOnClickListener { onItemClickListener.onClick(cat) }
     }
 

@@ -5,12 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
 import com.example.fragmentvm.databinding.DetailFragmentBinding
-import com.example.fragmentvm.utils.SharedViewModel
+import com.example.fragmentvm.utils.SharedVM
 
 class DetailFragment : Fragment() {
 
@@ -20,9 +19,8 @@ class DetailFragment : Fragment() {
 
     private lateinit var binding: DetailFragmentBinding
     private lateinit var imgDetail: ImageView
-    private lateinit var txtDetailHeader: TextView
 
-    private val model: SharedViewModel by activityViewModels()
+    private val model: SharedVM by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,14 +33,12 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         imgDetail = binding.imgDetail
-        txtDetailHeader = binding.txtDetailHeader
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         model.selected.observe(viewLifecycleOwner) {
             Glide.with(imgDetail).load(it.url).into(imgDetail)
-            txtDetailHeader.text = it.url
         }
     }
 

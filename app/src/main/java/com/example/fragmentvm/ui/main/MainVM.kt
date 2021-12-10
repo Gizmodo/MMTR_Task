@@ -1,4 +1,4 @@
-package com.example.fragmentvm.ui.second
+package com.example.fragmentvm.ui.main
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,7 +10,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import timber.log.Timber
 
-class SecondViewModel : ViewModel() {
+class MainVM : ViewModel() {
     private var retrofit: RetrofitServices = Common.retrofitService
     val catsList = MutableLiveData<List<Cat>>()
     val errorMessage = MutableLiveData<String>()
