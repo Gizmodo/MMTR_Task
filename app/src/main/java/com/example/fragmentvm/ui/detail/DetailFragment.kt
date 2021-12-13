@@ -14,7 +14,7 @@ import com.example.fragmentvm.utils.SharedVM
 class DetailFragment : Fragment() {
 
     companion object {
-        fun newInstance() = DetailFragment()
+        fun instance() = DetailFragment()
     }
 
     private lateinit var binding: DetailFragmentBinding

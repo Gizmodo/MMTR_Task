@@ -1,26 +1,19 @@
 package com.example.fragmentvm.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.fragmentvm.databinding.RecyclerviewItemCatBinding
 import com.example.fragmentvm.model.Cat
 
-class CatAdapter(private val onItemClickListener: OnItemClickListener) :
+class CatAdapter(
+    private val cats: List<Cat>,
+    private val listener: onRecyclerViewItemClick
+) :
     RecyclerView.Adapter<CatAdapter.MainViewHolder>() {
-    inner class MainViewHolder(val binding: RecyclerviewItemCatBinding) :
-        RecyclerView.ViewHolder(binding.root)
-
-    var cats = mutableListOf<Cat>()
-    fun setCatsList(cats: List<Cat>) {
-        this.cats = cats.toMutableList()
-        notifyDataSetChanged()
-    }
-
-    interface OnItemClickListener {
-        fun onClick(item: Cat)
-    }
+    override fun getItemCount() = cats.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -32,10 +25,20 @@ class CatAdapter(private val onItemClickListener: OnItemClickListener) :
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         val cat = cats[position]
         Glide.with(holder.itemView.context).load(cat.url).into(holder.binding.imgView)
-        holder.itemView.setOnClickListener { onItemClickListener.onClick(cat) }
+//        holder.itemView.setOnClickListener { onItemClickListener.onClick(cat) }
+        holder.binding.imgView.setOnClickListener {
+            listener.onRecyclerViewItemClick(it, cat)
+        }
     }
 
-    override fun getItemCount(): Int {
-        return cats.size
+
+    inner class MainViewHolder(val binding: RecyclerviewItemCatBinding) :
+        RecyclerView.ViewHolder(binding.root)
+
+
+    interface onRecyclerViewItemClick {
+        fun onRecyclerViewItemClick(view: View, cat: Cat)
     }
+
+
 }

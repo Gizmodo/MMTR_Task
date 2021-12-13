@@ -12,19 +12,19 @@ import timber.log.Timber
 
 class MainVM : ViewModel() {
     private var retrofit: RetrofitServices = Common.retrofitService
-    val catsList = MutableLiveData<List<Cat>>()
-    val errorMessage = MutableLiveData<String>()
+    val cats = MutableLiveData<List<Cat>>()
+    val errors = MutableLiveData<String>()
 
-    fun getFiveCats() {
+    fun getCats() {
         val response = retrofit.getFiveCats()
         response.enqueue(object : Callback<List<Cat>> {
             override fun onResponse(call: Call<List<Cat>>, response: Response<List<Cat>>) {
-                catsList.postValue(response.body())
+                cats.postValue(response.body())
             }
 
             override fun onFailure(call: Call<List<Cat>>, t: Throwable) {
                 Timber.e(t.message)
-                errorMessage.postValue(t.message)
+                errors.postValue(t.message)
             }
         })
     }
