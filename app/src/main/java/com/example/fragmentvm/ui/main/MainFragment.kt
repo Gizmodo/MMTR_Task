@@ -14,8 +14,7 @@ import com.example.fragmentvm.adapter.CatAdapter
 import com.example.fragmentvm.databinding.MainFragmentBinding
 import com.example.fragmentvm.model.Cat
 import com.example.fragmentvm.ui.detail.DetailFragment
-import com.example.fragmentvm.utils.SharedVM
-import timber.log.Timber
+import com.example.fragmentvm.utils.SharedViewModel
 
 class MainFragment : Fragment() {
     companion object {
@@ -24,7 +23,7 @@ class MainFragment : Fragment() {
 
     private val viewModel: MainVM by viewModels()
     private lateinit var binding: MainFragmentBinding
-    private val sharedModel: SharedVM by activityViewModels()
+    private val sharedModel: SharedViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,15 +45,6 @@ class MainFragment : Fragment() {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.cats.value?.size.let {
-            if ((it == 0) || (it == null)) {
-                viewModel.getCats()
-            }
-        }
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.home -> {
@@ -64,14 +54,7 @@ class MainFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel.errors.observe(viewLifecycleOwner) {
-            Timber.e(it)
-        }
-    }
-
-    private val catClickListener = object : CatAdapter.onRecyclerViewItemClick {
+    private val catClickListener = object : CatAdapter.OnRecyclerViewItemClick {
         override fun onRecyclerViewItemClick(view: View, cat: Cat) {
             sharedModel.select(cat)
             val transaction = requireActivity()

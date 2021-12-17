@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
 import com.example.fragmentvm.databinding.DetailFragmentBinding
-import com.example.fragmentvm.utils.SharedVM
+import com.example.fragmentvm.utils.SharedViewModel
 
 class DetailFragment : Fragment() {
 
@@ -20,12 +20,12 @@ class DetailFragment : Fragment() {
     private lateinit var binding: DetailFragmentBinding
     private lateinit var imgDetail: ImageView
 
-    private val model: SharedVM by activityViewModels()
+    private val model: SharedViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = DetailFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }

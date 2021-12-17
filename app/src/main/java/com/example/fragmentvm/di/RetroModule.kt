@@ -1,10 +1,8 @@
 package com.example.fragmentvm.di
 
-import com.example.fragmentvm.utils.Common
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
-import okhttp3.Headers
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -37,11 +35,13 @@ class RetroModule {
             val original: Request = chain.request()
 
             val requestBuilder: Request.Builder = original.newBuilder()
-                .headers(
-                    Headers.headersOf(
-                        "Content-Type: application/json",
-                        "x-api-key : 6aad15c4-b124-4ec3-846c-2c76f69cf5e8"
-                    )
+                .header(
+                    "x-api-key",
+                    "6aad15c4-b124-4ec3-846c-2c76f69cf5e8"
+                )
+                .header(
+                    "Content-Type",
+                    "application/json"
                 )
             val request: Request = requestBuilder.build()
             chain.proceed(request)
@@ -56,7 +56,7 @@ class RetroModule {
             .build()
 
         return Retrofit.Builder()
-            .baseUrl(Common.BASE_URL)
+            .baseUrl("https://api.thecatapi.com/v1/")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .addCallAdapterFactory(RxJava3CallAdapterFactory.create())

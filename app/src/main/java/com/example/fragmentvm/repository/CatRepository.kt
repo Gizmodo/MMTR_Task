@@ -9,37 +9,20 @@ import retrofit2.Response
 import timber.log.Timber
 import javax.inject.Inject
 
-
 class CatRepository @Inject constructor(private val apiService: RetroServiceInterface) {
-
-    /* @Inject
-     private val apiService: RetroServiceInterface = api*/
-
-    val getCatsLD: MutableLiveData<MutableList<Cat>>
+    val getCats: MutableLiveData<List<Cat>>
         get() {
-            val response = apiService.getFiveCatsLD()
-            var data: MutableLiveData<MutableList<Cat>> = MutableLiveData<MutableList<Cat>>()
-            val liveDataList: MutableLiveData<MutableList<Cat>>
-            Timber.d("Send request")
-            response.enqueue(object : Callback<MutableLiveData<MutableList<Cat>>> {
-                override fun onResponse(
-                    call: Call<MutableLiveData<MutableList<Cat>>>,
-                    response: Response<MutableLiveData<MutableList<Cat>>>
-                ) {
-                    if (response.isSuccessful) {
-                        data = response.body()!!
-                    }
+            val cats = MutableLiveData<List<Cat>>()
+            val response = apiService.getCats()
+            response.enqueue(object : Callback<List<Cat>> {
+                override fun onResponse(call: Call<List<Cat>>, response: Response<List<Cat>>) {
+                    cats.postValue(response.body())
                 }
 
-                override fun onFailure(
-                    call: Call<MutableLiveData<MutableList<Cat>>>,
-                    t: Throwable
-                ) {
+                override fun onFailure(call: Call<List<Cat>>, t: Throwable) {
                     Timber.e(t.message)
-//                    data.postValue(null)
                 }
-
             })
-            return data
+            return cats
         }
 }

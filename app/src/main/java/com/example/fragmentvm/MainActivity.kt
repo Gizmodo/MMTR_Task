@@ -6,7 +6,7 @@ import com.example.fragmentvm.databinding.MainActivityBinding
 import com.example.fragmentvm.ui.main.MainFragment
 
 class MainActivity : AppCompatActivity() {
-    lateinit var binding: MainActivityBinding
+    private lateinit var binding: MainActivityBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,7 +19,5 @@ class MainActivity : AppCompatActivity() {
                 .commit()
         }
         setSupportActionBar(binding.toolbar)
-
-
     }
 }

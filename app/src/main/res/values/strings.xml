@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Traineeship</string>
-    <string name="cat_image">Cat image</string>
+    <string name="imageDescription">Изображение</string>
 </resources>
