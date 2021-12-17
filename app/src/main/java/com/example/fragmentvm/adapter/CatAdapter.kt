@@ -10,7 +10,7 @@ import com.example.fragmentvm.model.Cat
 
 class CatAdapter(
     private val cats: List<Cat>,
-    private val listener: onRecyclerViewItemClick
+    private val listener: OnRecyclerViewItemClick
 ) :
     RecyclerView.Adapter<CatAdapter.MainViewHolder>() {
     override fun getItemCount() = cats.size
@@ -25,7 +25,6 @@ class CatAdapter(
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         val cat = cats[position]
         Glide.with(holder.itemView.context).load(cat.url).into(holder.binding.imgView)
-//        holder.itemView.setOnClickListener { onItemClickListener.onClick(cat) }
         holder.binding.imgView.setOnClickListener {
             listener.onRecyclerViewItemClick(it, cat)
         }
@@ -36,7 +35,7 @@ class CatAdapter(
         RecyclerView.ViewHolder(binding.root)
 
 
-    interface onRecyclerViewItemClick {
+    interface OnRecyclerViewItemClick {
         fun onRecyclerViewItemClick(view: View, cat: Cat)
     }
 
