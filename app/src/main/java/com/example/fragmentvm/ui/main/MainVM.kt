@@ -1,12 +1,15 @@
 package com.example.fragmentvm.ui.main
 
 import androidx.lifecycle.ViewModel
-import com.example.fragmentvm.di.AppGraph
-import com.example.fragmentvm.di.DaggerAppGraph
+import com.example.fragmentvm.App
 import com.example.fragmentvm.repository.CatRepository
+import javax.inject.Inject
 
 class MainVM : ViewModel() {
-    private val appGraph: AppGraph by lazy { DaggerAppGraph.create() }
-    private val catRepository: CatRepository by lazy { appGraph.repository() }
+    init {
+        App.instance().appGraph.embed(this)
+    }
+    @Inject
+    lateinit var catRepository: CatRepository
     val cats = catRepository.getCats
 }
