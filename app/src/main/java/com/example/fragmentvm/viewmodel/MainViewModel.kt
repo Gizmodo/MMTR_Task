@@ -1,11 +1,11 @@
-package com.example.fragmentvm.ui.main
+package com.example.fragmentvm.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.example.fragmentvm.App
 import com.example.fragmentvm.repository.CatRepository
 import javax.inject.Inject
 
-class MainVM : ViewModel() {
+class MainViewModel : ViewModel() {
     init {
         App.instance().appGraph.embed(this)
     }

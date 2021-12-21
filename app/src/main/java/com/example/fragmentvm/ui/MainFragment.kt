@@ -1,4 +1,4 @@
-package com.example.fragmentvm.ui.main
+package com.example.fragmentvm.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,15 +13,15 @@ import com.example.fragmentvm.R
 import com.example.fragmentvm.adapter.CatAdapter
 import com.example.fragmentvm.databinding.MainFragmentBinding
 import com.example.fragmentvm.model.Cat
-import com.example.fragmentvm.ui.detail.DetailFragment
 import com.example.fragmentvm.utils.SharedViewModel
+import com.example.fragmentvm.viewmodel.MainViewModel
 
 class MainFragment : Fragment() {
     companion object {
         fun newInstance() = MainFragment()
     }
 
-    private val viewModel: MainVM by viewModels()
+    private val viewModel: MainViewModel by viewModels()
     private lateinit var binding: MainFragmentBinding
     private val sharedModel: SharedViewModel by activityViewModels()
 
