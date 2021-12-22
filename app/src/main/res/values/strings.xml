@@ -3,5 +3,6 @@
     <string name="imageDescription">Изображение</string>
     <string name="email">E-mail</string>
     <string name="description">Description</string>
+    <string name="apikey">api key</string>
     <string name="btnNext">Next</string>
 </resources>
