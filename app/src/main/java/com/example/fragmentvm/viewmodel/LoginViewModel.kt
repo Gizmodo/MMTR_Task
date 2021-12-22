@@ -1,8 +1,5 @@
 package com.example.fragmentvm.viewmodel
 
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -50,40 +47,13 @@ class LoginViewModel : ViewModel() {
         return userMutableLiveData
     }
 
-    val emailTextWatcher: TextWatcher
-        get() = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
-            override fun afterTextChanged(s: Editable?) {
-                user?.email = s.toString()
-            }
-        }
-
-    val descriptionTextWatcher: TextWatcher
-        get() = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
-            override fun afterTextChanged(s: Editable?) {
-                user?.description = s.toString()
-            }
-
-        }
-
-    fun onNextClicked(v: View) {
-
-    }
-
     fun updateDescription(data: String) {
+        Timber.d("Description received in VM $data")
         _description.value = data
-        Timber.d("Description $data")
     }
 
     fun updateEmail(data: String) {
+        Timber.d("Email received in VM $data")
         _email.value = data
-        Timber.d("Email $data")
     }
 }
