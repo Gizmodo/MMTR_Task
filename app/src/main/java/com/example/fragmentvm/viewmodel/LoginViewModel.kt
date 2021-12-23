@@ -1,59 +1,48 @@
 package com.example.fragmentvm.viewmodel
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.fragmentvm.model.User
+import com.example.fragmentvm.utils.CombinedLiveData
+import com.example.fragmentvm.utils.Validator
 import timber.log.Timber
 
-
 class LoginViewModel : ViewModel() {
-    private var _description = MutableLiveData<String>()
-    val description: MutableLiveData<String>
-        get() = _description
 
-    private var _email = MutableLiveData<String>()
-    val email: MutableLiveData<String>
-        get() = _email
+    private var _isValidDescription = MutableLiveData<Boolean>()
+    private var _isValidEmail = MutableLiveData<Boolean>()
 
-
-    private var user: User? = null
-
-    private val userMutableLiveData = MutableLiveData<User>()
-    val userData: LiveData<User> = userMutableLiveData
+    val isValidEmail: MutableLiveData<Boolean> get() = _isValidEmail.skipFirst()
+    val isValidDescription: MutableLiveData<Boolean> get() = _isValidDescription.skipFirst()
+    val isValidForm: LiveData<Boolean> get() = _combined
 
     init {
-        description.value = ""
-        email.value = ""
-        this.user = User("", "")
+        this._isValidEmail.value = false
+        this._isValidDescription.value = false
     }
 
-    fun performValidation() {
-
-        /* if (username.isBlank()) {
-             logInResult.value = "Invalid username"
-             return
-         }
-
-         if (password.isBlank()) {
-             logInResult.value = "Invalid password"
-             return
-         }
-
-         logInResult.value = "Valid credentials :)"*/
+    private fun <T> LiveData<T>.skipFirst(): MutableLiveData<T> {
+        val result = MediatorLiveData<T>()
+        var isFirst = true
+        result.addSource(this) {
+            if (isFirst) isFirst = false
+            else result.value = it
+        }
+        return result
     }
 
-    fun getUser(): MutableLiveData<User> {
-        return userMutableLiveData
+    private var _combined: LiveData<Boolean> =
+        CombinedLiveData.combine(_isValidEmail, _isValidDescription)
+        { left, right ->
+            return@combine left.and(right)
+        }
+
+    fun updateEmail(data: String) {
+        _isValidEmail.postValue(Validator.isEmailValid(data))
     }
 
     fun updateDescription(data: String) {
-        Timber.d("Description received in VM $data")
-        _description.value = data
-    }
-
-    fun updateEmail(data: String) {
-        Timber.d("Email received in VM $data")
-        _email.value = data
+        _isValidDescription.postValue(Validator.isDescriptionValid(data))
     }
 }
