@@ -1,12 +1,13 @@
 package com.example.fragmentvm.di
 
 import com.example.fragmentvm.model.Cat
+import com.example.fragmentvm.model.Payload
 import com.example.fragmentvm.model.signupResponse
 import io.reactivex.rxjava3.core.Single
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
-
 
 interface RetroServiceInterface {
     @GET("images/search")
@@ -17,7 +18,6 @@ interface RetroServiceInterface {
 
     @POST("user/passwordlesssignup")
     fun signUp(
-        @Query("email") email:String,
-        @Query(value = "appDescription") description:String,
+        @Body document: Payload,
     ): Single<signupResponse>
 }
