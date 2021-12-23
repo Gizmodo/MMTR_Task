@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.fragmentvm.R
 import com.example.fragmentvm.databinding.LoginFragmentBinding
 import com.example.fragmentvm.viewmodel.LoginViewModel
 import com.google.android.material.textfield.TextInputEditText
@@ -52,6 +53,24 @@ class LoginFragment : Fragment() {
         initUIs()
         createFieldsObservers()
         vmObservers()
+        setListeners()
+    }
+
+    private fun setListeners() {
+        btnLogin.setOnClickListener {
+            val transaction = requireActivity()
+                .supportFragmentManager
+                .beginTransaction()
+
+            with(transaction) {
+                replace(
+                    R.id.container,
+                    ApiFragment.instance()
+                )
+                addToBackStack(null)
+                commit()
+            }
+        }
     }
 
     private fun vmObservers() {

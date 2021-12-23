@@ -9,7 +9,7 @@ class Validator {
             return EMAIL_REGEX.toRegex().matches(email)
         }
 
-        fun isDescriptionValid(description: String): Boolean {
+        fun isNotEmpty(description: String): Boolean {
             return description.isNotEmpty()
         }
     }

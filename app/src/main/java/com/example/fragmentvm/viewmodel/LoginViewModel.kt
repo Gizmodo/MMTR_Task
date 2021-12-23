@@ -1,12 +1,11 @@
 package com.example.fragmentvm.viewmodel
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.fragmentvm.utils.CombinedLiveData
+import com.example.fragmentvm.utils.Util.Companion.skipFirst
 import com.example.fragmentvm.utils.Validator
-import timber.log.Timber
 
 class LoginViewModel : ViewModel() {
 
@@ -22,16 +21,6 @@ class LoginViewModel : ViewModel() {
         this._isValidDescription.value = false
     }
 
-    private fun <T> LiveData<T>.skipFirst(): MutableLiveData<T> {
-        val result = MediatorLiveData<T>()
-        var isFirst = true
-        result.addSource(this) {
-            if (isFirst) isFirst = false
-            else result.value = it
-        }
-        return result
-    }
-
     private var _combined: LiveData<Boolean> =
         CombinedLiveData.combine(_isValidEmail, _isValidDescription)
         { left, right ->
@@ -43,6 +32,6 @@ class LoginViewModel : ViewModel() {
     }
 
     fun updateDescription(data: String) {
-        _isValidDescription.postValue(Validator.isDescriptionValid(data))
+        _isValidDescription.postValue(Validator.isNotEmpty(data))
     }
 }
