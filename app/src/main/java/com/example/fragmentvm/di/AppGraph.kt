@@ -9,12 +9,11 @@ import javax.inject.Singleton
 @Singleton
 @Component(modules = [
     RetroModule::class,
-    ContextModule::class,
+    AppModule::class,
     StorageModule::class
 ]) // Providers
 interface AppGraph {
     fun embed(vm: MainViewModel)
     fun embed(vm: ApiViewModel)
     fun embed(vm: LoginViewModel) //consumer
-
 }

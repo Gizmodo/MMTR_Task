@@ -38,8 +38,6 @@ class LoginFragment : Fragment() {
     private lateinit var tilDescription: TextInputLayout
 
     private lateinit var btnLogin: Button
-    private lateinit var btnLoad: Button
-    private lateinit var btnSave: Button
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -105,12 +103,10 @@ class LoginFragment : Fragment() {
         edtDescription = binding.edtDescription
         tilDescription = binding.tilDescription
         btnLogin = binding.btnLogin
-       /* btnSave = binding.btnSave
-        btnLoad = binding.btnLoad*/
     }
 
     private fun toObservable(editText: TextInputEditText): Observable<String> {
-        val descriptionTextChangeObservable = Observable.create<String> { emitter ->
+        val observable = Observable.create<String> { emitter ->
             val textWatcher = object : TextWatcher {
                 override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
@@ -126,7 +122,7 @@ class LoginFragment : Fragment() {
             }
         }
 
-        return descriptionTextChangeObservable.debounce(50, TimeUnit.MILLISECONDS)
+        return observable.debounce(50, TimeUnit.MILLISECONDS)
     }
 
     private fun createFieldsObservers() {

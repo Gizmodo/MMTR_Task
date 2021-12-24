@@ -14,7 +14,7 @@ class ApiViewModel : ViewModel() {
     @Inject
     lateinit var repository: Repository
     private val payload: Payload = Payload("", "")
-    val userResponse = repository.postForm(payload)
+
     private val _apikey = MutableLiveData<String>()
 
     private val _isValidApiKey = MutableLiveData<Boolean>()
@@ -26,12 +26,14 @@ class ApiViewModel : ViewModel() {
 
     init {
         App.instance().appGraph.embed(this)
+
     }
 
     fun updateApiKey(data: String) {
         _isValidApiKey.postValue(Validator.isNotEmpty(data))
     }
-
-
+fun asd(){
+    val userResponse = repository.postForm(payload)
+}
 
 }

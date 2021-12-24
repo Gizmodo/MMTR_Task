@@ -23,14 +23,9 @@ class App : Application() {
         appGraph = DaggerAppGraph
             .builder()
             .retroModule(RetroModule())
-            .contextModule(ContextModule())
+            .appModule(AppModule(this))
             .storageModule(StorageModule(this))
-//            .sharedPreferencesModule(PreferencesModule())
-//            .prefsModule(PrefsModule())
             .build()
         appInstance = this
-        appContext = this
     }
-
-
 }

@@ -1,13 +1,14 @@
 package com.example.fragmentvm.viewmodel
 
-import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.fragmentvm.App
+import com.example.fragmentvm.repository.RepositoryPrefs
 import com.example.fragmentvm.utils.CombinedLiveData
 import com.example.fragmentvm.utils.Util.Companion.skipFirst
 import com.example.fragmentvm.utils.Validator
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -27,7 +28,7 @@ class LoginViewModel : ViewModel() {
     }
 
     @Inject
-    lateinit var sharedPreferences: SharedPreferences
+    lateinit var repo: RepositoryPrefs
 
     private var _combined: LiveData<Boolean> =
         CombinedLiveData.combine(_isValidEmail, _isValidDescription)
@@ -37,24 +38,13 @@ class LoginViewModel : ViewModel() {
 
     fun updateEmail(data: String) {
         val isEmailValid = Validator.isEmailValid(data)
-        if (isEmailValid) {
-            // TODO: Save to prefs
-            /*val preferences = Preferences()
-            preferences.saveEmail(data)*/
-        }
+        if (isEmailValid) repo.setEmail(data)
         _isValidEmail.postValue(isEmailValid)
     }
 
     fun updateDescription(data: String) {
         val isDescriptionValid = Validator.isNotEmpty(data)
-        if (isDescriptionValid) {
-            // TODO: Save to prefs
-            val prefEditor: SharedPreferences.Editor =
-                sharedPreferences.edit()
-            prefEditor.putString("key",data)
-            prefEditor.apply()
-
-        }
+        if (isDescriptionValid) Timber.d(repo.getEmail())
         _isValidDescription.postValue(isDescriptionValid)
     }
 }
