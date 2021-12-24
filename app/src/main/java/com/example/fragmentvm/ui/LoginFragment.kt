@@ -38,6 +38,8 @@ class LoginFragment : Fragment() {
     private lateinit var tilDescription: TextInputLayout
 
     private lateinit var btnLogin: Button
+    private lateinit var btnLoad: Button
+    private lateinit var btnSave: Button
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -103,6 +105,8 @@ class LoginFragment : Fragment() {
         edtDescription = binding.edtDescription
         tilDescription = binding.tilDescription
         btnLogin = binding.btnLogin
+       /* btnSave = binding.btnSave
+        btnLoad = binding.btnLoad*/
     }
 
     private fun toObservable(editText: TextInputEditText): Observable<String> {

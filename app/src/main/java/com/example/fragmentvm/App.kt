@@ -1,9 +1,8 @@
 package com.example.fragmentvm
 
 import android.app.Application
-import com.example.fragmentvm.di.AppGraph
-import com.example.fragmentvm.di.DaggerAppGraph
-import com.example.fragmentvm.di.RetroModule
+import android.content.Context
+import com.example.fragmentvm.di.*
 import com.example.fragmentvm.utils.LineNumberDebugTree
 import timber.log.Timber
 
@@ -12,6 +11,7 @@ class App : Application() {
 
     companion object {
         private lateinit var appInstance: App
+        lateinit var appContext: Context
         fun instance(): App {
             return appInstance
         }
@@ -23,8 +23,13 @@ class App : Application() {
         appGraph = DaggerAppGraph
             .builder()
             .retroModule(RetroModule())
+            .contextModule(ContextModule())
+            .storageModule(StorageModule(this))
+//            .sharedPreferencesModule(PreferencesModule())
+//            .prefsModule(PrefsModule())
             .build()
         appInstance = this
+        appContext = this
     }
 
 
