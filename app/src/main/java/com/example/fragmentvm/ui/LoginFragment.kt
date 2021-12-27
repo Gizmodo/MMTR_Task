@@ -7,11 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.fragmentvm.R
 import com.example.fragmentvm.databinding.LoginFragmentBinding
 import com.example.fragmentvm.viewmodel.LoginViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import io.reactivex.rxjava3.core.BackpressureStrategy
@@ -60,19 +61,33 @@ class LoginFragment : Fragment() {
     private fun setListeners() {
         btnLogin.setOnClickListener {
             viewModel.postRequest()
-/*
-            val transaction = requireActivity()
-                .supportFragmentManager
-                .beginTransaction()
+        }
+    }
 
-            with(transaction) {
-                replace(
-                    R.id.container,
-                    ApiFragment.instance()
-                )
-                addToBackStack(null)
-                commit()
-            }*/
+    private fun navigateNextFragment() {
+        val transaction = requireActivity()
+            .supportFragmentManager
+            .beginTransaction()
+
+        with(transaction) {
+            replace(
+                R.id.container,
+                ApiFragment.instance()
+            )
+            addToBackStack(null)
+            commit()
+        }
+    }
+
+    private fun showDialog(message: String) {
+        context?.let {
+            MaterialAlertDialogBuilder(it)
+                .setTitle(resources.getString(R.string.title))
+                .setMessage(message)
+                .setPositiveButton(resources.getString(R.string.accept)) { dialog, which ->
+                    dialog.dismiss()
+                }
+                .show()
         }
     }
 
@@ -81,12 +96,8 @@ class LoginFragment : Fragment() {
             .signUpLiveData
             .observe(viewLifecycleOwner) {
                 when (it.status) {
-                    400 -> {
-                        Toast.makeText(context, it.message, Toast.LENGTH_LONG)
-                            .show()
-                    }
-                    // TODO: Navigate ApiKeyFragment
-                    200 -> Timber.d(it.message)
+                    400 -> showDialog(it.message)
+                    else -> navigateNextFragment()
                 }
             }
 

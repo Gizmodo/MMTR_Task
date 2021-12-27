@@ -5,4 +5,6 @@
     <string name="description">Description</string>
     <string name="apikey">api key</string>
     <string name="btnNext">Next</string>
+    <string name="title">Error</string>
+    <string name="accept">OK</string>
 </resources>

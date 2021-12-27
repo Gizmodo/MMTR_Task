@@ -60,7 +60,6 @@ class LoginViewModel : ViewModel() {
                     try {
                         val error: SignupResponse =
                             adapter.fromJson(body?.string())
-                        Timber.d(" code = " + error.status + " message = " + error.message)
                         _signUpLiveData.value = error
                     } catch (e: IOException) {
                         Timber.e(e)
