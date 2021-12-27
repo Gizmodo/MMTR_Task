@@ -7,9 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.example.fragmentvm.R
 import com.example.fragmentvm.databinding.LoginFragmentBinding
 import com.example.fragmentvm.viewmodel.LoginViewModel
 import com.google.android.material.textfield.TextInputEditText
@@ -20,6 +20,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
+
 
 class LoginFragment : Fragment() {
 
@@ -58,6 +59,8 @@ class LoginFragment : Fragment() {
 
     private fun setListeners() {
         btnLogin.setOnClickListener {
+            viewModel.postRequest()
+/*
             val transaction = requireActivity()
                 .supportFragmentManager
                 .beginTransaction()
@@ -69,11 +72,24 @@ class LoginFragment : Fragment() {
                 )
                 addToBackStack(null)
                 commit()
-            }
+            }*/
         }
     }
 
     private fun vmObservers() {
+        viewModel
+            .signUpLiveData
+            .observe(viewLifecycleOwner) {
+                when (it.status) {
+                    400 -> {
+                        Toast.makeText(context, it.message, Toast.LENGTH_LONG)
+                            .show()
+                    }
+                    // TODO: Navigate ApiKeyFragment
+                    200 -> Timber.d(it.message)
+                }
+            }
+
         viewModel.isValidForm.observe(viewLifecycleOwner) {
             btnLogin.isEnabled = it
         }

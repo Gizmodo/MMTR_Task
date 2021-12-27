@@ -4,23 +4,22 @@ import androidx.lifecycle.MutableLiveData
 import com.example.fragmentvm.di.RetroServiceInterface
 import com.example.fragmentvm.model.Cat
 import com.example.fragmentvm.model.Payload
-import com.example.fragmentvm.model.signupResponse
+import com.example.fragmentvm.model.SignupResponse
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.annotations.NonNull
+import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
 import javax.inject.Inject
 
 
-class Repository @Inject constructor(private val apiService: RetroServiceInterface) {
-    fun postForm(payload: Payload): MutableLiveData<signupResponse> {
-        val response = MutableLiveData<signupResponse>()
-        apiService.signUp(payload)
+class RepositoryRetrofit @Inject constructor(
+    private val apiService: RetroServiceInterface,
+) {
+    fun postSignUp(payload: Payload): @NonNull Observable<SignupResponse> {
+        return apiService.signUp(payload)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ result ->
-                response.value = result
-            }, { Timber.e(it) })
-        return response
     }
 
     val getCats: MutableLiveData<List<Cat>>
@@ -29,11 +28,14 @@ class Repository @Inject constructor(private val apiService: RetroServiceInterfa
             apiService.getCats()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ result ->
-                    cats.value = result
-                }, { error ->
-                    Timber.e(error)
-                })
+                .subscribe(
+                    { result ->
+                        cats.value = result
+                    },
+                    { error ->
+                        Timber.e(error)
+                    }
+                )
             return cats
         }
 }

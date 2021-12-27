@@ -16,10 +16,4 @@ class AppModule(private val application: Application) {
     @Provides
     @Singleton
     fun providesApplicationContext(): Context = application
-/*
-    @Singleton
-    @Provides
-    fun providesNetworkConnectivityHelper(): NetworkConnectivityHelper{
-        return NetworkConnectivityHelper(application.applicationContext)
-    }*/
 }

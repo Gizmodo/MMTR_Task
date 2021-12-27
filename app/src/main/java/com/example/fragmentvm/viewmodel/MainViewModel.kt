@@ -2,7 +2,7 @@ package com.example.fragmentvm.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.example.fragmentvm.App
-import com.example.fragmentvm.repository.Repository
+import com.example.fragmentvm.repository.RepositoryRetrofit
 import javax.inject.Inject
 
 class MainViewModel : ViewModel() {
@@ -11,6 +11,6 @@ class MainViewModel : ViewModel() {
     }
 
     @Inject
-    lateinit var repository: Repository
-    val cats = repository.getCats
+    lateinit var repositoryRetrofit: RepositoryRetrofit
+    val cats = repositoryRetrofit.getCats
 }

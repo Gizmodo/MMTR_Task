@@ -1,11 +1,11 @@
 package com.example.fragmentvm.repository
 
 import android.content.Context
-import com.example.fragmentvm.preferences.AppPreferenceInterface
+import com.example.fragmentvm.preferences.SharedPreferenceInterface
 import javax.inject.Inject
 
 
-class RepositoryPrefs @Inject constructor(context: Context) : AppPreferenceInterface {
+class RepositorySharedPref @Inject constructor(context: Context) : SharedPreferenceInterface {
     companion object {
         const val TOKEN_EMAIL = "email"
         const val TOKEN_DESCRIPTION = "description"
@@ -23,12 +23,16 @@ class RepositoryPrefs @Inject constructor(context: Context) : AppPreferenceInter
         return preference.getString(key, defaultValue) ?: defaultValue
     }
 
-    override fun getEmail(): String = getString(TOKEN_EMAIL)
-
-    override fun setEmail(email: String) {
-        setString(TOKEN_EMAIL, email)
-    }
-
+    override var description: String
+        get() = getString(TOKEN_DESCRIPTION)
+        set(value) {
+            setString(TOKEN_DESCRIPTION, value)
+        }
+    override var email: String
+        get() = getString(TOKEN_EMAIL)
+        set(value) {
+            setString(TOKEN_EMAIL, value)
+        }
     override var apikey: String
         get() = getString(TOKEN_APIKEY)
         set(value) {

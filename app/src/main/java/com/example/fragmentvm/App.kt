@@ -2,7 +2,10 @@ package com.example.fragmentvm
 
 import android.app.Application
 import android.content.Context
-import com.example.fragmentvm.di.*
+import com.example.fragmentvm.di.AppGraph
+import com.example.fragmentvm.di.AppModule
+import com.example.fragmentvm.di.DaggerAppGraph
+import com.example.fragmentvm.di.RetroModule
 import com.example.fragmentvm.utils.LineNumberDebugTree
 import timber.log.Timber
 
@@ -24,7 +27,6 @@ class App : Application() {
             .builder()
             .retroModule(RetroModule())
             .appModule(AppModule(this))
-            .storageModule(StorageModule(this))
             .build()
         appInstance = this
     }

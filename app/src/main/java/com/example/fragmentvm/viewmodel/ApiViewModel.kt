@@ -4,16 +4,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.fragmentvm.App
-import com.example.fragmentvm.model.Payload
-import com.example.fragmentvm.repository.Repository
+import com.example.fragmentvm.repository.RepositoryRetrofit
+import com.example.fragmentvm.repository.RepositorySharedPref
 import com.example.fragmentvm.utils.Util.Companion.skipFirst
 import com.example.fragmentvm.utils.Validator
 import javax.inject.Inject
 
 class ApiViewModel : ViewModel() {
     @Inject
-    lateinit var repository: Repository
-    private val payload: Payload = Payload("", "")
+    lateinit var repositoryRetrofit: RepositoryRetrofit
+
+    @Inject
+    lateinit var sharedRepo: RepositorySharedPref
 
     private val _apikey = MutableLiveData<String>()
 
@@ -26,14 +28,11 @@ class ApiViewModel : ViewModel() {
 
     init {
         App.instance().appGraph.embed(this)
-
     }
 
     fun updateApiKey(data: String) {
+        // TODO: Save to prefs
         _isValidApiKey.postValue(Validator.isNotEmpty(data))
     }
-fun asd(){
-    val userResponse = repository.postForm(payload)
-}
 
 }
