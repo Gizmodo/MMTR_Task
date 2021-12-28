@@ -50,7 +50,7 @@ class MainFragment : Fragment() {
 
     private fun initUIs() {
         btnBack = binding.btnBack
-        btnBack.setOnClickListener() {
+        btnBack.setOnClickListener {
             navigateBack()
         }
     }

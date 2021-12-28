@@ -5,6 +5,33 @@ plugins {
     id "scabbard.gradle" version "0.5.0"
 }
 
+ext.versionMajor = 1
+ext.versionMinor = 0
+ext.versionPatch = 0
+
+@SuppressWarnings('GrMethodMayBeStatic')
+def generateVersionCode() {
+    return ext.versionMajor * 10000 + ext.versionMinor * 100 + ext.versionPatch
+}
+
+def generateVersionName() {
+    String versionName = "${versionMajor}.${versionMinor}.${versionPatch}"
+    def versionPropsFile = file('version.properties')
+    Properties versionProps = new Properties()
+
+    if (versionPropsFile.canRead()) {
+        versionProps.load(new FileInputStream(versionPropsFile))
+    } else {
+        versionProps['BUILD_NUMBER'] = '0'
+    }
+
+    def buildNumber = versionProps['BUILD_NUMBER'].toInteger() + 1
+    versionProps['BUILD_NUMBER'] = buildNumber.toString()
+    versionProps.store(versionPropsFile.newWriter(), null)
+
+    return "${versionName}.BN-${buildNumber}"
+}
+
 android {
     compileSdk 31
     compileSdkVersion 31
@@ -14,14 +41,11 @@ android {
         applicationId "com.example.fragmentvm"
         minSdk 21
         targetSdk 31
-        versionCode 1
-        versionName "1.0"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        versionCode generateVersionCode()
+        versionName generateVersionName()
     }
     buildFeatures {
         viewBinding true
-        dataBinding true
     }
     buildTypes {
         release {

@@ -1,7 +1,6 @@
 package com.example.fragmentvm
 
 import android.app.Application
-import android.content.Context
 import com.example.fragmentvm.di.AppGraph
 import com.example.fragmentvm.di.AppModule
 import com.example.fragmentvm.di.DaggerAppGraph
@@ -14,7 +13,6 @@ class App : Application() {
 
     companion object {
         private lateinit var appInstance: App
-        lateinit var appContext: Context
         fun instance(): App {
             return appInstance
         }
