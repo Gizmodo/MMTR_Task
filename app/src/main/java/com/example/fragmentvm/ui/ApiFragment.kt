@@ -7,12 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import com.example.fragmentvm.R
 import com.example.fragmentvm.databinding.ApiFragmentBinding
-import com.example.fragmentvm.utils.SharedViewModel
 import com.example.fragmentvm.viewmodel.ApiViewModel
 import com.google.android.material.textfield.TextInputEditText
 import io.reactivex.rxjava3.core.BackpressureStrategy
@@ -31,9 +29,10 @@ class ApiFragment : Fragment() {
     private var subscriptions: CompositeDisposable = CompositeDisposable()
     private lateinit var binding: ApiFragmentBinding
     private lateinit var btnNext: Button
+    private lateinit var btnBack: Button
     private lateinit var edtApiKey: TextInputEditText
     private lateinit var viewModel: ApiViewModel
-    private val model: SharedViewModel by activityViewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -59,11 +58,16 @@ class ApiFragment : Fragment() {
     private fun initUIs() {
         btnNext = binding.btnNext
         edtApiKey = binding.edtApikey
+        btnBack = binding.btnBack
     }
 
     private fun initListeners() {
         btnNext.setOnClickListener {
-            Toast.makeText(context, "!!!", Toast.LENGTH_LONG).show()
+            navigateMainFragment()
+        }
+
+        btnBack.setOnClickListener() {
+            navigateLoginFragment()
         }
 
         val observable = toObservable(edtApiKey)
@@ -105,5 +109,34 @@ class ApiFragment : Fragment() {
     override fun onPause() {
         subscriptions.clear()
         super.onPause()
+    }
+
+    private fun navigateLoginFragment() {
+        val transaction = requireActivity()
+            .supportFragmentManager
+            .beginTransaction()
+
+        with(transaction) {
+            replace(
+                R.id.container,
+                LoginFragment.instance()
+            )
+            commit()
+        }
+    }
+
+    private fun navigateMainFragment() {
+        val transaction = requireActivity()
+            .supportFragmentManager
+            .beginTransaction()
+
+        with(transaction) {
+            replace(
+                R.id.container,
+                MainFragment.instance()
+            )
+            addToBackStack(null)
+            commit()
+        }
     }
 }

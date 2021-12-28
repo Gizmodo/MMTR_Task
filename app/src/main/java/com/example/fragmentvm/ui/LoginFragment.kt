@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit
 class LoginFragment : Fragment() {
 
     companion object {
-        fun newInstance() = LoginFragment()
+        fun instance() = LoginFragment()
     }
 
     private var subscriptions: CompositeDisposable = CompositeDisposable()

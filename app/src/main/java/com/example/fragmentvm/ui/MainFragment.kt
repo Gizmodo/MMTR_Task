@@ -18,7 +18,7 @@ import com.example.fragmentvm.viewmodel.MainViewModel
 
 class MainFragment : Fragment() {
     companion object {
-        fun newInstance() = MainFragment()
+        fun instance() = MainFragment()
     }
 
     private val viewModel: MainViewModel by viewModels()
@@ -27,7 +27,7 @@ class MainFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         binding = MainFragmentBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
