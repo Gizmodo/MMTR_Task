@@ -2,7 +2,7 @@ package com.example.fragmentvm.di
 
 import com.example.fragmentvm.model.Cat
 import com.example.fragmentvm.model.Payload
-import com.example.fragmentvm.model.SignupResponse
+import com.example.fragmentvm.model.Signup
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import retrofit2.http.Body
@@ -15,10 +15,16 @@ interface RetroServiceInterface {
     fun getCats(
         @Query("limit") limit: Int = 5,
         @Query("size") size: String = "small",
+//        @Query("api_key") apiKey: String,
     ): Single<List<Cat>>
 
     @POST("user/passwordlesssignup")
     fun signUp(
         @Body document: Payload,
-    ): Observable<SignupResponse>
+    ): Observable<Signup>
+
+    @GET("favourites")
+    fun favourites(
+        @Query("api_key") apiKey:String
+    ) : Observable<List<Signup>>
 }

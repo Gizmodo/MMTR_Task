@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.fragmentvm.App
 import com.example.fragmentvm.model.Payload
-import com.example.fragmentvm.model.SignupResponse
+import com.example.fragmentvm.model.Signup
 import com.example.fragmentvm.repository.RepositoryRetrofit
 import com.example.fragmentvm.repository.RepositorySharedPref
 import com.example.fragmentvm.utils.CombinedLiveData
@@ -43,8 +43,8 @@ class LoginViewModel : ViewModel() {
     @Inject
     lateinit var repositoryRetrofit: RepositoryRetrofit
 
-    private var _signUpLiveData = MutableLiveData<SignupResponse>()
-    val signUpLiveData: LiveData<SignupResponse>
+    private var _signUpLiveData = MutableLiveData<Signup>()
+    val signUpLiveData: LiveData<Signup>
         get() = _signUpLiveData
 
     fun postRequest() {
@@ -55,10 +55,10 @@ class LoginViewModel : ViewModel() {
                 if (it is HttpException) {
                     val body = it.response()?.errorBody()
                     val gson = Gson()
-                    val adapter: TypeAdapter<SignupResponse> =
-                        gson.getAdapter(SignupResponse::class.java)
+                    val adapter: TypeAdapter<Signup> =
+                        gson.getAdapter(Signup::class.java)
                     try {
-                        val error: SignupResponse =
+                        val error: Signup =
                             adapter.fromJson(body?.string())
                         _signUpLiveData.value = error
                     } catch (e: IOException) {
@@ -75,14 +75,14 @@ class LoginViewModel : ViewModel() {
         }
 
     fun updateEmail(data: String) {
-        val isEmailValid = Validator.isEmailValid(data)
-        if (isEmailValid) sharedRepo.email = data
-        _isValidEmail.postValue(isEmailValid)
+        val isValidEmail = Validator.isEmailValid(data)
+        if (isValidEmail) sharedRepo.email = data
+        _isValidEmail.postValue(isValidEmail)
     }
 
     fun updateDescription(data: String) {
-        val isDescriptionValid = Validator.isNotEmpty(data)
-        if (isDescriptionValid) sharedRepo.description = data
-        _isValidDescription.postValue(isDescriptionValid)
+        val isValidDescription = Validator.isNotEmpty(data)
+        if (isValidDescription) sharedRepo.description = data
+        _isValidDescription.postValue(isValidDescription)
     }
 }

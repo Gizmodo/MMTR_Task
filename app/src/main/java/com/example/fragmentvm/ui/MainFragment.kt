@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -24,7 +25,7 @@ class MainFragment : Fragment() {
     private val viewModel: MainViewModel by viewModels()
     private lateinit var binding: MainFragmentBinding
     private val sharedModel: SharedViewModel by activityViewModels()
-
+    private lateinit var btnBack: Button
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -42,6 +43,28 @@ class MainFragment : Fragment() {
                 it.setHasFixedSize(true)
                 it.adapter = CatAdapter(cats, catClickListener)
             }
+        }
+        initUIs()
+    }
+
+    private fun initUIs() {
+        btnBack = binding.btnBack
+        btnBack.setOnClickListener() {
+            navigateBack()
+        }
+    }
+
+    private fun navigateBack() {
+        val transaction = requireActivity()
+            .supportFragmentManager
+            .beginTransaction()
+
+        with(transaction) {
+            replace(
+                R.id.container,
+                ApiFragment.instance()
+            )
+            commit()
         }
     }
 

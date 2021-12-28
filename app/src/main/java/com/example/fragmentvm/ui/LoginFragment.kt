@@ -54,11 +54,11 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initUIs()
         createFieldsObservers()
-        vmObservers()
-        setListeners()
+        initViewModelObservers()
+        initListeners()
     }
 
-    private fun setListeners() {
+    private fun initListeners() {
         btnLogin.setOnClickListener {
             viewModel.postRequest()
         }
@@ -84,14 +84,14 @@ class LoginFragment : Fragment() {
             MaterialAlertDialogBuilder(it)
                 .setTitle(resources.getString(R.string.title))
                 .setMessage(message)
-                .setPositiveButton(resources.getString(R.string.accept)) { dialog, which ->
+                .setPositiveButton(resources.getString(R.string.accept)) { dialog, _ ->
                     dialog.dismiss()
                 }
                 .show()
         }
     }
 
-    private fun vmObservers() {
+    private fun initViewModelObservers() {
         viewModel
             .signUpLiveData
             .observe(viewLifecycleOwner) {
