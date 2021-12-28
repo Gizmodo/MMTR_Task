@@ -5,10 +5,8 @@ import com.example.fragmentvm.model.Payload
 import com.example.fragmentvm.model.Signup
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Query
+import retrofit2.http.*
+
 
 interface RetroServiceInterface {
     @GET("images/search")
@@ -18,6 +16,13 @@ interface RetroServiceInterface {
 //        @Query("api_key") apiKey: String,
     ): Single<List<Cat>>
 
+    @GET("images/search")
+    fun getCatsObservable(
+        @Header("x-api-key") apiKey: String,
+        @Query("limit") limit: Int = 5,
+        @Query("size") size: String = "small",
+    ): Observable<List<Cat>>
+
     @POST("user/passwordlesssignup")
     fun signUp(
         @Body document: Payload,
@@ -25,6 +30,6 @@ interface RetroServiceInterface {
 
     @GET("favourites")
     fun favourites(
-        @Query("api_key") apiKey:String
-    ) : Observable<List<Signup>>
+        @Query("api_key") apiKey: String,
+    ): Observable<List<Signup>>
 }

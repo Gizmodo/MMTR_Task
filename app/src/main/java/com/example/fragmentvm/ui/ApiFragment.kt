@@ -95,7 +95,7 @@ class ApiFragment : Fragment() {
             viewModel.sendRequest()
         }
 
-        btnBack.setOnClickListener() {
+        btnBack.setOnClickListener {
             navigateBack()
         }
     }

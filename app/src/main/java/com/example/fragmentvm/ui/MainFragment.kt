@@ -2,13 +2,12 @@ package com.example.fragmentvm.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.fragmentvm.R
 import com.example.fragmentvm.adapter.CatAdapter
@@ -22,21 +21,18 @@ class MainFragment : Fragment() {
         fun instance() = MainFragment()
     }
 
-    private val viewModel: MainViewModel by viewModels()
+    private lateinit var viewModel: MainViewModel
     private lateinit var binding: MainFragmentBinding
     private val sharedModel: SharedViewModel by activityViewModels()
     private lateinit var btnBack: Button
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
         binding = MainFragmentBinding.inflate(inflater, container, false)
-        setHasOptionsMenu(true)
-        return binding.root
-    }
+        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         viewModel.cats.observe(viewLifecycleOwner) { cats ->
             binding.recyclerview.also {
                 it.layoutManager = LinearLayoutManager(requireContext())
@@ -44,6 +40,11 @@ class MainFragment : Fragment() {
                 it.adapter = CatAdapter(cats, catClickListener)
             }
         }
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         initUIs()
     }
 
@@ -66,15 +67,6 @@ class MainFragment : Fragment() {
             )
             commit()
         }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.home -> {
-                return true
-            }
-        }
-        return super.onOptionsItemSelected(item)
     }
 
     private val catClickListener = object : CatAdapter.OnRecyclerViewItemClick {
