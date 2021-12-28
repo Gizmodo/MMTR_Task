@@ -5,9 +5,8 @@ import androidx.lifecycle.ViewModel
 import com.example.fragmentvm.model.Cat
 
 class SharedViewModel : ViewModel() {
-    val selected = MutableLiveData<Cat>()
-
+    val selectedCat = MutableLiveData<Cat>()
     fun select(cat: Cat) {
-        selected.value = cat
+        selectedCat.value = cat
     }
 }

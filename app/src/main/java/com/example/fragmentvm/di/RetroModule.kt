@@ -36,10 +36,6 @@ class RetroModule {
 
             val requestBuilder: Request.Builder = original.newBuilder()
                 .header(
-                    "x-api-key",
-                    "6aad15c4-b124-4ec3-846c-2c76f69cf5e8"
-                )
-                .header(
                     "Content-Type",
                     "application/json"
                 )

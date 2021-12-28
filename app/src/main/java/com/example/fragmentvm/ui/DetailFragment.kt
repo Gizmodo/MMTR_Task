@@ -1,4 +1,4 @@
-package com.example.fragmentvm.ui.detail
+package com.example.fragmentvm.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -37,7 +37,7 @@ class DetailFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        model.selected.observe(viewLifecycleOwner) {
+        model.selectedCat.observe(viewLifecycleOwner) {
             Glide.with(imgDetail).load(it.url).into(imgDetail)
         }
     }

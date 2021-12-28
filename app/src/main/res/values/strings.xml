@@ -1,4 +1,11 @@
 <resources>
-    <string name="app_name">Traineeship</string>
+    <string name="app_name">PetSide</string>
     <string name="imageDescription">Изображение</string>
+    <string name="email">E-mail</string>
+    <string name="description">Description</string>
+    <string name="apikey">api key</string>
+    <string name="btnNext">Next</string>
+    <string name="title">Error</string>
+    <string name="accept">OK</string>
+    <string name="back">Back</string>
 </resources>
