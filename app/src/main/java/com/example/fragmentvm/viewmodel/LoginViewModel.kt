@@ -28,13 +28,10 @@ class LoginViewModel : ViewModel() {
     val isValidDescription: MutableLiveData<Boolean> get() = _isValidDescription.skipFirst()
     val isValidForm: LiveData<Boolean> get() = _combined
 
-    private val payload: Payload
-
     init {
         App.instance().appGraph.embed(this)
         this._isValidEmail.value = false
         this._isValidDescription.value = false
-        this.payload = Payload(sharedRepo.description, sharedRepo.email)
     }
 
     @Inject
@@ -48,6 +45,7 @@ class LoginViewModel : ViewModel() {
         get() = _signUpLiveData
 
     fun postRequest() {
+        val payload = Payload(sharedRepo.description, sharedRepo.email)
         repositoryRetrofit.postSignUp(payload)
             .subscribe({
                 _signUpLiveData.value = it
