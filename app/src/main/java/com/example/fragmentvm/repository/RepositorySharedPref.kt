@@ -7,9 +7,9 @@ import javax.inject.Inject
 
 class RepositorySharedPref @Inject constructor(context: Context) : SharedPreferenceInterface {
     companion object {
-        const val TOKEN_EMAIL = "email"
-        const val TOKEN_DESCRIPTION = "description"
-        const val TOKEN_APIKEY = "apikey"
+        private const val TOKEN_EMAIL = "email"
+        private const val TOKEN_DESCRIPTION = "description"
+        private const val TOKEN_APIKEY = "apikey"
     }
 
     private var preference = context.getSharedPreferences("dagger-pref", Context.MODE_PRIVATE)
