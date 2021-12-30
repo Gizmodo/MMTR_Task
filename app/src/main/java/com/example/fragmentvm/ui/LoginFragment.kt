@@ -1,8 +1,6 @@
 package com.example.fragmentvm.ui
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,16 +9,15 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.fragmentvm.R
 import com.example.fragmentvm.databinding.LoginFragmentBinding
+import com.example.fragmentvm.utils.Util.Companion.toObservable
 import com.example.fragmentvm.viewmodel.LoginViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import io.reactivex.rxjava3.core.BackpressureStrategy
-import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 
 class LoginFragment : Fragment() {
@@ -130,26 +127,6 @@ class LoginFragment : Fragment() {
         edtDescription = binding.edtDescription
         tilDescription = binding.tilDescription
         btnLogin = binding.btnLogin
-    }
-
-    private fun toObservable(editText: TextInputEditText): Observable<String> {
-        val observable = Observable.create<String> { emitter ->
-            val textWatcher = object : TextWatcher {
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-                override fun onTextChanged(s: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    s?.toString()?.let { emitter.onNext(it) }
-                }
-
-                override fun afterTextChanged(p0: Editable?) {}
-            }
-            editText.addTextChangedListener(textWatcher)
-            emitter.setCancellable {
-                editText.removeTextChangedListener(textWatcher)
-            }
-        }
-
-        return observable.debounce(50, TimeUnit.MILLISECONDS)
     }
 
     private fun createFieldsObservers() {
