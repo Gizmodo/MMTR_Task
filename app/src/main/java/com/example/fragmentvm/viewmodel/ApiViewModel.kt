@@ -3,14 +3,17 @@ package com.example.fragmentvm.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.fragmentvm.App
 import com.example.fragmentvm.model.Signup
+import com.example.fragmentvm.repository.DataStoreRepositoryImpl
 import com.example.fragmentvm.repository.RepositoryRetrofit
-import com.example.fragmentvm.repository.RepositorySharedPref
 import com.example.fragmentvm.utils.Util.Companion.skipFirst
 import com.example.fragmentvm.utils.Validator
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import okio.IOException
 import retrofit2.HttpException
 import timber.log.Timber
@@ -29,7 +32,7 @@ class ApiViewModel : ViewModel() {
     lateinit var repositoryRetrofit: RepositoryRetrofit
 
     @Inject
-    lateinit var sharedRepo: RepositorySharedPref
+    lateinit var ds: DataStoreRepositoryImpl
 
     private var _isValidApiKey = MutableLiveData<Boolean>()
     val isValidApiKey: LiveData<Boolean>
@@ -43,12 +46,17 @@ class ApiViewModel : ViewModel() {
 
     fun updateApiKey(data: String) {
         val isValidKey = Validator.isNotEmpty(data)
-        if (isValidKey) sharedRepo.apikey = data
+        if (isValidKey) {
+            viewModelScope.launch {
+                ds.putString("apikey", data)
+            }
+        }
         _isValidApiKey.postValue(isValidKey)
     }
 
     fun sendRequest() {
-        repositoryRetrofit.getFavourites(sharedRepo.apikey)
+        val apikey = runBlocking { ds.getString("apikey") }
+        repositoryRetrofit.getFavourites(apikey.toString())
             .subscribe({
                 _isSuccessRequest.postValue(true)
             }, {

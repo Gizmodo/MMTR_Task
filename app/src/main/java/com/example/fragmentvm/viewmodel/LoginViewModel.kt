@@ -3,9 +3,11 @@ package com.example.fragmentvm.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.fragmentvm.App
 import com.example.fragmentvm.model.Payload
 import com.example.fragmentvm.model.Signup
+import com.example.fragmentvm.repository.DataStoreRepositoryImpl
 import com.example.fragmentvm.repository.RepositoryRetrofit
 import com.example.fragmentvm.repository.RepositorySharedPref
 import com.example.fragmentvm.utils.CombinedLiveData
@@ -13,6 +15,8 @@ import com.example.fragmentvm.utils.Util.Companion.skipFirst
 import com.example.fragmentvm.utils.Validator
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import okio.IOException
 import retrofit2.HttpException
 import timber.log.Timber
@@ -35,7 +39,7 @@ class LoginViewModel : ViewModel() {
     }
 
     @Inject
-    lateinit var sharedRepo: RepositorySharedPref
+    lateinit var ds: DataStoreRepositoryImpl
 
     @Inject
     lateinit var repositoryRetrofit: RepositoryRetrofit
@@ -45,7 +49,9 @@ class LoginViewModel : ViewModel() {
         get() = _signUpLiveData
 
     fun postRequest() {
-        val payload = Payload(sharedRepo.description, sharedRepo.email)
+        val desc = runBlocking { ds.getString("description") }
+        val eml = runBlocking { ds.getString("email") }
+        val payload = Payload(desc.toString(), eml.toString())
         repositoryRetrofit.postSignUp(payload)
             .subscribe({
                 _signUpLiveData.value = it
@@ -74,13 +80,21 @@ class LoginViewModel : ViewModel() {
 
     fun updateEmail(data: String) {
         val isValidEmail = Validator.isEmailValid(data)
-        if (isValidEmail) sharedRepo.email = data
+        if (isValidEmail) {
+            viewModelScope.launch {
+                ds.putString("email", data)
+            }
+        }
         _isValidEmail.postValue(isValidEmail)
     }
 
     fun updateDescription(data: String) {
         val isValidDescription = Validator.isNotEmpty(data)
-        if (isValidDescription) sharedRepo.description = data
+        if (isValidDescription) {
+            viewModelScope.launch {
+                ds.putString("description", data)
+            }
+        }
         _isValidDescription.postValue(isValidDescription)
     }
 }

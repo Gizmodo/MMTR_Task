@@ -38,12 +38,16 @@ class LoginFragment : Fragment() {
 
     private lateinit var btnLogin: Button
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel = ViewModelProvider(this)[LoginViewModel::class.java]
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
         binding = LoginFragmentBinding.inflate(inflater, container, false)
-        viewModel = ViewModelProvider(this)[LoginViewModel::class.java]
         return binding.root
     }
 

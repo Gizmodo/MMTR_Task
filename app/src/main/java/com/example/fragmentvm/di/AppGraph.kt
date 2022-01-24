@@ -7,10 +7,12 @@ import dagger.Component
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [
-    RetroModule::class,
-    AppModule::class
-]) // Providers
+@Component(
+    modules = [
+        RetroModule::class,
+        AppModule::class
+    ]
+) // Providers
 interface AppGraph {
     fun embed(vm: MainViewModel)
     fun embed(vm: ApiViewModel)
