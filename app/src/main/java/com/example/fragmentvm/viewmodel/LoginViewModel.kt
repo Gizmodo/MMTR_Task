@@ -9,7 +9,6 @@ import com.example.fragmentvm.model.Payload
 import com.example.fragmentvm.model.Signup
 import com.example.fragmentvm.repository.DataStoreRepositoryImpl
 import com.example.fragmentvm.repository.RepositoryRetrofit
-import com.example.fragmentvm.repository.RepositorySharedPref
 import com.example.fragmentvm.utils.CombinedLiveData
 import com.example.fragmentvm.utils.Util.Companion.skipFirst
 import com.example.fragmentvm.utils.Validator
@@ -80,21 +79,13 @@ class LoginViewModel : ViewModel() {
 
     fun updateEmail(data: String) {
         val isValidEmail = Validator.isEmailValid(data)
-        if (isValidEmail) {
-            viewModelScope.launch {
-                ds.putString("email", data)
-            }
-        }
+        if (isValidEmail) viewModelScope.launch { ds.putString("email", data) }
         _isValidEmail.postValue(isValidEmail)
     }
 
     fun updateDescription(data: String) {
         val isValidDescription = Validator.isNotEmpty(data)
-        if (isValidDescription) {
-            viewModelScope.launch {
-                ds.putString("description", data)
-            }
-        }
+        if (isValidDescription) viewModelScope.launch { ds.putString("description", data) }
         _isValidDescription.postValue(isValidDescription)
     }
 }

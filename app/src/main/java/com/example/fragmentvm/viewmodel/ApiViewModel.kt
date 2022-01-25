@@ -58,6 +58,9 @@ class ApiViewModel : ViewModel() {
         val apikey = runBlocking { ds.getString("apikey") }
         repositoryRetrofit.getFavourites(apikey.toString())
             .subscribe({
+                viewModelScope.launch {
+                    ds.putBool("flagReg", true)
+                }
                 _isSuccessRequest.postValue(true)
             }, {
                 _isSuccessRequest.postValue(false)
