@@ -8,7 +8,6 @@
         android:id="@+id/textView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="107dp"
         android:fontFamily="@font/inter400"
         android:gravity="center|top"
         android:text="@string/app_name"

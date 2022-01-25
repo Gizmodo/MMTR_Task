@@ -11,23 +11,22 @@
         layout="@layout/header"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/barrier2" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilApikey"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="64dp"
-        android:layout_marginTop="109dp"
         android:layout_marginEnd="64dp"
-        android:layout_marginBottom="8dp"
         android:hint="@string/apikey"
+        app:layout_constraintBottom_toTopOf="@id/btnNext"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/include"
-        app:layout_constraintVertical_chainStyle="packed">
+        app:layout_constraintTop_toBottomOf="@+id/include">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edtApikey"
@@ -43,7 +42,7 @@
         android:layout_height="50dp"
         android:layout_marginStart="40dp"
         android:layout_marginEnd="40dp"
-        android:layout_marginBottom="39dp"
+        android:layout_marginBottom="40dp"
         android:enabled="false"
         android:text="@string/btnNext"
         app:icon="@drawable/ic_arrow"
@@ -64,5 +63,13 @@
         app:icon="@drawable/ic_arrow"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="btnBack"
+        tools:layout_editor_absoluteY="658dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
