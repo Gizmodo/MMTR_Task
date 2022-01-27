@@ -4,12 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.fragmentvm.R
 import com.example.fragmentvm.adapter.CatAdapter
 import com.example.fragmentvm.databinding.MainFragmentBinding
 import com.example.fragmentvm.model.Cat
@@ -24,7 +24,12 @@ class MainFragment : Fragment() {
     private lateinit var viewModel: MainViewModel
     private lateinit var binding: MainFragmentBinding
     private val sharedModel: SharedViewModel by activityViewModels()
-    private lateinit var btnBack: Button
+    private lateinit var nav: NavController
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        nav = findNavController()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,47 +48,10 @@ class MainFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initUIs()
-    }
-
-    private fun initUIs() {
-        btnBack = binding.btnBack
-        btnBack.setOnClickListener {
-            navigateBack()
-        }
-    }
-
-    private fun navigateBack() {
-        val transaction = requireActivity()
-            .supportFragmentManager
-            .beginTransaction()
-
-        with(transaction) {
-            replace(
-                R.id.container,
-                ApiFragment.instance()
-            )
-            commit()
-        }
-    }
-
     private val catClickListener = object : CatAdapter.OnRecyclerViewItemClick {
         override fun onRecyclerViewItemClick(view: View, cat: Cat) {
             sharedModel.select(cat)
-            val transaction = requireActivity()
-                .supportFragmentManager
-                .beginTransaction()
-
-            with(transaction) {
-                replace(
-                    R.id.container,
-                    DetailFragment.instance()
-                )
-                addToBackStack(null)
-                commit()
-            }
+            nav.navigate(MainFragmentDirections.actionMainFragmentToDetailFragment())
         }
     }
 }
