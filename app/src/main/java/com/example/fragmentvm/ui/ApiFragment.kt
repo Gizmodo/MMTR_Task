@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import com.example.fragmentvm.R
 import com.example.fragmentvm.databinding.ApiFragmentBinding
 import com.example.fragmentvm.utils.Util.Companion.toObservable
@@ -32,13 +34,14 @@ class ApiFragment : Fragment() {
     private lateinit var edtApiKey: TextInputEditText
     private lateinit var viewModel: ApiViewModel
     private lateinit var tilApiKey: TextInputLayout
-
+    private lateinit var nav: NavController
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
         binding = ApiFragmentBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(this)[ApiViewModel::class.java]
+        nav = findNavController()
         return binding.root
     }
 
@@ -118,31 +121,10 @@ class ApiFragment : Fragment() {
     }
 
     private fun navigateBack() {
-        val transaction = requireActivity()
-            .supportFragmentManager
-            .beginTransaction()
-
-        with(transaction) {
-            replace(
-                R.id.container,
-                LoginFragment.instance()
-            )
-            commit()
-        }
+        nav.navigate(ApiFragmentDirections.actionApiFragmentToLoginFragment())
     }
 
     private fun navigateMainFragment() {
-        val transaction = requireActivity()
-            .supportFragmentManager
-            .beginTransaction()
-
-        with(transaction) {
-            replace(
-                R.id.container,
-                MainFragment.instance()
-            )
-            addToBackStack(null)
-            commit()
-        }
+        nav.navigate(ApiFragmentDirections.actionApiFragmentToMainFragment())
     }
 }

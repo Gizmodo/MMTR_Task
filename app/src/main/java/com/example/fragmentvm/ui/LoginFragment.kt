@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.example.fragmentvm.R
 import com.example.fragmentvm.databinding.LoginFragmentBinding
 import com.example.fragmentvm.utils.Util.Companion.toObservable
@@ -66,18 +67,8 @@ class LoginFragment : Fragment() {
     }
 
     private fun navigateNextFragment() {
-        val transaction = requireActivity()
-            .supportFragmentManager
-            .beginTransaction()
-
-        with(transaction) {
-            replace(
-                R.id.container,
-                ApiFragment.instance()
-            )
-            addToBackStack(null)
-            commit()
-        }
+        this.findNavController()
+            .navigate(LoginFragmentDirections.actionLoginFragmentToApiFragment())
     }
 
     private fun showDialog(message: String) {
