@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.fragmentvm.adapter.CatAdapter
 import com.example.fragmentvm.databinding.MainFragmentBinding
 import com.example.fragmentvm.model.Cat
@@ -25,6 +26,7 @@ class MainFragment : Fragment() {
     private lateinit var binding: MainFragmentBinding
     private val sharedModel: SharedViewModel by activityViewModels()
     private lateinit var nav: NavController
+    private lateinit var swipe: SwipeRefreshLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,12 +41,20 @@ class MainFragment : Fragment() {
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
         viewModel.cats.observe(viewLifecycleOwner) { cats ->
+            swipe.isRefreshing = false
             binding.recyclerview.also {
                 it.layoutManager = LinearLayoutManager(requireContext())
                 it.setHasFixedSize(true)
                 it.adapter = CatAdapter(cats, catClickListener)
             }
         }
+
+        swipe = binding.swipeLayout
+        swipe.setOnRefreshListener {
+            swipe.isRefreshing = true
+            viewModel.getCats()
+        }
+
         return binding.root
     }
 

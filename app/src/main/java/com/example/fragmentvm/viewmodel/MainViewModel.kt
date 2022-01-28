@@ -27,7 +27,7 @@ class MainViewModel : ViewModel() {
     val cats: LiveData<List<Cat>>
         get() = _cats
 
-    private fun getCats() {
+    fun getCats() {
         val apikey = runBlocking { ds.getString("apikey") }
         repositoryRetrofit.getCats(apikey.toString())
             .subscribe({ _cats.postValue(it) }, { Timber.e(it) })
