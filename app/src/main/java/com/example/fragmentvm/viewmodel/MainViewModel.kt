@@ -8,6 +8,7 @@ import com.example.fragmentvm.App
 import com.example.fragmentvm.model.Cat
 import com.example.fragmentvm.repository.DataStoreRepositoryImpl
 import com.example.fragmentvm.repository.RepositoryRetrofit
+import com.example.fragmentvm.utils.CatUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -54,13 +55,5 @@ class MainViewModel : ViewModel() {
                         _uiState.value = CatUiState.Error(it)
                     })
         }
-    }
-
-    sealed class CatUiState {
-        object Empty : CatUiState()
-        object Loading : CatUiState()
-        object Finished : CatUiState()
-        class Loaded(val data: List<Cat>) : CatUiState()
-        class Error(val t: Throwable) : CatUiState()
     }
 }
