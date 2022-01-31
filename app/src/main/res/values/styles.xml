@@ -7,4 +7,12 @@
         <item name="android:contentDescription">""</item>
         <item name="iconGravity">textEnd</item>
     </style>
+
+    <style name="Widget.App.CircularProgressIndicator" parent="Widget.Material3.CircularProgressIndicator">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.CircularProgressIndicator</item>
+    </style>
+
+    <style name="ThemeOverlay.App.CircularProgressIndicator" parent="">
+        <item name="colorPrimary">@color/progress_indicator</item>
+    </style>
 </resources>
