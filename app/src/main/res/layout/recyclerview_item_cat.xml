@@ -1,17 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.Material3.CardView.Filled"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    android:elevation="8dp"
-    app:cardCornerRadius="8dp">
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="4dp"
+    app:cardElevation="4dp">
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/imgView"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:scaleType="centerCrop" />
+        android:layout_height="match_parent">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imgView"
+            android:layout_width="match_parent"
+            android:layout_height="221dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ImageContrastCheck" />
+
+        <Button
+            android:id="@+id/btnThumbUp"
+            style="@style/Theme.FragmentVM.Card"
+            android:contentDescription="@string/thumbup"
+            app:icon="@drawable/ic_thumb_up"
+            app:iconTint="@color/thumb_fill"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnThumbDown"
+            app:layout_constraintTop_toBottomOf="@id/imgView"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <Button
+            android:id="@+id/btnThumbDown"
+            style="@style/Theme.FragmentVM.Card"
+            android:contentDescription="@string/thumbdown"
+            app:icon="@drawable/ic_thumb_down"
+            app:iconTint="@color/thumb_empty"
+            app:layout_constraintBottom_toBottomOf="@id/btnThumbUp"
+            app:layout_constraintEnd_toStartOf="@id/btnDots"
+            app:layout_constraintTop_toTopOf="@id/btnThumbUp"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <Button
+            android:id="@+id/btnDots"
+            style="@style/Theme.FragmentVM.Card"
+            android:contentDescription="@string/dots"
+            app:icon="@drawable/ic_more_vert_24"
+            app:iconTint="@color/thumb_empty"
+            app:layout_constraintBottom_toBottomOf="@id/btnThumbDown"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/btnThumbDown"
+            tools:ignore="TouchTargetSizeCheck" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </com.google.android.material.card.MaterialCardView>

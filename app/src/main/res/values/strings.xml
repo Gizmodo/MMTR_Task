@@ -8,4 +8,7 @@
     <string name="title">Error</string>
     <string name="accept">OK</string>
     <string name="back">Back</string>
+    <string name="thumbup">Like</string>
+    <string name="thumbdown">Dislike</string>
+    <string name="dots">More</string>
 </resources>
