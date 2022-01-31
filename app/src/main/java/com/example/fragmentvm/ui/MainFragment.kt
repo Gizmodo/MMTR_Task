@@ -90,7 +90,7 @@ class MainFragment : Fragment() {
 
         swipe = binding.swipeLayout
         swipe.setOnRefreshListener {
-            swipe.isRefreshing = true
+            swipe.isRefreshing = false
             viewModel.getCats()
         }
         return binding.root
