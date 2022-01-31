@@ -1,16 +1,18 @@
 package com.example.fragmentvm.adapter
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable.DEFAULT
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
-import com.example.fragmentvm.R
 import com.example.fragmentvm.databinding.RecyclerviewItemCatBinding
 import com.example.fragmentvm.model.Cat
+import com.example.fragmentvm.utils.GlideImpl
 
 
 class CatAdapter(
@@ -29,29 +31,25 @@ class CatAdapter(
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         val cat = cats[position]
-        val circularProgressDrawable = CircularProgressDrawable(holder.itemView.context)
-        circularProgressDrawable.apply {
-            setStyle(DEFAULT)
-            backgroundColor = R.color.error
-            setColorSchemeColors(R.color.error)
-            start()
-        }
 
-        val requestOptions = RequestOptions
-            .errorOf(R.drawable.ic_outline_running_with_errors_24)
-            .placeholder(circularProgressDrawable)
-            .fitCenter()
-        /*
-        requestOptions.centerCrop()
-        requestOptions.placeholder(circularProgressDrawable)
-        requestOptions.error(R.drawable.ic_outline_running_with_errors_24)
-        requestOptions.fitCenter()
-*/
+        val requestOptions = RequestOptions()
+            .error(ColorDrawable(Color.RED))
+
+        holder.binding.itemProgressBar.visibility = View.VISIBLE
+
         Glide
             .with(holder.itemView.context)
+            .addDefaultRequestListener(GlideImpl.OnCompleted {
+                holder.binding.itemProgressBar.visibility = View.GONE
+            })
+            .applyDefaultRequestOptions(requestOptions)
             .load(cat.url)
-            .apply(requestOptions)
+            .thumbnail(0.5f)
+            .centerCrop()
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .transition(DrawableTransitionOptions().crossFade())
             .into(holder.binding.imgView)
+
         holder.binding.imgView.setOnClickListener {
             listener.onRecyclerViewItemClick(it, cat)
         }

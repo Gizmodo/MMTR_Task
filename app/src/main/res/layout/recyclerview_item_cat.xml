@@ -14,6 +14,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/itemProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@id/imgView"
+            app:layout_constraintEnd_toEndOf="@id/imgView"
+            app:layout_constraintStart_toStartOf="@id/imgView"
+            app:layout_constraintTop_toTopOf="@id/imgView" />
+
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgView"
             android:layout_width="match_parent"
