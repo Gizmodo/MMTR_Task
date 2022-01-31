@@ -32,16 +32,21 @@ class CatAdapter(
         val circularProgressDrawable = CircularProgressDrawable(holder.itemView.context)
         circularProgressDrawable.apply {
             setStyle(DEFAULT)
+            backgroundColor = R.color.error
             setColorSchemeColors(R.color.error)
             start()
         }
 
-        val requestOptions = RequestOptions()
+        val requestOptions = RequestOptions
+            .errorOf(R.drawable.ic_outline_running_with_errors_24)
+            .placeholder(circularProgressDrawable)
+            .fitCenter()
+        /*
         requestOptions.centerCrop()
         requestOptions.placeholder(circularProgressDrawable)
         requestOptions.error(R.drawable.ic_outline_running_with_errors_24)
         requestOptions.fitCenter()
-
+*/
         Glide
             .with(holder.itemView.context)
             .load(cat.url)
