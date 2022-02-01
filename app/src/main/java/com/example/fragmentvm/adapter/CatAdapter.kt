@@ -1,7 +1,5 @@
 package com.example.fragmentvm.adapter
 
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +8,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
+import com.example.fragmentvm.R
 import com.example.fragmentvm.databinding.RecyclerviewItemCatBinding
 import com.example.fragmentvm.model.Cat
 import com.example.fragmentvm.utils.GlideImpl
@@ -29,18 +28,26 @@ class CatAdapter(
         return MainViewHolder(binding)
     }
 
+    private fun showProgress(holder: MainViewHolder) {
+        holder.binding.itemProgressBar.visibility = View.VISIBLE
+    }
+
+    private fun hideProgress(holder: MainViewHolder) {
+        holder.binding.itemProgressBar.visibility = View.GONE
+    }
+
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         val cat = cats[position]
 
         val requestOptions = RequestOptions()
-            .error(ColorDrawable(Color.RED))
+            .error(R.drawable.ic_error_placeholder)
 
-        holder.binding.itemProgressBar.visibility = View.VISIBLE
+        showProgress(holder)
 
         Glide
             .with(holder.itemView.context)
             .addDefaultRequestListener(GlideImpl.OnCompleted {
-                holder.binding.itemProgressBar.visibility = View.GONE
+                hideProgress(holder)
             })
             .applyDefaultRequestOptions(requestOptions)
             .load(cat.url)
@@ -55,14 +62,11 @@ class CatAdapter(
         }
     }
 
-
     inner class MainViewHolder(val binding: RecyclerviewItemCatBinding) :
         RecyclerView.ViewHolder(binding.root)
-
 
     interface OnRecyclerViewItemClick {
         fun onRecyclerViewItemClick(view: View, cat: Cat)
     }
-
 
 }
