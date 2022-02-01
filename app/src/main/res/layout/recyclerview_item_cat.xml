@@ -34,39 +34,67 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ImageContrastCheck" />
 
-        <Button
-            android:id="@+id/btnThumbUp"
-            style="@style/Theme.FragmentVM.Card"
-            android:contentDescription="@string/thumbup"
-            app:icon="@drawable/ic_thumb_up"
-            app:iconTint="@color/thumb_fill"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btnThumbDown"
-            app:layout_constraintTop_toBottomOf="@id/imgView"
-            tools:ignore="TouchTargetSizeCheck" />
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="@id/toggleVote"
+            app:layout_constraintEnd_toEndOf="@id/toggleVote"
+            app:layout_constraintStart_toStartOf="@id/toggleVote"
+            app:layout_constraintTop_toTopOf="@id/toggleVote">
 
-        <Button
-            android:id="@+id/btnThumbDown"
-            style="@style/Theme.FragmentVM.Card"
-            android:contentDescription="@string/thumbdown"
-            app:icon="@drawable/ic_thumb_down"
-            app:iconTint="@color/thumb_empty"
-            app:layout_constraintBottom_toBottomOf="@id/btnThumbUp"
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/prrprprpr"
+                style="@style/Widget.Material3.CircularProgressIndicator.ExtraSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="false"
+                android:max="100"
+                android:min="0"
+                android:progress="79"
+                android:visibility="visible" />
+
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/toggleVote"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btnDots"
-            app:layout_constraintTop_toTopOf="@id/btnThumbUp"
-            tools:ignore="TouchTargetSizeCheck" />
+            app:layout_constraintTop_toBottomOf="@id/imgView">
+
+            <Button
+                android:id="@+id/btnVoteUp"
+                style="@style/Theme.FragmentVM.Card"
+                android:contentDescription="@string/thumbup"
+                app:icon="@drawable/ic_vote_up"
+                app:iconTint="@color/vote_up"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <Button
+                android:id="@+id/btnVoteDown"
+                style="@style/Theme.FragmentVM.Card"
+                android:contentDescription="@string/thumbdown"
+                app:icon="@drawable/ic_vote_down"
+                app:iconTint="@color/vote_down"
+                tools:ignore="TouchTargetSizeCheck" />
+
+        </com.google.android.material.button.MaterialButtonToggleGroup>
 
         <Button
             android:id="@+id/btnDots"
             style="@style/Theme.FragmentVM.Card"
             android:contentDescription="@string/dots"
             app:icon="@drawable/ic_more_vert_24"
-            app:iconTint="@color/thumb_empty"
-            app:layout_constraintBottom_toBottomOf="@id/btnThumbDown"
+            app:iconTint="@color/vote_down"
+            app:layout_constraintBottom_toBottomOf="@id/toggleVote"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/btnThumbDown"
+            app:layout_constraintTop_toTopOf="@id/toggleVote"
             tools:ignore="TouchTargetSizeCheck" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
