@@ -5,8 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fragmentvm.App
+import com.example.fragmentvm.model.BackendResponse
 import com.example.fragmentvm.model.Payload
-import com.example.fragmentvm.model.Signup
 import com.example.fragmentvm.repository.DataStoreRepositoryImpl
 import com.example.fragmentvm.repository.RepositoryRetrofit
 import com.example.fragmentvm.utils.CombinedLiveData
@@ -43,8 +43,8 @@ class LoginViewModel : ViewModel() {
     @Inject
     lateinit var repositoryRetrofit: RepositoryRetrofit
 
-    private var _signUpLiveData = MutableLiveData<Signup>()
-    val signUpLiveData: LiveData<Signup>
+    private var _signUpLiveData = MutableLiveData<BackendResponse>()
+    val signUpLiveData: LiveData<BackendResponse>
         get() = _signUpLiveData
 
     fun postRequest() {
@@ -58,10 +58,10 @@ class LoginViewModel : ViewModel() {
                 if (it is HttpException) {
                     val body = it.response()?.errorBody()
                     val gson = Gson()
-                    val adapter: TypeAdapter<Signup> =
-                        gson.getAdapter(Signup::class.java)
+                    val adapter: TypeAdapter<BackendResponse> =
+                        gson.getAdapter(BackendResponse::class.java)
                     try {
-                        val error: Signup =
+                        val error: BackendResponse =
                             adapter.fromJson(body?.string())
                         _signUpLiveData.value = error
                     } catch (e: IOException) {

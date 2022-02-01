@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fragmentvm.App
-import com.example.fragmentvm.model.Signup
+import com.example.fragmentvm.model.BackendResponse
 import com.example.fragmentvm.repository.DataStoreRepositoryImpl
 import com.example.fragmentvm.repository.RepositoryRetrofit
 import com.example.fragmentvm.utils.Util.Companion.skipFirst
@@ -24,8 +24,8 @@ class ApiViewModel : ViewModel() {
     val isSuccessRequest: LiveData<Boolean>
         get() = _isSuccessRequest
 
-    private var _errorLiveData = MutableLiveData<Signup>()
-    val errorLiveData: LiveData<Signup>
+    private var _errorLiveData = MutableLiveData<BackendResponse>()
+    val errorLiveData: LiveData<BackendResponse>
         get() = _errorLiveData
 
     @Inject
@@ -67,10 +67,10 @@ class ApiViewModel : ViewModel() {
                 if (it is HttpException) {
                     val body = it.response()?.errorBody()
                     val gson = Gson()
-                    val adapter: TypeAdapter<Signup> =
-                        gson.getAdapter(Signup::class.java)
+                    val adapter: TypeAdapter<BackendResponse> =
+                        gson.getAdapter(BackendResponse::class.java)
                     try {
-                        val error: Signup =
+                        val error: BackendResponse =
                             adapter.fromJson(body?.string())
                         _errorLiveData.value = error
                     } catch (e: IOException) {

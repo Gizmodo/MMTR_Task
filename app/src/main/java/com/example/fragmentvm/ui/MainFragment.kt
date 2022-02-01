@@ -20,6 +20,8 @@ import com.example.fragmentvm.databinding.MainFragmentBinding
 import com.example.fragmentvm.model.Cat
 import com.example.fragmentvm.utils.CatUiState
 import com.example.fragmentvm.utils.SharedViewModel
+import com.example.fragmentvm.utils.UiState
+import com.example.fragmentvm.utils.VotesEnum
 import com.example.fragmentvm.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -44,30 +46,60 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uiState.collect {
-                    when (val state = it) {
-                        CatUiState.Empty -> {
-                            Timber.d("Empty")
-                            binding.progressBar.visibility = View.GONE
-                        }
-                        is CatUiState.Error -> {
-                            Timber.d("Error")
-                            Toast.makeText(context, state.t.message, Toast.LENGTH_LONG)
-                                .show()
-                        }
-                        is CatUiState.Loaded -> {
-                            Timber.d("Loaded")
-                            binding.progressBar.visibility = View.GONE
-                        }
-                        CatUiState.Loading -> {
-                            Timber.d("Loading")
-                            binding.progressBar.visibility = View.VISIBLE
-                        }
-                        CatUiState.Finished -> {
-                            Timber.d("Finished")
-                            binding.progressBar.visibility = View.GONE
-                        }
-                    }
+                monitor1()
+                monitor2()
+            }
+        }
+    }
+
+    private suspend fun monitor1() {
+        viewModel.uiVoteState.collect {
+            when (val state = it) {
+                is UiState.BadResponse -> {
+                    Timber.d("BadResponse")
+                }
+                UiState.Empty -> {
+                    Timber.d("Empty")
+                }
+                is UiState.Error -> {
+                    Timber.d("Error")
+                }
+                UiState.Finished -> {
+                    Timber.d("Finished")
+                }
+                UiState.Loading -> {
+                    Timber.d("Loading")
+                }
+                is UiState.Success -> {
+                    Timber.d("Success")
+                }
+            }
+        }
+    }
+
+    private suspend fun monitor2() {
+        viewModel.uiState.collect {
+            when (val state = it) {
+                CatUiState.Empty -> {
+                    Timber.d("Empty")
+                    binding.progressBar.visibility = View.GONE
+                }
+                is CatUiState.Error -> {
+                    Timber.d("Error")
+                    Toast.makeText(context, state.t.message, Toast.LENGTH_LONG)
+                        .show()
+                }
+                is CatUiState.Loaded -> {
+                    Timber.d("Loaded")
+                    binding.progressBar.visibility = View.GONE
+                }
+                CatUiState.Loading -> {
+                    Timber.d("Loading")
+                    binding.progressBar.visibility = View.VISIBLE
+                }
+                CatUiState.Finished -> {
+                    Timber.d("Finished")
+                    binding.progressBar.visibility = View.GONE
                 }
             }
         }
@@ -84,7 +116,8 @@ class MainFragment : Fragment() {
             binding.recyclerview.also {
                 it.layoutManager = LinearLayoutManager(requireContext())
                 it.setHasFixedSize(true)
-                it.adapter = CatAdapter(cats, catClickListener)
+
+                it.adapter = CatAdapter(cats, catClickListener, voteListener = voteClickListener)
             }
         }
 
@@ -96,10 +129,17 @@ class MainFragment : Fragment() {
         return binding.root
     }
 
+    private val voteClickListener = object : CatAdapter.OnVoteClickListener {
+        override fun onVoteClickListener(view: View, cat: Cat, vote: VotesEnum) {
+            viewModel.vote(cat, vote)
+        }
+
+    }
     private val catClickListener = object : CatAdapter.OnRecyclerViewItemClick {
         override fun onRecyclerViewItemClick(view: View, cat: Cat) {
             sharedModel.select(cat)
             nav.navigate(MainFragmentDirections.actionMainFragmentToDetailFragment())
         }
     }
+
 }

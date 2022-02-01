@@ -12,11 +12,14 @@ import com.example.fragmentvm.R
 import com.example.fragmentvm.databinding.RecyclerviewItemCatBinding
 import com.example.fragmentvm.model.Cat
 import com.example.fragmentvm.utils.GlideImpl
+import com.example.fragmentvm.utils.VotesEnum
+import timber.log.Timber
 
 
 class CatAdapter(
     private val cats: List<Cat>,
     private val listener: OnRecyclerViewItemClick,
+    private val voteListener: OnVoteClickListener,
 ) :
     RecyclerView.Adapter<CatAdapter.MainViewHolder>() {
     override fun getItemCount() = cats.size
@@ -60,6 +63,15 @@ class CatAdapter(
         holder.binding.imgView.setOnClickListener {
             listener.onRecyclerViewItemClick(it, cat)
         }
+
+        holder.binding.btnThumbDown.setOnClickListener {
+            Timber.d("VoteDown")
+            voteListener.onVoteClickListener(it, cat, VotesEnum.DOWN)
+        }
+        holder.binding.btnThumbUp.setOnClickListener {
+            Timber.d("VoteUp")
+            voteListener.onVoteClickListener(it, cat, VotesEnum.UP)
+        }
     }
 
     inner class MainViewHolder(val binding: RecyclerviewItemCatBinding) :
@@ -67,6 +79,10 @@ class CatAdapter(
 
     interface OnRecyclerViewItemClick {
         fun onRecyclerViewItemClick(view: View, cat: Cat)
+    }
+
+    interface OnVoteClickListener {
+        fun onVoteClickListener(view: View, cat: Cat, vote: VotesEnum)
     }
 
 }
