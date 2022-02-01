@@ -64,11 +64,11 @@ class CatAdapter(
             listener.onRecyclerViewItemClick(it, cat)
         }
 
-        holder.binding.btnThumbDown.setOnClickListener {
+        holder.binding.btnVoteDown.setOnClickListener {
             Timber.d("VoteDown")
             voteListener.onVoteClickListener(it, cat, VotesEnum.DOWN)
         }
-        holder.binding.btnThumbUp.setOnClickListener {
+        holder.binding.btnVoteUp.setOnClickListener {
             Timber.d("VoteUp")
             voteListener.onVoteClickListener(it, cat, VotesEnum.UP)
         }
