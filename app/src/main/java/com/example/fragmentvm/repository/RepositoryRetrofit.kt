@@ -36,7 +36,7 @@ class RepositoryRetrofit @Inject constructor(
     }
 
     fun postVote(apiKey: String, votePayload: VotePayload): @NotNull Observable<BackendResponse> {
-        return apiService.vote(apiKey,votePayload)
+        return apiService.vote(apiKey, votePayload)
             .compose(RxUtils.applyObservableScheduler())
     }
 }

@@ -38,27 +38,25 @@
             android:id="@+id/toggleVote"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:singleSelection="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btnDots"
-            app:layout_constraintTop_toBottomOf="@id/imgView">
+            app:layout_constraintTop_toBottomOf="@id/imgView"
+            app:singleSelection="true">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnVoteUp"
                 style="@style/Theme.FragmentVM.Card"
-                android:checkable="true"
+                android:checkable="false"
                 android:contentDescription="@string/thumbup"
                 app:icon="@drawable/ic_vote_up"
-                app:iconTint="@color/vote_up"
                 tools:ignore="TouchTargetSizeCheck" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnVoteDown"
-                android:checkable="false"
                 style="@style/Theme.FragmentVM.Card"
+                android:checkable="false"
                 android:contentDescription="@string/thumbdown"
                 app:icon="@drawable/ic_vote_down"
-                app:iconTint="@color/vote_down"
                 tools:ignore="TouchTargetSizeCheck" />
 
         </com.google.android.material.button.MaterialButtonToggleGroup>
@@ -68,7 +66,7 @@
             style="@style/Theme.FragmentVM.Card"
             android:contentDescription="@string/dots"
             app:icon="@drawable/ic_more_vert_24"
-            app:iconTint="@color/vote_down"
+            app:iconTint="@color/vote_inactive"
             app:layout_constraintBottom_toBottomOf="@id/toggleVote"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/toggleVote"

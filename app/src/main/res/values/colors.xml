@@ -54,7 +54,7 @@
     <color name="seed">#27AE60</color>
     <color name="error">#BA1B1B</color>
     <color name="white">#FFFFFF</color>
-    <color name="vote_up">#2D9CDB</color>
-    <color name="vote_down">#979797</color>
+    <color name="vote_active">#2D9CDB</color>
+    <color name="vote_inactive">#979797</color>
     <color name="progress_indicator">#03DAC5</color>
 </resources>
