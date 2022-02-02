@@ -13,6 +13,7 @@ import com.example.fragmentvm.databinding.RecyclerviewItemCatBinding
 import com.example.fragmentvm.model.Cat
 import com.example.fragmentvm.utils.GlideImpl
 import com.example.fragmentvm.utils.VotesEnum
+import com.google.android.material.button.MaterialButtonToggleGroup
 import timber.log.Timber
 
 
@@ -20,6 +21,7 @@ class CatAdapter(
     private val cats: List<Cat>,
     private val listener: OnRecyclerViewItemClick,
     private val voteListener: OnVoteClickListener,
+    private val groupListener: OnButtonCheckedListener,
 ) :
     RecyclerView.Adapter<CatAdapter.MainViewHolder>() {
     override fun getItemCount() = cats.size
@@ -37,6 +39,10 @@ class CatAdapter(
 
     private fun hideProgress(holder: MainViewHolder) {
         holder.binding.itemProgressBar.visibility = View.GONE
+    }
+
+    fun changeText(holder: MainViewHolder, text: String) {
+        holder.binding.tvTest.text = text
     }
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
@@ -72,6 +78,12 @@ class CatAdapter(
             Timber.d("VoteUp")
             voteListener.onVoteClickListener(it, cat, VotesEnum.UP)
         }
+
+        holder.binding.toggleVote.setOnClickListener {
+            Timber.d("toggleVote")
+            groupListener.onButtonChecked(holder.binding.toggleVote,
+                cat)
+        }
     }
 
     inner class MainViewHolder(val binding: RecyclerviewItemCatBinding) :
@@ -85,4 +97,9 @@ class CatAdapter(
         fun onVoteClickListener(view: View, cat: Cat, vote: VotesEnum)
     }
 
+    interface OnButtonCheckedListener {
+        fun onButtonChecked(
+            group: MaterialButtonToggleGroup, cat: Cat,
+        )
+    }
 }

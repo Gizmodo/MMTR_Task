@@ -32,8 +32,11 @@ class MainViewModel : ViewModel() {
     private val _uiVoteState = MutableStateFlow<UiState<BackendResponse>>(UiState.Empty)
     val uiVoteState: StateFlow<UiState<BackendResponse>> = _uiVoteState
 
+    private var apikey: String
+
     init {
         App.instance().appGraph.embed(this)
+        apikey = runBlocking { ds.getString("apikey").toString() }
         getCats()
     }
 
@@ -49,16 +52,32 @@ class MainViewModel : ViewModel() {
 
     fun vote(cat: Cat, vote: VotesEnum) {
         _uiVoteState.value = UiState.Loading
-        val apikey = runBlocking { ds.getString("apikey") }
 
         viewModelScope.launch(Dispatchers.IO) {
             val votePayload = VotePayload(cat.id, vote.value)
-            retrofit.postVote(apikey.toString(), votePayload = votePayload)
+            retrofit.postVoteWithResponse(apiKey = apikey, votePayload = votePayload)
                 .subscribe({
-                    if (it.message.contentEquals("SUCCESS")) {
-                        _uiVoteState.value = UiState.Success(it)
+                    if (it.isSuccessful) {
+                        it.body()?.let { body ->
+                            _uiVoteState.value = UiState.Success(body)
+                        }
                     } else {
+                        Timber.d("400")
 
+                        it.errorBody()?.let { body ->
+                            Timber.d("Body response not null")
+                            val gson = Gson()
+                            val adapter: TypeAdapter<BackendResponse> =
+                                gson.getAdapter(BackendResponse::class.java)
+                            try {
+                                val error: BackendResponse =
+                                    adapter.fromJson(body.string())
+                                _uiVoteState.value = UiState.BadResponse(error)
+                            } catch (e: IOException) {
+                                Timber.e(e)
+                                _uiVoteState.value = UiState.Error(e)
+                            }
+                        }
                     }
                 }, {
                     if (it is HttpException) {
@@ -78,14 +97,40 @@ class MainViewModel : ViewModel() {
                     Timber.e(it)
                     _uiVoteState.value = UiState.Error(it)
                 })
+
+            /*  retrofit.postVote(apikey, votePayload = votePayload)
+                  .subscribe({
+                      if (it.message.contentEquals("SUCCESS")) {
+                          _uiVoteState.value = UiState.Success(it)
+                      } else {
+
+                      }
+                  }, {
+                      if (it is HttpException) {
+                          val body = it.response()?.errorBody()
+                          val gson = Gson()
+                          val adapter: TypeAdapter<BackendResponse> =
+                              gson.getAdapter(BackendResponse::class.java)
+                          try {
+                              val error: BackendResponse =
+                                  adapter.fromJson(body?.string())
+                              _uiVoteState.value = UiState.BadResponse(error)
+                          } catch (e: IOException) {
+                              Timber.e(it)
+                              _uiVoteState.value = UiState.Error(it)
+                          }
+                      }
+                      Timber.e(it)
+                      _uiVoteState.value = UiState.Error(it)
+                  })*/
         }
     }
 
     fun getCats() {
         _uiState.value = CatUiState.Loading
-        val apikey = runBlocking { ds.getString("apikey") }
+
         viewModelScope.launch(Dispatchers.IO) {
-            retrofit.getCats(apikey.toString())
+            retrofit.getCats(apikey)
                 .subscribe(
                     {
                         if (it.isEmpty()) {

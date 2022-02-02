@@ -15,6 +15,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.fragmentvm.R
 import com.example.fragmentvm.adapter.CatAdapter
 import com.example.fragmentvm.databinding.MainFragmentBinding
 import com.example.fragmentvm.model.Cat
@@ -23,6 +24,8 @@ import com.example.fragmentvm.utils.SharedViewModel
 import com.example.fragmentvm.utils.UiState
 import com.example.fragmentvm.utils.VotesEnum
 import com.example.fragmentvm.viewmodel.MainViewModel
+import com.google.android.material.button.MaterialButtonToggleGroup
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -46,17 +49,32 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                monitor1()
-                monitor2()
+                monitorVote()
+                //  monitorList()
             }
         }
     }
 
-    private suspend fun monitor1() {
+    private fun showDialog(message: String) {
+        context?.let {
+            MaterialAlertDialogBuilder(it)
+                .setTitle(resources.getString(R.string.title))
+                .setMessage(message)
+                .setPositiveButton(resources.getString(R.string.accept)) { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
+        }
+    }
+
+    private suspend fun monitorVote() {
         viewModel.uiVoteState.collect {
+            Timber.d("monitorVote called")
             when (val state = it) {
                 is UiState.BadResponse -> {
                     Timber.d("BadResponse")
+                    uncheckVoteButtons()
+                    showDialog(state.badResponse.message)
                 }
                 UiState.Empty -> {
                     Timber.d("Empty")
@@ -77,8 +95,13 @@ class MainFragment : Fragment() {
         }
     }
 
-    private suspend fun monitor2() {
+    private fun uncheckVoteButtons() {
+//        binding.
+    }
+
+    private suspend fun monitorList() {
         viewModel.uiState.collect {
+            Timber.d("monitorList called")
             when (val state = it) {
                 CatUiState.Empty -> {
                     Timber.d("Empty")
@@ -116,8 +139,10 @@ class MainFragment : Fragment() {
             binding.recyclerview.also {
                 it.layoutManager = LinearLayoutManager(requireContext())
                 it.setHasFixedSize(true)
+                val adapter = CatAdapter(cats, catClickListener, voteListener = voteClickListener,
+                    groupListener = groupListener)
 
-                it.adapter = CatAdapter(cats, catClickListener, voteListener = voteClickListener)
+                it.adapter = adapter
             }
         }
 
@@ -135,11 +160,28 @@ class MainFragment : Fragment() {
         }
 
     }
+
     private val catClickListener = object : CatAdapter.OnRecyclerViewItemClick {
         override fun onRecyclerViewItemClick(view: View, cat: Cat) {
+
             sharedModel.select(cat)
             nav.navigate(MainFragmentDirections.actionMainFragmentToDetailFragment())
         }
+    }
+
+    private val groupListener = object : CatAdapter.OnButtonCheckedListener {
+        override fun onButtonChecked(group: MaterialButtonToggleGroup, cat: Cat) {
+            Timber.d("onButtonChecked ")
+            when (group.checkedButtonId) {
+                R.id.btnVoteUp -> {
+                    Timber.d("onButtonChecked VoteUp")
+                }
+                R.id.btnVoteDown -> {
+                    Timber.d("onButtonChecked VoteDown")
+                }
+            }
+        }
+
     }
 
 }

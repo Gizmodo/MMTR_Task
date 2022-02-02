@@ -72,6 +72,18 @@
             app:layout_constraintTop_toTopOf="@id/toggleVote"
             tools:ignore="TouchTargetSizeCheck" />
 
+        <TextView
+            android:id="@+id/tvTest"
+            style="@style/TextAppearance.Material3.TitleLarge"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:text="TextView"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/toggleVote"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imgView" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>

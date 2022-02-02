@@ -11,6 +11,7 @@ import io.reactivex.rxjava3.annotations.NonNull
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.jetbrains.annotations.NotNull
+import retrofit2.Response
 import javax.inject.Inject
 
 
@@ -33,6 +34,14 @@ class RepositoryRetrofit @Inject constructor(
         return apiService.getCatsObservable(apiKey)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    fun postVoteWithResponse(
+        apiKey: String,
+        votePayload: VotePayload,
+    ): @NotNull Observable<Response<BackendResponse>> {
+        return apiService.voteWithResponse(apiKey, votePayload)
+            .compose(RxUtils.applyObservableScheduler())
     }
 
     fun postVote(apiKey: String, votePayload: VotePayload): @NotNull Observable<BackendResponse> {

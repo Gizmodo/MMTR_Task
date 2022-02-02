@@ -9,17 +9,17 @@
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toTopOf="@id/nav_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/nav_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerview"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="50dp"
+            android:layout_height="80dp"
             android:contentDescription="@string/accept"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:indeterminate="true"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/nav_view"
+        app:layout_constraintBottom_toTopOf="@id/nav_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
