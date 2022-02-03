@@ -50,6 +50,7 @@ class MainViewModel : ViewModel() {
     val cats: LiveData<List<Cat>>
         get() = _cats
 
+    // TODO: передать position и возвращать его в Success
     fun vote(cat: Cat, vote: VotesEnum) {
         _uiVoteState.value = UiState.Loading
 

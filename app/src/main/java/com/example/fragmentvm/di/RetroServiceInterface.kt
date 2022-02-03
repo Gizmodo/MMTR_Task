@@ -14,7 +14,7 @@ interface RetroServiceInterface {
     @GET("images/search")
     fun getCatsObservable(
         @Header("x-api-key") apiKey: String,
-        @Query("limit") limit: Int = 2,
+        @Query("limit") limit: Int = 20,
         @Query("size") size: String = "small",
     ): Observable<List<Cat>>
 

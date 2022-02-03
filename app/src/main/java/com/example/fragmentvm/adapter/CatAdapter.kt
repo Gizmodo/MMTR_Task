@@ -14,6 +14,7 @@ import com.example.fragmentvm.model.Cat
 import com.example.fragmentvm.utils.GlideImpl
 import com.example.fragmentvm.utils.VotesEnum
 import com.google.android.material.button.MaterialButtonToggleGroup
+import io.github.serpro69.kfaker.Faker
 import timber.log.Timber
 
 
@@ -22,8 +23,10 @@ class CatAdapter(
     private val listener: OnRecyclerViewItemClick,
     private val voteListener: OnVoteClickListener,
     private val groupListener: OnButtonCheckedListener,
+    private val onDotsListener: OnDotsListener,
 ) :
     RecyclerView.Adapter<CatAdapter.MainViewHolder>() {
+    val faker = Faker()
     override fun getItemCount() = cats.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
@@ -41,8 +44,20 @@ class CatAdapter(
         holder.binding.itemProgressBar.visibility = View.GONE
     }
 
-    fun changeText(holder: MainViewHolder, text: String) {
-        holder.binding.tvTest.text = text
+    fun setToggle(position: Int, state: Boolean) {
+        cats[position].state = state
+        notifyItemChanged(position)
+    }
+
+    fun changeText(position: Int, value: Int) {
+        Timber.d("Before")
+        Timber.i(cats[position].toString())
+        cats[position].height = value
+        notifyItemChanged(position)
+        Timber.d("After")
+        Timber.i(cats[position].toString())
+        //holder.binding.tvTest.text = text
+        //notifyItemChanged(holder.adapterPosition)
     }
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
@@ -52,7 +67,8 @@ class CatAdapter(
             .error(R.drawable.ic_error_placeholder)
 
         showProgress(holder)
-
+        holder.binding.tvTest.text = cat.height.toString()
+        holder.binding.switch1.isChecked = cat.state
         Glide
             .with(holder.itemView.context)
             .addDefaultRequestListener(GlideImpl.OnCompleted {
@@ -65,6 +81,13 @@ class CatAdapter(
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .transition(DrawableTransitionOptions().crossFade())
             .into(holder.binding.imgView)
+
+        holder.binding.tvTest.setOnClickListener {
+            //Timber.d(cats[holder.adapterPosition].toString())
+            val num = faker.random.nextInt(1..180)
+            holder.binding.tvTest.text = num.toString()
+            cats[holder.adapterPosition].height = num
+        }
 
         holder.binding.imgView.setOnClickListener {
             listener.onRecyclerViewItemClick(it, cat)
@@ -84,6 +107,15 @@ class CatAdapter(
             groupListener.onButtonChecked(holder.binding.toggleVote,
                 cat)
         }
+
+        holder.binding.switch1.setOnCheckedChangeListener { view, isChecked ->
+            Timber.d("Switch state $isChecked")
+            cats[holder.adapterPosition].state = isChecked
+//            notifyItemChanged(holder.adapterPosition)
+        }
+        holder.binding.btnDots.setOnClickListener {
+            onDotsListener.onClick(it, cat, position)
+        }
     }
 
     inner class MainViewHolder(val binding: RecyclerviewItemCatBinding) :
@@ -95,6 +127,10 @@ class CatAdapter(
 
     interface OnVoteClickListener {
         fun onVoteClickListener(view: View, cat: Cat, vote: VotesEnum)
+    }
+
+    interface OnDotsListener {
+        fun onClick(view: View, cat: Cat, position: Int)
     }
 
     interface OnButtonCheckedListener {
