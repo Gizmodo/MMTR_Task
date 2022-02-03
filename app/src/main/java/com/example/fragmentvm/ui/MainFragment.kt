@@ -7,10 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.*
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,6 +15,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.fragmentvm.R
 import com.example.fragmentvm.adapter.CatAdapter
 import com.example.fragmentvm.databinding.MainFragmentBinding
+import com.example.fragmentvm.model.BackendResponse
 import com.example.fragmentvm.model.Cat
 import com.example.fragmentvm.utils.CatUiState
 import com.example.fragmentvm.utils.SharedViewModel
@@ -27,6 +25,8 @@ import com.example.fragmentvm.viewmodel.MainViewModel
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.serpro69.kfaker.Faker
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -47,12 +47,37 @@ class MainFragment : Fragment() {
         nav = findNavController()
     }
 
+    private fun observe() {
+        
+        viewModel.getUIState().flowWithLifecycle(Lifecycle.State.STARTED)
+//            .flowOnLifecycle(Lifecycle.State.STARTED)
+            .onEach { state -> handleState(state) }
+            .launchIn(viewLifecycleOwner.lifecycleScope)
+
+        viewModel.getUIVoteState()
+            .flowWithLifecycle(Lifecycle.State.STARTED)
+            .onEach { products -> handleProducts(products) }
+            .launchIn(lifecycleScope)
+    }
+
+    private fun handleProducts(products: UiState<BackendResponse>) {
+        TODO("Not yet implemented")
+    }
+
+    private fun handleState(state: CatUiState) {
+        TODO("Not yet implemented")
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-//                monitorList()
-                monitorVote()
+                launch {
+                    monitorList()
+                }
+                launch {
+                    monitorVote()
+                }
             }
         }
     }
@@ -76,7 +101,7 @@ class MainFragment : Fragment() {
                 is UiState.BadResponse -> {
                     Timber.d("BadResponse")
                     // TODO: в функцию передать position
-                    setVoteButtons(position,false)
+                    setVoteButtons(0, false)
                     showDialog(state.badResponse.message)
                 }
                 UiState.Empty -> {
@@ -95,15 +120,15 @@ class MainFragment : Fragment() {
                 is UiState.Success -> {
                     Timber.d("Success")
                     // TODO: в функцию передать position
-                    setVoteButtons(position,true)
+                    setVoteButtons(0, true)
 //                    showDialog(state.badResponse.message)
                 }
             }
         }
     }
 
-    private fun setVoteButtons(position : Int, state: Boolean) {
-        adapter.setToggle(position,state)
+    private fun setVoteButtons(position: Int, state: Boolean) {
+        adapter.setToggle(position, state)
         adapter.notifyItemChanged(position)
     }
 
@@ -147,8 +172,10 @@ class MainFragment : Fragment() {
             binding.recyclerview.also {
                 it.layoutManager = LinearLayoutManager(requireContext())
                 it.setHasFixedSize(true)
-                adapter = CatAdapter(cats, catClickListener, voteListener = voteClickListener,
-                    groupListener = groupListener, onDotsListener = onDotsListener)
+                adapter = CatAdapter(
+                    cats, catClickListener, voteListener = voteClickListener,
+                    groupListener = groupListener, onDotsListener = onDotsListener
+                )
                 it.adapter = adapter
             }
         }
@@ -171,7 +198,7 @@ class MainFragment : Fragment() {
         return binding.root
     }
 
-    private val  onDotsListener =object: CatAdapter.OnDotsListener {
+    private val onDotsListener = object : CatAdapter.OnDotsListener {
         override fun onClick(view: View, cat: Cat, position: Int) {
             // TODO: добавить position в параметры
 //            viewModel.vote()

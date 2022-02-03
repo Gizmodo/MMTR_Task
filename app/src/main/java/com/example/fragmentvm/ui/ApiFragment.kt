@@ -35,6 +35,7 @@ class ApiFragment : Fragment() {
     private lateinit var viewModel: ApiViewModel
     private lateinit var tilApiKey: TextInputLayout
     private lateinit var nav: NavController
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -115,9 +116,9 @@ class ApiFragment : Fragment() {
         subscriptions.add(subscribeEdtApiKey)
     }
 
-    override fun onPause() {
+    override fun onDestroy() {
         subscriptions.clear()
-        super.onPause()
+        super.onDestroy()
     }
 
     private fun navigateBack() {
