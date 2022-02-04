@@ -26,7 +26,6 @@ import com.example.fragmentvm.utils.VotesEnum
 import com.example.fragmentvm.viewmodel.MainViewModel
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import io.github.serpro69.kfaker.Faker
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
@@ -36,7 +35,6 @@ class MainFragment : Fragment() {
         fun instance() = MainFragment()
     }
 
-    val faker = Faker()
     private lateinit var viewModel: MainViewModel
     private lateinit var binding: MainFragmentBinding
     private val sharedModel: SharedViewModel by activityViewModels()
@@ -67,7 +65,11 @@ class MainFragment : Fragment() {
                 it.setHasFixedSize(true)
                 adapter = CatAdapter(
                     cats, catClickListener, voteListener = voteClickListener,
-                    groupListener = groupListener, onDotsListener = onDotsListener
+                    groupListener = groupListener,
+                    onDotsListener = onDotsListener,
+                    onVoteClickListener = { view, cat, position, state ->
+                        Timber.d("View ${view.id} Position $position Cat $cat State $state")
+                    }
                 )
                 it.adapter = adapter
             }
@@ -80,6 +82,16 @@ class MainFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    @Suppress("unused")
+    private val awd = object : (Cat, Int) -> Unit {
+        override fun invoke(p1: Cat, p2: Int) {
+            Timber.d(p2.toString())
+            Timber.d(p1.toString())
+
+        }
+
     }
 
     private fun observeUIStates() {

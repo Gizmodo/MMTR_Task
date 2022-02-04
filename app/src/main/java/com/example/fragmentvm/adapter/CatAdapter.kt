@@ -9,14 +9,12 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.example.fragmentvm.R
-import com.example.fragmentvm.databinding.RecyclerviewItemCatBinding
+import com.example.fragmentvm.databinding.RvItemCatBinding
 import com.example.fragmentvm.model.Cat
 import com.example.fragmentvm.utils.GlideImpl
 import com.example.fragmentvm.utils.VotesEnum
 import com.google.android.material.button.MaterialButtonToggleGroup
-import io.github.serpro69.kfaker.Faker
 import timber.log.Timber
-
 
 class CatAdapter(
     private val cats: List<Cat>,
@@ -24,24 +22,21 @@ class CatAdapter(
     private val voteListener: OnVoteClickListener,
     private val groupListener: OnButtonCheckedListener,
     private val onDotsListener: OnDotsListener,
+    private val onVoteClickListener: (
+        view: View,
+        cat: Cat,
+        position: Int,
+        state: VotesEnum,
+    ) -> Unit,
 ) :
     RecyclerView.Adapter<CatAdapter.MainViewHolder>() {
-    val faker = Faker()
     override fun getItemCount() = cats.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
         val inflater = LayoutInflater.from(parent.context)
 
-        val binding = RecyclerviewItemCatBinding.inflate(inflater, parent, false)
+        val binding = RvItemCatBinding.inflate(inflater, parent, false)
         return MainViewHolder(binding)
-    }
-
-    private fun showProgress(holder: MainViewHolder) {
-        holder.binding.itemProgressBar.visibility = View.VISIBLE
-    }
-
-    private fun hideProgress(holder: MainViewHolder) {
-        holder.binding.itemProgressBar.visibility = View.GONE
     }
 
     fun setToggle(position: Int, state: Boolean) {
@@ -62,64 +57,119 @@ class CatAdapter(
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         val cat = cats[position]
-
-        val requestOptions = RequestOptions()
-            .error(R.drawable.ic_error_placeholder)
-
-        showProgress(holder)
-        holder.binding.tvTest.text = cat.height.toString()
-        holder.binding.switch1.isChecked = cat.state
-        Glide
-            .with(holder.itemView.context)
-            .addDefaultRequestListener(GlideImpl.OnCompleted {
-                hideProgress(holder)
-            })
-            .applyDefaultRequestOptions(requestOptions)
-            .load(cat.url)
-            .thumbnail(0.5f)
-            .centerCrop()
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .transition(DrawableTransitionOptions().crossFade())
-            .into(holder.binding.imgView)
-
-        holder.binding.tvTest.setOnClickListener {
-            //Timber.d(cats[holder.adapterPosition].toString())
-            val num = faker.random.nextInt(1..180)
-            holder.binding.tvTest.text = num.toString()
-            cats[holder.adapterPosition].height = num
+        holder.bind(cat)
+        holder.itemView.setOnClickListener {
+            when (it.id) {
+                R.id.btnVoteDown -> onVoteClickListener(it, cat, position, VotesEnum.DOWN)
+                R.id.btnVoteUp -> onVoteClickListener(it, cat, position, VotesEnum.UP)
+            }
         }
+        /* holder.binding.tvTest.setOnClickListener {
+             //Timber.d(cats[holder.adapterPosition].toString())
+             val num = faker.random.nextInt(1..180)
+             holder.binding.tvTest.text = num.toString()
+             cats[holder.adapterPosition].height = num
+         }
+ */
 
-        holder.binding.imgView.setOnClickListener {
-            listener.onRecyclerViewItemClick(it, cat)
-        }
 
-        holder.binding.btnVoteDown.setOnClickListener {
-            Timber.d("VoteDown")
-            voteListener.onVoteClickListener(it, cat, VotesEnum.DOWN)
-        }
-        holder.binding.btnVoteUp.setOnClickListener {
-            Timber.d("VoteUp")
-            voteListener.onVoteClickListener(it, cat, VotesEnum.UP)
-        }
+        /* holder.binding.switch1.setOnCheckedChangeListener { view, isChecked ->
+             Timber.d("Switch state $isChecked")
+             cats[holder.adapterPosition].state = isChecked
+ //            notifyItemChanged(holder.adapterPosition)
+         }*/
 
-        holder.binding.toggleVote.setOnClickListener {
-            Timber.d("toggleVote")
-            groupListener.onButtonChecked(holder.binding.toggleVote,
-                cat)
-        }
 
-        holder.binding.switch1.setOnCheckedChangeListener { view, isChecked ->
-            Timber.d("Switch state $isChecked")
-            cats[holder.adapterPosition].state = isChecked
-//            notifyItemChanged(holder.adapterPosition)
-        }
-        holder.binding.btnDots.setOnClickListener {
-            onDotsListener.onClick(it, cat, position)
-        }
     }
 
-    inner class MainViewHolder(val binding: RecyclerviewItemCatBinding) :
-        RecyclerView.ViewHolder(binding.root)
+    companion object {
+        val ro = RequestOptions()
+            .error(R.drawable.ic_error_placeholder)
+    }
+
+    inner class MainViewHolder(private val binding: RvItemCatBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            itemView.setOnClickListener {
+                onVoteClickListener(it, cats[adapterPosition], adapterPosition, VotesEnum.UNDEFINED)
+            }
+        }
+
+        private fun setProgressBarVisibility(state: Int) {
+            binding.itemProgressBar.visibility = state
+        }
+
+        fun bind(model: Cat) {
+            with(binding) {
+                setProgressBarVisibility(View.VISIBLE)
+                Glide
+                    .with(itemView.context)
+//                .with(this@MainViewHolder.itemView.context)
+                    .addDefaultRequestListener(GlideImpl.OnCompleted {
+                        setProgressBarVisibility(View.GONE)
+//                    hideProgress(holder)
+                    })
+                    .applyDefaultRequestOptions(ro)
+                    .load(model.url)
+                    .thumbnail(0.5f)
+                    .centerCrop()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .transition(DrawableTransitionOptions().crossFade())
+                    .into(imgView)
+
+                toggleVote.clearChecked()
+                //Assign model to tag
+                btnVoteDown.tag = model
+                btnVoteUp.tag = model
+
+                //Click listeners
+                btnVoteUp.setOnClickListener {
+                    onVoteClickListener(it, model, adapterPosition, VotesEnum.UP)
+                }
+
+                btnVoteDown.setOnClickListener {
+                    onVoteClickListener(it, model, adapterPosition, VotesEnum.DOWN)
+                }
+
+
+
+
+
+
+
+
+
+
+                btnVoteUp.isChecked = model.state
+                btnVoteDown.isChecked = model.state
+
+                imgView.setOnClickListener {
+                    listener.onRecyclerViewItemClick(it, model)
+                }
+
+
+                /*   btnVoteDown.setOnClickListener {
+                       Timber.d("VoteDown")
+                       voteListener.onVoteClickListener(it, model, VotesEnum.DOWN)
+                   }
+                   btnVoteUp.setOnClickListener {
+                       Timber.d("VoteUp")
+                       voteListener.onVoteClickListener(it, model, VotesEnum.UP)
+                   }
+
+                   toggleVote.setOnClickListener {
+                       Timber.d("toggleVote")
+                       groupListener.onButtonChecked(toggleVote, model)
+                   }
+
+                   btnDots.setOnClickListener {
+                       // TODO: adapterPosition???
+                       onDotsListener.onClick(it, model, adapterPosition)
+                   }*/
+            }
+        }
+    }
 
     interface OnRecyclerViewItemClick {
         fun onRecyclerViewItemClick(view: View, cat: Cat)

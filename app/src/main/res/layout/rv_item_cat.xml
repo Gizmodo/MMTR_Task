@@ -72,28 +72,6 @@
             app:layout_constraintTop_toTopOf="@id/toggleVote"
             tools:ignore="TouchTargetSizeCheck" />
 
-        <TextView
-            android:id="@+id/tvTest"
-            style="@style/TextAppearance.Material3.TitleLarge"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:gravity="center"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/switch1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imgView" />
-
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/switch1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:minWidth="48dp"
-            android:minHeight="48dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/toggleVote"
-            app:layout_constraintTop_toBottomOf="@+id/imgView" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>
