@@ -27,11 +27,9 @@ import javax.inject.Inject
 
 class MainViewModel : ViewModel() {
     private val _uiState = MutableStateFlow<CatUiState>(CatUiState.Empty)
-    val uiState: StateFlow<CatUiState> = _uiState
     fun getUIState() : StateFlow<CatUiState> = _uiState
 
     private val _uiVoteState = MutableStateFlow<UiState<BackendResponse>>(UiState.Empty)
-    val uiVoteState: StateFlow<UiState<BackendResponse>> = _uiVoteState
     fun getUIVoteState() : StateFlow<UiState<BackendResponse>> = _uiVoteState
 
     private var apikey: String

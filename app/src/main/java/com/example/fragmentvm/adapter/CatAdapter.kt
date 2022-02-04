@@ -13,28 +13,26 @@ import com.example.fragmentvm.databinding.RvItemCatBinding
 import com.example.fragmentvm.model.Cat
 import com.example.fragmentvm.utils.GlideImpl
 import com.example.fragmentvm.utils.VotesEnum
-import com.google.android.material.button.MaterialButtonToggleGroup
 import timber.log.Timber
 
 class CatAdapter(
     private val cats: List<Cat>,
-    private val listener: OnRecyclerViewItemClick,
-    private val voteListener: OnVoteClickListener,
-    private val groupListener: OnButtonCheckedListener,
-    private val onDotsListener: OnDotsListener,
     private val onVoteClickListener: (
         view: View,
         cat: Cat,
         position: Int,
-        state: VotesEnum,
+        vote: VotesEnum,
+    ) -> Unit,
+    private val onClickListener: (
+        cat: Cat,
     ) -> Unit,
 ) :
     RecyclerView.Adapter<CatAdapter.MainViewHolder>() {
+
     override fun getItemCount() = cats.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-
         val binding = RvItemCatBinding.inflate(inflater, parent, false)
         return MainViewHolder(binding)
     }
@@ -58,28 +56,11 @@ class CatAdapter(
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         val cat = cats[position]
         holder.bind(cat)
-        holder.itemView.setOnClickListener {
-            when (it.id) {
-                R.id.btnVoteDown -> onVoteClickListener(it, cat, position, VotesEnum.DOWN)
-                R.id.btnVoteUp -> onVoteClickListener(it, cat, position, VotesEnum.UP)
-            }
-        }
-        /* holder.binding.tvTest.setOnClickListener {
-             //Timber.d(cats[holder.adapterPosition].toString())
-             val num = faker.random.nextInt(1..180)
-             holder.binding.tvTest.text = num.toString()
-             cats[holder.adapterPosition].height = num
-         }
- */
-
-
         /* holder.binding.switch1.setOnCheckedChangeListener { view, isChecked ->
              Timber.d("Switch state $isChecked")
              cats[holder.adapterPosition].state = isChecked
  //            notifyItemChanged(holder.adapterPosition)
          }*/
-
-
     }
 
     companion object {
@@ -90,11 +71,11 @@ class CatAdapter(
     inner class MainViewHolder(private val binding: RvItemCatBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        init {
-            itemView.setOnClickListener {
-                onVoteClickListener(it, cats[adapterPosition], adapterPosition, VotesEnum.UNDEFINED)
-            }
-        }
+        /* init {
+             itemView.setOnClickListener {
+                 onVoteClickListener(it, cats[adapterPosition], adapterPosition, VotesEnum.UNDEFINED)
+             }
+         }*/
 
         private fun setProgressBarVisibility(state: Int) {
             binding.itemProgressBar.visibility = state
@@ -105,10 +86,8 @@ class CatAdapter(
                 setProgressBarVisibility(View.VISIBLE)
                 Glide
                     .with(itemView.context)
-//                .with(this@MainViewHolder.itemView.context)
                     .addDefaultRequestListener(GlideImpl.OnCompleted {
                         setProgressBarVisibility(View.GONE)
-//                    hideProgress(holder)
                     })
                     .applyDefaultRequestOptions(ro)
                     .load(model.url)
@@ -132,60 +111,14 @@ class CatAdapter(
                     onVoteClickListener(it, model, adapterPosition, VotesEnum.DOWN)
                 }
 
-
-
-
-
-
-
-
-
-
-                btnVoteUp.isChecked = model.state
-                btnVoteDown.isChecked = model.state
-
                 imgView.setOnClickListener {
-                    listener.onRecyclerViewItemClick(it, model)
+                    onClickListener(model)
                 }
 
-
-                /*   btnVoteDown.setOnClickListener {
-                       Timber.d("VoteDown")
-                       voteListener.onVoteClickListener(it, model, VotesEnum.DOWN)
-                   }
-                   btnVoteUp.setOnClickListener {
-                       Timber.d("VoteUp")
-                       voteListener.onVoteClickListener(it, model, VotesEnum.UP)
-                   }
-
-                   toggleVote.setOnClickListener {
-                       Timber.d("toggleVote")
-                       groupListener.onButtonChecked(toggleVote, model)
-                   }
-
-                   btnDots.setOnClickListener {
-                       // TODO: adapterPosition???
-                       onDotsListener.onClick(it, model, adapterPosition)
-                   }*/
+// TODO: Maybe delete
+                btnVoteUp.isChecked = model.state
+                btnVoteDown.isChecked = model.state
             }
         }
-    }
-
-    interface OnRecyclerViewItemClick {
-        fun onRecyclerViewItemClick(view: View, cat: Cat)
-    }
-
-    interface OnVoteClickListener {
-        fun onVoteClickListener(view: View, cat: Cat, vote: VotesEnum)
-    }
-
-    interface OnDotsListener {
-        fun onClick(view: View, cat: Cat, position: Int)
-    }
-
-    interface OnButtonCheckedListener {
-        fun onButtonChecked(
-            group: MaterialButtonToggleGroup, cat: Cat,
-        )
     }
 }

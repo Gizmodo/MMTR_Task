@@ -18,13 +18,10 @@ import com.example.fragmentvm.R
 import com.example.fragmentvm.adapter.CatAdapter
 import com.example.fragmentvm.databinding.MainFragmentBinding
 import com.example.fragmentvm.model.BackendResponse
-import com.example.fragmentvm.model.Cat
 import com.example.fragmentvm.utils.CatUiState
 import com.example.fragmentvm.utils.SharedViewModel
 import com.example.fragmentvm.utils.UiState
-import com.example.fragmentvm.utils.VotesEnum
 import com.example.fragmentvm.viewmodel.MainViewModel
-import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -64,11 +61,15 @@ class MainFragment : Fragment() {
                 it.layoutManager = LinearLayoutManager(requireContext())
                 it.setHasFixedSize(true)
                 adapter = CatAdapter(
-                    cats, catClickListener, voteListener = voteClickListener,
-                    groupListener = groupListener,
-                    onDotsListener = onDotsListener,
-                    onVoteClickListener = { view, cat, position, state ->
-                        Timber.d("View ${view.id} Position $position Cat $cat State $state")
+                    cats,
+                    { view, cat, position, vote ->
+                        Timber.d("View ${view.id} Position $position Cat $cat Vote to set $vote")
+                        viewModel.vote(cat, vote)
+                    }, { cat ->
+                        sharedModel.select(cat)
+                        nav.navigate(
+                            MainFragmentDirections.actionMainFragmentToDetailFragment()
+                        )
                     }
                 )
                 it.adapter = adapter
@@ -82,16 +83,6 @@ class MainFragment : Fragment() {
         }
 
         return binding.root
-    }
-
-    @Suppress("unused")
-    private val awd = object : (Cat, Int) -> Unit {
-        override fun invoke(p1: Cat, p2: Int) {
-            Timber.d(p2.toString())
-            Timber.d(p1.toString())
-
-        }
-
     }
 
     private fun observeUIStates() {
@@ -180,39 +171,5 @@ class MainFragment : Fragment() {
     private fun setVoteButtons(position: Int, state: Boolean) {
         adapter.setToggle(position, state)
         adapter.notifyItemChanged(position)
-    }
-
-    private val onDotsListener = object : CatAdapter.OnDotsListener {
-        override fun onClick(view: View, cat: Cat, position: Int) {
-            // TODO: добавить position в параметры
-//            viewModel.vote()
-        }
-    }
-
-    private val voteClickListener = object : CatAdapter.OnVoteClickListener {
-        override fun onVoteClickListener(view: View, cat: Cat, vote: VotesEnum) {
-            viewModel.vote(cat, vote)
-        }
-    }
-
-    private val catClickListener = object : CatAdapter.OnRecyclerViewItemClick {
-        override fun onRecyclerViewItemClick(view: View, cat: Cat) {
-            sharedModel.select(cat)
-            nav.navigate(MainFragmentDirections.actionMainFragmentToDetailFragment())
-        }
-    }
-
-    private val groupListener = object : CatAdapter.OnButtonCheckedListener {
-        override fun onButtonChecked(group: MaterialButtonToggleGroup, cat: Cat) {
-            Timber.d("onButtonChecked ")
-            when (group.checkedButtonId) {
-                R.id.btnVoteUp -> {
-                    Timber.d("onButtonChecked VoteUp")
-                }
-                R.id.btnVoteDown -> {
-                    Timber.d("onButtonChecked VoteDown")
-                }
-            }
-        }
     }
 }

@@ -1,13 +1,7 @@
 package com.example.fragmentvm.utils
 
-enum class VotesEnum(val value: Int) {
+enum class VotesEnum(val value: Int = -1) {
+    UNDEFINED(-1),
     DOWN(0),
-    UP(1),
-    UNDEFINED(-1)
-}
-
-enum class LikeState(val value: Int = 0){
-    UNDETERMINED(0),
-    LIKED(1),
-    DISLIKED(2)
+    UP(1)
 }
