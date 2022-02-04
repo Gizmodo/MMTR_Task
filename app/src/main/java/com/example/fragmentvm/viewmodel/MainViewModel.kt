@@ -10,8 +10,8 @@ import com.example.fragmentvm.model.Cat
 import com.example.fragmentvm.model.VotePayload
 import com.example.fragmentvm.repository.DataStoreRepositoryImpl
 import com.example.fragmentvm.repository.RepositoryRetrofit
-import com.example.fragmentvm.utils.CatUiState
-import com.example.fragmentvm.utils.UiState
+import com.example.fragmentvm.utils.StateUIMain
+import com.example.fragmentvm.utils.StateUIVote
 import com.example.fragmentvm.utils.VotesEnum
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
@@ -26,11 +26,11 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class MainViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow<CatUiState>(CatUiState.Empty)
-    fun getUIState() : StateFlow<CatUiState> = _uiState
+    private val _stateUIMain = MutableStateFlow<StateUIMain>(StateUIMain.Empty)
+    fun getStateUIMain() : StateFlow<StateUIMain> = _stateUIMain
 
-    private val _uiVoteState = MutableStateFlow<UiState<BackendResponse>>(UiState.Empty)
-    fun getUIVoteState() : StateFlow<UiState<BackendResponse>> = _uiVoteState
+    private val _stateUIVote = MutableStateFlow<StateUIVote<BackendResponse>>(StateUIVote.Empty)
+    fun getStateUIVote() : StateFlow<StateUIVote<BackendResponse>> = _stateUIVote
 
     private var apikey: String
 
@@ -51,16 +51,18 @@ class MainViewModel : ViewModel() {
         get() = _cats
 
     // TODO: передать position и возвращать его в Success
-    fun vote(cat: Cat, vote: VotesEnum) {
-        _uiVoteState.value = UiState.Loading
+    fun vote(cat: Cat, vote: VotesEnum, position: Int) {
+        _stateUIVote.value = StateUIVote.Loading
 
         viewModelScope.launch(Dispatchers.IO) {
             val votePayload = VotePayload(cat.id, vote.value)
-            retrofit.postVoteWithResponse(apiKey = apikey, votePayload = votePayload)
+            retrofit.postVoteWithResponse(apikey, votePayload)
                 .subscribe({
                     if (it.isSuccessful) {
                         it.body()?.let { body ->
-                            _uiVoteState.value = UiState.Success(body)
+                            body.position=position
+                            body.vote = vote
+                            _stateUIVote.value = StateUIVote.Success(body)
                         }
                     } else {
                         Timber.d("400")
@@ -73,10 +75,11 @@ class MainViewModel : ViewModel() {
                             try {
                                 val error: BackendResponse =
                                     adapter.fromJson(body.string())
-                                _uiVoteState.value = UiState.BadResponse(error)
+
+                                _stateUIVote.value = StateUIVote.BadResponse(error)
                             } catch (e: IOException) {
                                 Timber.e(e)
-                                _uiVoteState.value = UiState.Error(e)
+                                _stateUIVote.value = StateUIVote.Error(e)
                             }
                         }
                     }
@@ -89,14 +92,14 @@ class MainViewModel : ViewModel() {
                         try {
                             val error: BackendResponse =
                                 adapter.fromJson(body?.string())
-                            _uiVoteState.value = UiState.BadResponse(error)
+                            _stateUIVote.value = StateUIVote.BadResponse(error)
                         } catch (e: IOException) {
                             Timber.e(it)
-                            _uiVoteState.value = UiState.Error(it)
+                            _stateUIVote.value = StateUIVote.Error(it)
                         }
                     }
                     Timber.e(it)
-                    _uiVoteState.value = UiState.Error(it)
+                    _stateUIVote.value = StateUIVote.Error(it)
                 })
 
             /*  retrofit.postVote(apikey, votePayload = votePayload)
@@ -128,22 +131,22 @@ class MainViewModel : ViewModel() {
     }
 
     fun getCats() {
-        _uiState.value = CatUiState.Loading
+        _stateUIMain.value = StateUIMain.Loading
 
         viewModelScope.launch(Dispatchers.IO) {
             retrofit.getCats(apikey)
                 .subscribe(
                     {
                         if (it.isEmpty()) {
-                            _uiState.value = CatUiState.Empty
+                            _stateUIMain.value = StateUIMain.Empty
                         } else {
-                            _uiState.value = CatUiState.Finished
+                            _stateUIMain.value = StateUIMain.Finished
                             _cats.postValue(it)
                         }
                     },
                     {
                         Timber.e(it)
-                        _uiState.value = CatUiState.Error(it)
+                        _stateUIMain.value = StateUIMain.Error(it)
                     })
         }
     }

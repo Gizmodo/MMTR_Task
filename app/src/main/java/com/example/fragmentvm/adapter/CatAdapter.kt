@@ -18,7 +18,6 @@ import timber.log.Timber
 class CatAdapter(
     private val cats: List<Cat>,
     private val onVoteClickListener: (
-        view: View,
         cat: Cat,
         position: Int,
         vote: VotesEnum,
@@ -37,8 +36,8 @@ class CatAdapter(
         return MainViewHolder(binding)
     }
 
-    fun setToggle(position: Int, state: Boolean) {
-        cats[position].state = state
+    fun setToggle(position: Int, vote: VotesEnum) {
+        cats[position].state = vote.value as Boolean
         notifyItemChanged(position)
     }
 
@@ -98,26 +97,27 @@ class CatAdapter(
                     .into(imgView)
 
                 toggleVote.clearChecked()
-                //Assign model to tag
-                btnVoteDown.tag = model
-                btnVoteUp.tag = model
 
-                //Click listeners
-                btnVoteUp.setOnClickListener {
-                    onVoteClickListener(it, model, adapterPosition, VotesEnum.UP)
+                with(btnVoteDown) {
+                    tag = model
+                    isChecked = model.state
+                    setOnClickListener {
+                        onVoteClickListener(model, adapterPosition, VotesEnum.DOWN)
+                    }
                 }
 
-                btnVoteDown.setOnClickListener {
-                    onVoteClickListener(it, model, adapterPosition, VotesEnum.DOWN)
+                with(btnVoteUp) {
+                    tag = model
+                    isChecked = model.state
+                    setOnClickListener {
+                        onVoteClickListener(model, adapterPosition, VotesEnum.UP)
+                    }
                 }
 
                 imgView.setOnClickListener {
                     onClickListener(model)
                 }
 
-// TODO: Maybe delete
-                btnVoteUp.isChecked = model.state
-                btnVoteDown.isChecked = model.state
             }
         }
     }

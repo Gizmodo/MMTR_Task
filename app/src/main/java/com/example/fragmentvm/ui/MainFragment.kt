@@ -18,9 +18,10 @@ import com.example.fragmentvm.R
 import com.example.fragmentvm.adapter.CatAdapter
 import com.example.fragmentvm.databinding.MainFragmentBinding
 import com.example.fragmentvm.model.BackendResponse
-import com.example.fragmentvm.utils.CatUiState
 import com.example.fragmentvm.utils.SharedViewModel
-import com.example.fragmentvm.utils.UiState
+import com.example.fragmentvm.utils.StateUIMain
+import com.example.fragmentvm.utils.StateUIVote
+import com.example.fragmentvm.utils.VotesEnum
 import com.example.fragmentvm.viewmodel.MainViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.launchIn
@@ -62,9 +63,9 @@ class MainFragment : Fragment() {
                 it.setHasFixedSize(true)
                 adapter = CatAdapter(
                     cats,
-                    { view, cat, position, vote ->
-                        Timber.d("View ${view.id} Position $position Cat $cat Vote to set $vote")
-                        viewModel.vote(cat, vote)
+                    { cat, position, vote ->
+                        Timber.d("Cat url: ${cat.url}  Cat state: ${cat.state} Vote to set $vote")
+                        viewModel.vote(cat, vote, position)
                     }, { cat ->
                         sharedModel.select(cat)
                         nav.navigate(
@@ -86,69 +87,69 @@ class MainFragment : Fragment() {
     }
 
     private fun observeUIStates() {
-        viewModel.getUIState()
+        viewModel.getStateUIMain()
             .flowWithLifecycle(viewLifecycleOwner.lifecycle)
             .onEach { state -> handleUIState(state) }
             .launchIn(viewLifecycleOwner.lifecycleScope)
 
-        viewModel.getUIVoteState()
+        viewModel.getStateUIVote()
             .flowWithLifecycle(viewLifecycleOwner.lifecycle)
             .onEach { state -> handleVoteState(state) }
             .launchIn(lifecycleScope)
     }
 
-    private fun handleVoteState(state: UiState<BackendResponse>) {
+    private fun handleVoteState(state: StateUIVote<BackendResponse>) {
         Timber.d("handleVoteState")
         when (state) {
-            is UiState.BadResponse -> {
+            is StateUIVote.BadResponse -> {
                 Timber.d("BadResponse")
                 // TODO: в функцию передать position
-                setVoteButtons(0, false)
+                setVoteButtons(state.badResponse.position, state.badResponse.vote)
                 showDialog(state.badResponse.message)
             }
-            UiState.Empty -> {
+            StateUIVote.Empty -> {
                 Timber.d("Empty")
             }
-            is UiState.Error -> {
+            is StateUIVote.Error -> {
                 Timber.d("Error")
 
             }
-            UiState.Finished -> {
+            StateUIVote.Finished -> {
                 Timber.d("Finished")
             }
-            UiState.Loading -> {
+            StateUIVote.Loading -> {
                 Timber.d("Loading")
             }
-            is UiState.Success -> {
+            is StateUIVote.Success -> {
                 Timber.d("Success")
                 // TODO: в функцию передать position
-                setVoteButtons(0, true)
+                setVoteButtons(state.item.position, state.item.vote)
 //                    showDialog(state.badResponse.message)
             }
         }
     }
 
-    private fun handleUIState(state: CatUiState) {
+    private fun handleUIState(state: StateUIMain) {
         Timber.d("handleUIState")
         when (state) {
-            CatUiState.Empty -> {
+            StateUIMain.Empty -> {
                 Timber.d("Empty")
                 binding.progressBar.visibility = View.GONE
             }
-            is CatUiState.Error -> {
+            is StateUIMain.Error -> {
                 Timber.d("Error")
                 Toast.makeText(context, state.t.message, Toast.LENGTH_LONG)
                     .show()
             }
-            is CatUiState.Loaded -> {
+            is StateUIMain.Loaded -> {
                 Timber.d("Loaded")
                 binding.progressBar.visibility = View.GONE
             }
-            CatUiState.Loading -> {
+            StateUIMain.Loading -> {
                 Timber.d("Loading")
                 binding.progressBar.visibility = View.VISIBLE
             }
-            CatUiState.Finished -> {
+            StateUIMain.Finished -> {
                 Timber.d("Finished")
                 binding.progressBar.visibility = View.GONE
             }
@@ -168,8 +169,8 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun setVoteButtons(position: Int, state: Boolean) {
-        adapter.setToggle(position, state)
-        adapter.notifyItemChanged(position)
+    private fun setVoteButtons(position: Int, vote: VotesEnum) {
+        adapter.setToggle(position, vote)
+//        adapter.notifyItemChanged(position)
     }
 }
