@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.*
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,7 +29,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.serpro69.kfaker.Faker
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class MainFragment : Fragment() {
@@ -47,118 +48,9 @@ class MainFragment : Fragment() {
         nav = findNavController()
     }
 
-    private fun observe() {
-        
-        viewModel.getUIState().flowWithLifecycle(Lifecycle.State.STARTED)
-//            .flowOnLifecycle(Lifecycle.State.STARTED)
-            .onEach { state -> handleState(state) }
-            .launchIn(viewLifecycleOwner.lifecycleScope)
-
-        viewModel.getUIVoteState()
-            .flowWithLifecycle(Lifecycle.State.STARTED)
-            .onEach { products -> handleProducts(products) }
-            .launchIn(lifecycleScope)
-    }
-
-    private fun handleProducts(products: UiState<BackendResponse>) {
-        TODO("Not yet implemented")
-    }
-
-    private fun handleState(state: CatUiState) {
-        TODO("Not yet implemented")
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    monitorList()
-                }
-                launch {
-                    monitorVote()
-                }
-            }
-        }
-    }
-
-    private fun showDialog(message: String) {
-        context?.let {
-            MaterialAlertDialogBuilder(it)
-                .setTitle(resources.getString(R.string.title))
-                .setMessage(message)
-                .setPositiveButton(resources.getString(R.string.accept)) { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .show()
-        }
-    }
-
-    private suspend fun monitorVote() {
-        viewModel.uiVoteState.collect {
-            Timber.d("monitorVote called")
-            when (val state = it) {
-                is UiState.BadResponse -> {
-                    Timber.d("BadResponse")
-                    // TODO: в функцию передать position
-                    setVoteButtons(0, false)
-                    showDialog(state.badResponse.message)
-                }
-                UiState.Empty -> {
-                    Timber.d("Empty")
-                }
-                is UiState.Error -> {
-                    Timber.d("Error")
-
-                }
-                UiState.Finished -> {
-                    Timber.d("Finished")
-                }
-                UiState.Loading -> {
-                    Timber.d("Loading")
-                }
-                is UiState.Success -> {
-                    Timber.d("Success")
-                    // TODO: в функцию передать position
-                    setVoteButtons(0, true)
-//                    showDialog(state.badResponse.message)
-                }
-            }
-        }
-    }
-
-    private fun setVoteButtons(position: Int, state: Boolean) {
-        adapter.setToggle(position, state)
-        adapter.notifyItemChanged(position)
-    }
-
-    private suspend fun monitorList() {
-        viewModel.uiState.collect {
-            Timber.d("monitorList called")
-            when (val state = it) {
-                CatUiState.Empty -> {
-                    Timber.d("Empty")
-                    binding.progressBar.visibility = View.GONE
-                }
-                is CatUiState.Error -> {
-                    Timber.d("Error")
-                    Toast.makeText(context, state.t.message, Toast.LENGTH_LONG)
-                        .show()
-                }
-                is CatUiState.Loaded -> {
-                    Timber.d("Loaded")
-                    binding.progressBar.visibility = View.GONE
-                }
-                CatUiState.Loading -> {
-                    Timber.d("Loading")
-                    binding.progressBar.visibility = View.VISIBLE
-                }
-                CatUiState.Finished -> {
-                    Timber.d("Finished")
-                    binding.progressBar.visibility = View.GONE
-                }
-            }
-        }
+        observeUIStates()
     }
 
     override fun onCreateView(
@@ -167,6 +59,7 @@ class MainFragment : Fragment() {
     ): View {
         binding = MainFragmentBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+
         viewModel.cats.observe(viewLifecycleOwner) { cats ->
             swipe.isRefreshing = false
             binding.recyclerview.also {
@@ -186,25 +79,102 @@ class MainFragment : Fragment() {
             viewModel.getCats()
         }
 
-        val e = binding.navView
-
-        e.setOnItemSelectedListener {
-            Timber.d(it.itemId.toString())
-            if (it.itemId == 2131296550) {
-//                adapter.changeText()
-            }
-            true
-        }
         return binding.root
+    }
+
+    private fun observeUIStates() {
+        viewModel.getUIState()
+            .flowWithLifecycle(viewLifecycleOwner.lifecycle)
+            .onEach { state -> handleUIState(state) }
+            .launchIn(viewLifecycleOwner.lifecycleScope)
+
+        viewModel.getUIVoteState()
+            .flowWithLifecycle(viewLifecycleOwner.lifecycle)
+            .onEach { state -> handleVoteState(state) }
+            .launchIn(lifecycleScope)
+    }
+
+    private fun handleVoteState(state: UiState<BackendResponse>) {
+        Timber.d("handleVoteState")
+        when (state) {
+            is UiState.BadResponse -> {
+                Timber.d("BadResponse")
+                // TODO: в функцию передать position
+                setVoteButtons(0, false)
+                showDialog(state.badResponse.message)
+            }
+            UiState.Empty -> {
+                Timber.d("Empty")
+            }
+            is UiState.Error -> {
+                Timber.d("Error")
+
+            }
+            UiState.Finished -> {
+                Timber.d("Finished")
+            }
+            UiState.Loading -> {
+                Timber.d("Loading")
+            }
+            is UiState.Success -> {
+                Timber.d("Success")
+                // TODO: в функцию передать position
+                setVoteButtons(0, true)
+//                    showDialog(state.badResponse.message)
+            }
+        }
+    }
+
+    private fun handleUIState(state: CatUiState) {
+        Timber.d("handleUIState")
+        when (state) {
+            CatUiState.Empty -> {
+                Timber.d("Empty")
+                binding.progressBar.visibility = View.GONE
+            }
+            is CatUiState.Error -> {
+                Timber.d("Error")
+                Toast.makeText(context, state.t.message, Toast.LENGTH_LONG)
+                    .show()
+            }
+            is CatUiState.Loaded -> {
+                Timber.d("Loaded")
+                binding.progressBar.visibility = View.GONE
+            }
+            CatUiState.Loading -> {
+                Timber.d("Loading")
+                binding.progressBar.visibility = View.VISIBLE
+            }
+            CatUiState.Finished -> {
+                Timber.d("Finished")
+                binding.progressBar.visibility = View.GONE
+            }
+        }
+    }
+
+
+    private fun showDialog(message: String) {
+        context?.let {
+            MaterialAlertDialogBuilder(it)
+                .setTitle(resources.getString(R.string.title))
+                .setMessage(message)
+                .setPositiveButton(resources.getString(R.string.accept)) { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
+        }
+    }
+
+    private fun setVoteButtons(position: Int, state: Boolean) {
+        adapter.setToggle(position, state)
+        adapter.notifyItemChanged(position)
     }
 
     private val onDotsListener = object : CatAdapter.OnDotsListener {
         override fun onClick(view: View, cat: Cat, position: Int) {
             // TODO: добавить position в параметры
 //            viewModel.vote()
-
         }
-
     }
 
     private val voteClickListener = object : CatAdapter.OnVoteClickListener {
@@ -215,7 +185,6 @@ class MainFragment : Fragment() {
 
     private val catClickListener = object : CatAdapter.OnRecyclerViewItemClick {
         override fun onRecyclerViewItemClick(view: View, cat: Cat) {
-
             sharedModel.select(cat)
             nav.navigate(MainFragmentDirections.actionMainFragmentToDetailFragment())
         }
@@ -233,7 +202,5 @@ class MainFragment : Fragment() {
                 }
             }
         }
-
     }
-
 }
