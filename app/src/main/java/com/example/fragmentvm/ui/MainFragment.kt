@@ -7,12 +7,11 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.*
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.fragmentvm.R
 import com.example.fragmentvm.adapter.CatAdapter
@@ -24,9 +23,12 @@ import com.example.fragmentvm.utils.StateUIVote
 import com.example.fragmentvm.utils.VotesEnum
 import com.example.fragmentvm.viewmodel.MainViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import timber.log.Timber
+
 
 class MainFragment : Fragment() {
     companion object {
@@ -39,6 +41,7 @@ class MainFragment : Fragment() {
     private lateinit var nav: NavController
     private lateinit var swipe: SwipeRefreshLayout
     private lateinit var adapter: CatAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         nav = findNavController()
@@ -59,12 +62,15 @@ class MainFragment : Fragment() {
         viewModel.cats.observe(viewLifecycleOwner) { cats ->
             swipe.isRefreshing = false
             binding.recyclerview.also {
+                val animator = it.itemAnimator
+                if (animator is SimpleItemAnimator) {
+                    animator.supportsChangeAnimations = false
+                }
                 it.layoutManager = LinearLayoutManager(requireContext())
                 it.setHasFixedSize(true)
                 adapter = CatAdapter(
                     cats,
                     { cat, position, vote ->
-                        Timber.d("Cat url: ${cat.url}  Cat state: ${cat.state} Vote to set $vote")
                         viewModel.vote(cat, vote, position)
                     }, { cat ->
                         sharedModel.select(cat)
@@ -86,16 +92,37 @@ class MainFragment : Fragment() {
         return binding.root
     }
 
+    /***
+     * StateFlow is not lifecycle-aware. However, a Flow can be collected from a lifecycle-aware
+     * coroutine which requires more code to setup without using LiveData (more details below)
+     ***/
     private fun observeUIStates() {
         viewModel.getStateUIMain()
             .flowWithLifecycle(viewLifecycleOwner.lifecycle)
-            .onEach { state -> handleUIState(state) }
+            .onEach { handleUIState(it) }
             .launchIn(viewLifecycleOwner.lifecycleScope)
 
-        viewModel.getStateUIVote()
+        /*viewModel.getStateUIVote()
             .flowWithLifecycle(viewLifecycleOwner.lifecycle)
-            .onEach { state -> handleVoteState(state) }
-            .launchIn(lifecycleScope)
+            .distinctUntilChanged()
+            .onEach { handleVoteState(it) }
+            .launchIn(lifecycleScope)*/
+
+        /*viewLifecycleOwner.lifecycleScope.launch{
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.getStateUIVote().collectLatest{
+                    handleVoteState(it)
+                }
+            }
+        }*/
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.getStateUIVote()
+                .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
+                .distinctUntilChanged()
+                .collect {
+                    handleVoteState(it)
+                }
+        }
     }
 
     private fun handleVoteState(state: StateUIVote<BackendResponse>) {
@@ -103,8 +130,7 @@ class MainFragment : Fragment() {
         when (state) {
             is StateUIVote.BadResponse -> {
                 Timber.d("BadResponse")
-                // TODO: в функцию передать position
-                setVoteButtons(state.badResponse.position, state.badResponse.vote)
+                setVoteButton(state.badResponse.position, state.badResponse.vote)
                 showDialog(state.badResponse.message)
             }
             StateUIVote.Empty -> {
@@ -112,7 +138,6 @@ class MainFragment : Fragment() {
             }
             is StateUIVote.Error -> {
                 Timber.d("Error")
-
             }
             StateUIVote.Finished -> {
                 Timber.d("Finished")
@@ -122,15 +147,12 @@ class MainFragment : Fragment() {
             }
             is StateUIVote.Success -> {
                 Timber.d("Success")
-                // TODO: в функцию передать position
-                setVoteButtons(state.item.position, state.item.vote)
-//                    showDialog(state.badResponse.message)
+                setVoteButton(state.item.position, state.item.vote)
             }
         }
     }
 
     private fun handleUIState(state: StateUIMain) {
-        Timber.d("handleUIState")
         when (state) {
             StateUIMain.Empty -> {
                 Timber.d("Empty")
@@ -156,7 +178,6 @@ class MainFragment : Fragment() {
         }
     }
 
-
     private fun showDialog(message: String) {
         context?.let {
             MaterialAlertDialogBuilder(it)
@@ -169,8 +190,7 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun setVoteButtons(position: Int, vote: VotesEnum) {
+    private fun setVoteButton(position: Int, vote: VotesEnum) {
         adapter.setToggle(position, vote)
-//        adapter.notifyItemChanged(position)
     }
 }

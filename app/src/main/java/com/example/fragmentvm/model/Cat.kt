@@ -7,5 +7,6 @@ data class Cat(
     val url: String,
     val width: Int,
     val original_filename: String?,
-    var state: Boolean = true
+    var isLiked: Boolean = false,
+    var isDisliked: Boolean = false,
 )

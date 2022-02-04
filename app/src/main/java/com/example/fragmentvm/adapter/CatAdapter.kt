@@ -37,48 +37,33 @@ class CatAdapter(
     }
 
     fun setToggle(position: Int, vote: VotesEnum) {
-        cats[position].state = vote.value as Boolean
+        Timber.d("Previous state")
+        Timber.d("  Position $position like ${cats[position].isLiked} dislike ${cats[position].isDisliked}")
+        if (
+            (vote.value == VotesEnum.DOWN.value && cats[position].isDisliked) ||
+            (vote.value == VotesEnum.UP.value && cats[position].isLiked)
+        ) {
+            cats[position].isDisliked = false
+            cats[position].isLiked = false
+        } else if (vote.value == VotesEnum.UP.value) {
+            cats[position].isLiked = true
+            cats[position].isDisliked = false
+        } else if (vote.value == VotesEnum.DOWN.value) {
+            cats[position].isDisliked = true
+            cats[position].isLiked = false
+        }
+        Timber.d("New state")
+        Timber.d("  Position $position like ${cats[position].isLiked} dislike ${cats[position].isDisliked}")
         notifyItemChanged(position)
-    }
-
-    fun changeText(position: Int, value: Int) {
-        Timber.d("Before")
-        Timber.i(cats[position].toString())
-        cats[position].height = value
-        notifyItemChanged(position)
-        Timber.d("After")
-        Timber.i(cats[position].toString())
-        //holder.binding.tvTest.text = text
-        //notifyItemChanged(holder.adapterPosition)
     }
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         val cat = cats[position]
         holder.bind(cat)
-        /* holder.binding.switch1.setOnCheckedChangeListener { view, isChecked ->
-             Timber.d("Switch state $isChecked")
-             cats[holder.adapterPosition].state = isChecked
- //            notifyItemChanged(holder.adapterPosition)
-         }*/
-    }
-
-    companion object {
-        val ro = RequestOptions()
-            .error(R.drawable.ic_error_placeholder)
     }
 
     inner class MainViewHolder(private val binding: RvItemCatBinding) :
         RecyclerView.ViewHolder(binding.root) {
-
-        /* init {
-             itemView.setOnClickListener {
-                 onVoteClickListener(it, cats[adapterPosition], adapterPosition, VotesEnum.UNDEFINED)
-             }
-         }*/
-
-        private fun setProgressBarVisibility(state: Int) {
-            binding.itemProgressBar.visibility = state
-        }
 
         fun bind(model: Cat) {
             with(binding) {
@@ -88,7 +73,7 @@ class CatAdapter(
                     .addDefaultRequestListener(GlideImpl.OnCompleted {
                         setProgressBarVisibility(View.GONE)
                     })
-                    .applyDefaultRequestOptions(ro)
+                    .applyDefaultRequestOptions(RequestOptions().error(R.drawable.ic_error_placeholder))
                     .load(model.url)
                     .thumbnail(0.5f)
                     .centerCrop()
@@ -96,19 +81,15 @@ class CatAdapter(
                     .transition(DrawableTransitionOptions().crossFade())
                     .into(imgView)
 
-                toggleVote.clearChecked()
-
                 with(btnVoteDown) {
-                    tag = model
-                    isChecked = model.state
+                    isChecked = model.isDisliked
                     setOnClickListener {
                         onVoteClickListener(model, adapterPosition, VotesEnum.DOWN)
                     }
                 }
 
                 with(btnVoteUp) {
-                    tag = model
-                    isChecked = model.state
+                    isChecked = model.isLiked
                     setOnClickListener {
                         onVoteClickListener(model, adapterPosition, VotesEnum.UP)
                     }
@@ -119,6 +100,10 @@ class CatAdapter(
                 }
 
             }
+        }
+
+        private fun setProgressBarVisibility(state: Int) {
+            binding.itemProgressBar.visibility = state
         }
     }
 }

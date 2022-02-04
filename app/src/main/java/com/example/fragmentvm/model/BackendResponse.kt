@@ -7,5 +7,6 @@ data class BackendResponse(
     val message: String,
     val status: Int,
     var position: Int,
+    // TODO: undefined скорее всего не нужен
     var vote: VotesEnum = VotesEnum.UNDEFINED
 )

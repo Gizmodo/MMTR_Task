@@ -66,7 +66,6 @@ class MainViewModel : ViewModel() {
                         }
                     } else {
                         Timber.d("400")
-
                         it.errorBody()?.let { body ->
                             Timber.d("Body response not null")
                             val gson = Gson()
