@@ -7,7 +7,10 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.*
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,10 +26,8 @@ import com.example.fragmentvm.utils.StateUIVote
 import com.example.fragmentvm.utils.VotesEnum
 import com.example.fragmentvm.viewmodel.MainViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import timber.log.Timber
 
 
@@ -115,6 +116,13 @@ class MainFragment : Fragment() {
                 }
             }
         }*/
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.getStateUIVote()
+                .flowWithLifecycle(viewLifecycleOwner.lifecycle)
+                .onEach { viewState -> handleVoteState(viewState) }
+        }
+        /*
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.getStateUIVote()
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
@@ -122,7 +130,7 @@ class MainFragment : Fragment() {
                 .collect {
                     handleVoteState(it)
                 }
-        }
+        }*/
     }
 
     private fun handleVoteState(state: StateUIVote<BackendResponse>) {

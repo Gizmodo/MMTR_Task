@@ -17,7 +17,9 @@ import com.google.gson.Gson
 import com.google.gson.TypeAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okio.IOException
@@ -27,10 +29,14 @@ import javax.inject.Inject
 
 class MainViewModel : ViewModel() {
     private val _stateUIMain = MutableStateFlow<StateUIMain>(StateUIMain.Empty)
-    fun getStateUIMain() : StateFlow<StateUIMain> = _stateUIMain
+    fun getStateUIMain(): StateFlow<StateUIMain> = _stateUIMain
 
     private val _stateUIVote = MutableStateFlow<StateUIVote<BackendResponse>>(StateUIVote.Empty)
-    fun getStateUIVote() : StateFlow<StateUIVote<BackendResponse>> = _stateUIVote
+    fun getStateUIVote(): StateFlow<StateUIVote<BackendResponse>> = _stateUIVote.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000L),
+        initialValue = StateUIVote.Empty
+    )
 
     private var apikey: String
 
@@ -60,7 +66,7 @@ class MainViewModel : ViewModel() {
                 .subscribe({
                     if (it.isSuccessful) {
                         it.body()?.let { body ->
-                            body.position=position
+                            body.position = position
                             body.vote = vote
                             _stateUIVote.value = StateUIVote.Success(body)
                         }
