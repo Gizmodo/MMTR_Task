@@ -104,8 +104,8 @@ class MainFragment : Fragment() {
     private fun handleVoteState(state: StateUIVote<BackendResponse>) {
         when (state) {
             is StateUIVote.BadResponse -> {
-                setVoteButton(state.badResponse.position, state.badResponse.vote)
                 showDialog(state.badResponse.message)
+                adapter.notifyItemChanged(state.badResponse.position)
                 viewModel.resetVoteState()
             }
             StateUIVote.Empty -> {

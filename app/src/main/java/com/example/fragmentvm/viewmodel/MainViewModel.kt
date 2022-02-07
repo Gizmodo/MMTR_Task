@@ -73,7 +73,8 @@ class MainViewModel : ViewModel() {
                             try {
                                 val error: BackendResponse =
                                     adapter.fromJson(body.string())
-
+                                error.position = position
+                                error.vote = vote
                                 _stateUIVote.value = StateUIVote.BadResponse(error)
                             } catch (e: IOException) {
                                 Timber.e(e)
@@ -90,6 +91,8 @@ class MainViewModel : ViewModel() {
                         try {
                             val error: BackendResponse =
                                 adapter.fromJson(body?.string())
+                            error.position = position
+                            error.vote = vote
                             _stateUIVote.value = StateUIVote.BadResponse(error)
                         } catch (e: IOException) {
                             Timber.e(it)
