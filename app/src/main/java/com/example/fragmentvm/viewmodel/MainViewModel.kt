@@ -17,9 +17,7 @@ import com.google.gson.Gson
 import com.google.gson.TypeAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okio.IOException
@@ -32,11 +30,7 @@ class MainViewModel : ViewModel() {
     fun getStateUIMain(): StateFlow<StateUIMain> = _stateUIMain
 
     private val _stateUIVote = MutableStateFlow<StateUIVote<BackendResponse>>(StateUIVote.Empty)
-    fun getStateUIVote(): StateFlow<StateUIVote<BackendResponse>> = _stateUIVote.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000L),
-        initialValue = StateUIVote.Empty
-    )
+    fun getStateUIVote(): StateFlow<StateUIVote<BackendResponse>> = _stateUIVote
 
     private var apikey: String
 
@@ -56,7 +50,6 @@ class MainViewModel : ViewModel() {
     val cats: LiveData<List<Cat>>
         get() = _cats
 
-    // TODO: передать position и возвращать его в Success
     fun vote(cat: Cat, vote: VotesEnum, position: Int) {
         _stateUIVote.value = StateUIVote.Loading
 
@@ -106,32 +99,6 @@ class MainViewModel : ViewModel() {
                     Timber.e(it)
                     _stateUIVote.value = StateUIVote.Error(it)
                 })
-
-            /*  retrofit.postVote(apikey, votePayload = votePayload)
-                  .subscribe({
-                      if (it.message.contentEquals("SUCCESS")) {
-                          _uiVoteState.value = UiState.Success(it)
-                      } else {
-
-                      }
-                  }, {
-                      if (it is HttpException) {
-                          val body = it.response()?.errorBody()
-                          val gson = Gson()
-                          val adapter: TypeAdapter<BackendResponse> =
-                              gson.getAdapter(BackendResponse::class.java)
-                          try {
-                              val error: BackendResponse =
-                                  adapter.fromJson(body?.string())
-                              _uiVoteState.value = UiState.BadResponse(error)
-                          } catch (e: IOException) {
-                              Timber.e(it)
-                              _uiVoteState.value = UiState.Error(it)
-                          }
-                      }
-                      Timber.e(it)
-                      _uiVoteState.value = UiState.Error(it)
-                  })*/
         }
     }
 
@@ -154,5 +121,10 @@ class MainViewModel : ViewModel() {
                         _stateUIMain.value = StateUIMain.Error(it)
                     })
         }
+    }
+
+    fun resetVoteState() {
+        Timber.d("Reset vote state")
+        _stateUIVote.value = StateUIVote.Empty
     }
 }

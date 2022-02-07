@@ -7,10 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
+import androidx.lifecycle.*
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,7 +26,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
-
 
 class MainFragment : Fragment() {
     companion object {
@@ -93,53 +89,24 @@ class MainFragment : Fragment() {
         return binding.root
     }
 
-    /***
-     * StateFlow is not lifecycle-aware. However, a Flow can be collected from a lifecycle-aware
-     * coroutine which requires more code to setup without using LiveData (more details below)
-     ***/
     private fun observeUIStates() {
         viewModel.getStateUIMain()
-            .flowWithLifecycle(viewLifecycleOwner.lifecycle)
+            .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
             .onEach { handleUIState(it) }
             .launchIn(viewLifecycleOwner.lifecycleScope)
 
-        /*viewModel.getStateUIVote()
-            .flowWithLifecycle(viewLifecycleOwner.lifecycle)
-            .distinctUntilChanged()
+        viewModel.getStateUIVote()
+            .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
             .onEach { handleVoteState(it) }
-            .launchIn(lifecycleScope)*/
-
-        /*viewLifecycleOwner.lifecycleScope.launch{
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
-                viewModel.getStateUIVote().collectLatest{
-                    handleVoteState(it)
-                }
-            }
-        }*/
-
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.getStateUIVote()
-                .flowWithLifecycle(viewLifecycleOwner.lifecycle)
-                .onEach { viewState -> handleVoteState(viewState) }
-        }
-        /*
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.getStateUIVote()
-                .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
-                .distinctUntilChanged()
-                .collect {
-                    handleVoteState(it)
-                }
-        }*/
+            .launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
     private fun handleVoteState(state: StateUIVote<BackendResponse>) {
-        Timber.d("handleVoteState")
         when (state) {
             is StateUIVote.BadResponse -> {
-                Timber.d("BadResponse")
                 setVoteButton(state.badResponse.position, state.badResponse.vote)
                 showDialog(state.badResponse.message)
+                viewModel.resetVoteState()
             }
             StateUIVote.Empty -> {
                 Timber.d("Empty")
@@ -154,8 +121,8 @@ class MainFragment : Fragment() {
                 Timber.d("Loading")
             }
             is StateUIVote.Success -> {
-                Timber.d("Success")
                 setVoteButton(state.item.position, state.item.vote)
+                viewModel.resetVoteState()
             }
         }
     }
@@ -163,24 +130,16 @@ class MainFragment : Fragment() {
     private fun handleUIState(state: StateUIMain) {
         when (state) {
             StateUIMain.Empty -> {
-                Timber.d("Empty")
                 binding.progressBar.visibility = View.GONE
             }
             is StateUIMain.Error -> {
-                Timber.d("Error")
                 Toast.makeText(context, state.t.message, Toast.LENGTH_LONG)
                     .show()
             }
-            is StateUIMain.Loaded -> {
-                Timber.d("Loaded")
-                binding.progressBar.visibility = View.GONE
-            }
             StateUIMain.Loading -> {
-                Timber.d("Loading")
                 binding.progressBar.visibility = View.VISIBLE
             }
             StateUIMain.Finished -> {
-                Timber.d("Finished")
                 binding.progressBar.visibility = View.GONE
             }
         }

@@ -13,7 +13,6 @@ import com.example.fragmentvm.databinding.RvItemCatBinding
 import com.example.fragmentvm.model.Cat
 import com.example.fragmentvm.utils.GlideImpl
 import com.example.fragmentvm.utils.VotesEnum
-import timber.log.Timber
 
 class CatAdapter(
     private val cats: List<Cat>,
@@ -37,8 +36,6 @@ class CatAdapter(
     }
 
     fun setToggle(position: Int, vote: VotesEnum) {
-        Timber.d("Previous state")
-        Timber.d("  Position $position like ${cats[position].isLiked} dislike ${cats[position].isDisliked}")
         if (
             (vote.value == VotesEnum.DOWN.value && cats[position].isDisliked) ||
             (vote.value == VotesEnum.UP.value && cats[position].isLiked)
@@ -52,8 +49,6 @@ class CatAdapter(
             cats[position].isDisliked = true
             cats[position].isLiked = false
         }
-        Timber.d("New state")
-        Timber.d("  Position $position like ${cats[position].isLiked} dislike ${cats[position].isDisliked}")
         notifyItemChanged(position)
     }
 
