@@ -59,7 +59,7 @@ class MainFragment : Fragment() {
 
         viewModel.cats.observe(viewLifecycleOwner) { cats ->
             swipe.isRefreshing = false
-            adapter.addList(cats)
+            adapter.updateItems(cats)
 
             binding.recyclerview.also {
                 val animator = it.itemAnimator
@@ -76,7 +76,7 @@ class MainFragment : Fragment() {
                     Timber.d("Cat ${model.id} clicked at position $position")
                 }
             })
-            adapter.attachClickBase(object :  BaseAdapterCallback<Cat>{
+            adapter.attachClickBase(object : BaseAdapterCallback<Cat> {
                 override fun onItemClick(model: Cat, view: View, position: Int) {
                     Timber.d("attachClickBase")
                 }
