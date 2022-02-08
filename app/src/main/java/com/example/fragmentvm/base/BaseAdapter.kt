@@ -12,7 +12,6 @@ abstract class BaseAdapter<P> : RecyclerView.Adapter<BaseAdapter.BaseViewHolder<
 
     override fun onBindViewHolder(holder: BaseViewHolder<P>, position: Int) {
         holder.bind(mDataList[position])
-
         holder.itemView.setOnClickListener {
             mCallback?.onItemClick(mDataList[position], holder.itemView)
         }
@@ -81,7 +80,8 @@ abstract class BaseAdapter<P> : RecyclerView.Adapter<BaseAdapter.BaseViewHolder<
 
     fun getData() = mDataList
 
-    abstract class BaseViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    abstract class BaseViewHolder<T>(itemView: View) :
+        RecyclerView.ViewHolder(itemView) {
         abstract fun bind(model: T)
     }
 

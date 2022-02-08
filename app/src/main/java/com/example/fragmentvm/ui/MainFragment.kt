@@ -15,8 +15,11 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.fragmentvm.R
 import com.example.fragmentvm.adapter.CatAdapter
+import com.example.fragmentvm.base.BaseAdapter
+import com.example.fragmentvm.base.ca
 import com.example.fragmentvm.databinding.MainFragmentBinding
 import com.example.fragmentvm.model.BackendResponse
+import com.example.fragmentvm.model.Cat
 import com.example.fragmentvm.utils.SharedViewModel
 import com.example.fragmentvm.utils.StateUIMain
 import com.example.fragmentvm.utils.StateUIVote
@@ -38,7 +41,7 @@ class MainFragment : Fragment() {
     private lateinit var nav: NavController
     private lateinit var swipe: SwipeRefreshLayout
     private lateinit var adapter: CatAdapter
-
+    private lateinit var adapter2: ca
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         nav = findNavController()
@@ -65,6 +68,9 @@ class MainFragment : Fragment() {
                 }
                 it.layoutManager = LinearLayoutManager(requireContext())
                 it.setHasFixedSize(true)
+                adapter2 = ca()
+                adapter2.addList(cats)
+
                 adapter = CatAdapter(
                     cats,
                     { cat, position, vote ->
@@ -76,8 +82,22 @@ class MainFragment : Fragment() {
                         )
                     }
                 )
-                it.adapter = adapter
+//                it.adapter = adapter
+                it.adapter = adapter2
             }
+            adapter2.attachCallback(object : BaseAdapter.BaseAdapterCallback<Cat> {
+                override fun onItemClick(model: Cat, view: View) {
+                    sharedModel.select(model)
+                    nav.navigate(
+                        MainFragmentDirections.actionMainFragmentToDetailFragment()
+                    )
+                }
+
+                override fun onLongClick(model: Cat, view: View): Boolean {
+                    return false
+                }
+
+            })
         }
 
         swipe = binding.swipeLayout
