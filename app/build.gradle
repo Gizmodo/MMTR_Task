@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-kapt'
     id "scabbard.gradle" version "0.5.0"
     id 'androidx.navigation.safeargs'
+    id 'io.gitlab.arturbosch.detekt'
 }
 
 ext.versionMajor = 1
@@ -75,6 +76,16 @@ scabbard {
     qualifiedNames false
     outputFormat "svg"
 }
+detekt {
+    toolVersion = "1.19.0"
+    buildUponDefaultConfig = false
+    allRules = false
+    config = files("$rootDir/detekt/detekt.yml")
+    baseline = file("$rootDir/detekt/baseline.xml")
+    input = files("src/main/java/com")
+    debug = true
+    parallel = true
+}
 dependencies {
     def retrofit_version = "2.9.0"
     def okhttp_version = '5.0.0-alpha.4'
@@ -122,4 +133,29 @@ dependencies {
 
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
     kapt "com.github.bumptech.glide:compiler:$glide_version"
+}
+tasks.named("detekt").configure {
+    reports {
+        // Enable/Disable XML report (default: true)
+        xml.required.set(true)
+        xml.outputLocation.set(file("build/reports/detekt.xml"))
+
+        // Enable/Disable HTML report (default: true)
+        html.required.set(true)
+        html.outputLocation.set(file("build/reports/detekt.html"))
+
+        // Enable/Disable TXT report (default: true)
+        txt.required.set(true)
+        txt.outputLocation.set(file("build/reports/detekt.txt"))
+
+        // Enable/Disable SARIF report (default: false)
+        sarif.required.set(true)
+        sarif.outputLocation.set(file("build/reports/detekt.sarif"))
+
+        custom {
+            // The simple class name of your custom report.
+            reportId = "CustomJsonReport"
+            outputLocation.set(file("build/reports/detekt.json"))
+        }
+    }
 }
