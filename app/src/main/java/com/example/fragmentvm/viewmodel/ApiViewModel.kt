@@ -8,6 +8,7 @@ import com.example.fragmentvm.App
 import com.example.fragmentvm.model.BackendResponse
 import com.example.fragmentvm.repository.DataStoreRepositoryImpl
 import com.example.fragmentvm.repository.RepositoryRetrofit
+import com.example.fragmentvm.utils.SingleLiveEvent
 import com.example.fragmentvm.utils.Util.Companion.skipFirst
 import com.example.fragmentvm.utils.Validator
 import com.google.gson.Gson
@@ -21,12 +22,13 @@ import javax.inject.Inject
 
 class ApiViewModel : ViewModel() {
     private var _isSuccessRequest = MutableLiveData<Boolean>()
-    val isSuccessRequest: LiveData<Boolean>
-        get() = _isSuccessRequest
+    fun getIsSuccessRequest(): LiveData<Boolean> = _isSuccessRequest
 
-    private var _errorLiveData = MutableLiveData<BackendResponse>()
-    val errorLiveData: LiveData<BackendResponse>
-        get() = _errorLiveData
+    private var _errorLiveData = SingleLiveEvent<BackendResponse>()
+    fun getErrorLiveData(): SingleLiveEvent<BackendResponse> = _errorLiveData
+
+    private var _isValidApiKey = MutableLiveData<Boolean>()
+    fun getIsValidApiKey(): LiveData<Boolean> = _isValidApiKey.skipFirst()
 
     @Inject
     lateinit var repositoryRetrofit: RepositoryRetrofit
@@ -34,9 +36,6 @@ class ApiViewModel : ViewModel() {
     @Inject
     lateinit var ds: DataStoreRepositoryImpl
 
-    private var _isValidApiKey = MutableLiveData<Boolean>()
-    val isValidApiKey: LiveData<Boolean>
-        get() = _isValidApiKey.skipFirst()
 
     init {
         App.instance().appGraph.embed(this)
@@ -72,7 +71,8 @@ class ApiViewModel : ViewModel() {
                     try {
                         val error: BackendResponse =
                             adapter.fromJson(body?.string())
-                        _errorLiveData.value = error
+//                        _errorLiveData.value = error
+                        _errorLiveData.postValue(error)
                     } catch (e: IOException) {
                         Timber.e(e)
                     }
