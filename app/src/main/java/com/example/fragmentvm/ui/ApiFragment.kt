@@ -66,7 +66,7 @@ class ApiFragment : Fragment() {
     }
 
     private fun initViewModelObservers() {
-        viewModel.isValidApiKey.observe(viewLifecycleOwner) {
+        viewModel.getIsValidApiKey().observe(viewLifecycleOwner) {
             btnNext.isEnabled = it
             tilApiKey.isErrorEnabled = !it
             when (it) {
@@ -75,13 +75,13 @@ class ApiFragment : Fragment() {
             }
         }
 
-        viewModel.errorLiveData.observe(viewLifecycleOwner) {
+        viewModel.getErrorLiveData().observe(viewLifecycleOwner) {
             when (it.status) {
                 401 -> showDialog(it.message)
             }
         }
 
-        viewModel.isSuccessRequest.observe(viewLifecycleOwner) {
+        viewModel.getIsSuccessRequest().observe(viewLifecycleOwner) {
             if (it) navigateMainFragment()
         }
     }
