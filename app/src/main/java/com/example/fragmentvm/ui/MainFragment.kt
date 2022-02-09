@@ -66,7 +66,6 @@ class MainFragment : Fragment() {
                 if (animator is SimpleItemAnimator) {
                     animator.supportsChangeAnimations = false
                 }
-                it.layoutManager = LinearLayoutManager(requireContext())
                 it.setHasFixedSize(true)
 
                 it.adapter = adapter
