@@ -70,7 +70,7 @@ class CatAdapter(
                     })
                     .applyDefaultRequestOptions(RequestOptions().error(R.drawable.ic_error_placeholder))
                     .load(model.url)
-                    .thumbnail(0.5f)
+                    .thumbnail()
                     .centerCrop()
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .transition(DrawableTransitionOptions().crossFade())

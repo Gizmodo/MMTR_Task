@@ -7,7 +7,7 @@ plugins {
 }
 
 ext.versionMajor = 1
-ext.versionMinor = 0
+ext.versionMinor = 1
 ext.versionPatch = 0
 
 @SuppressWarnings('GrMethodMayBeStatic')
