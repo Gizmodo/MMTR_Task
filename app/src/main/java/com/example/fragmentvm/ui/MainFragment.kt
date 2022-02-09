@@ -63,7 +63,6 @@ class MainFragment : Fragment() {
                 if (animator is SimpleItemAnimator) {
                     animator.supportsChangeAnimations = false
                 }
-                it.layoutManager = LinearLayoutManager(requireContext())
                 it.setHasFixedSize(true)
                 adapter = CatAdapter(
                     cats,
