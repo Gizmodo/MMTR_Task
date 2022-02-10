@@ -9,9 +9,8 @@ import com.example.fragmentvm.model.BackendResponse
 import com.example.fragmentvm.model.Payload
 import com.example.fragmentvm.repository.DataStoreRepositoryImpl
 import com.example.fragmentvm.repository.RepositoryRetrofit
-import com.example.fragmentvm.utils.CombinedLiveData
-import com.example.fragmentvm.utils.Util.Companion.skipFirst
-import com.example.fragmentvm.utils.Validator
+import com.example.fragmentvm.utils.Util
+import com.example.fragmentvm.utils.Util.skipFirst
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
 import kotlinx.coroutines.launch
@@ -20,7 +19,6 @@ import okio.IOException
 import retrofit2.HttpException
 import timber.log.Timber
 import javax.inject.Inject
-
 
 class LoginViewModel : ViewModel() {
 
@@ -72,19 +70,19 @@ class LoginViewModel : ViewModel() {
     }
 
     private var _combined: LiveData<Boolean> =
-        CombinedLiveData.combine(_isValidEmail, _isValidDescription)
+        Util.combine(_isValidEmail, _isValidDescription)
         { left, right ->
             return@combine left.and(right)
         }
 
     fun updateEmail(data: String) {
-        val isValidEmail = Validator.isEmailValid(data)
+        val isValidEmail = Util.isEmailValid(data)
         if (isValidEmail) viewModelScope.launch { ds.putString("email", data) }
         _isValidEmail.postValue(isValidEmail)
     }
 
     fun updateDescription(data: String) {
-        val isValidDescription = Validator.isNotEmpty(data)
+        val isValidDescription = Util.isNotEmpty(data)
         if (isValidDescription) viewModelScope.launch { ds.putString("description", data) }
         _isValidDescription.postValue(isValidDescription)
     }

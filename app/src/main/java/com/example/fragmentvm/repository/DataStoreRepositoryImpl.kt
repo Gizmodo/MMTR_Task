@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.first
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -45,7 +46,7 @@ class DataStoreRepositoryImpl @Inject constructor(private val context: Context) 
             val preferences = context.dataStore.data.first()
             preferences[preferencesKey]
         } catch (e: Exception) {
-            e.printStackTrace()
+            Timber.e(e)
             null
         }
     }
@@ -56,7 +57,7 @@ class DataStoreRepositoryImpl @Inject constructor(private val context: Context) 
             val preferences = context.dataStore.data.first()
             preferences[preferencesKey]
         } catch (e: Exception) {
-            e.printStackTrace()
+            Timber.e(e)
             null
         }
     }
@@ -67,7 +68,7 @@ class DataStoreRepositoryImpl @Inject constructor(private val context: Context) 
             val preferences = context.dataStore.data.first()
             preferences[preferencesKey]
         } catch (e: java.lang.Exception) {
-            e.printStackTrace()
+            Timber.e(e)
             null
         }
     }
