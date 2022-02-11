@@ -8,7 +8,7 @@ import com.example.fragmentvm.App
 import com.example.fragmentvm.model.BackendResponse
 import com.example.fragmentvm.model.Cat
 import com.example.fragmentvm.model.VotePayload
-import com.example.fragmentvm.repository.DataStoreRepositoryImpl
+import com.example.fragmentvm.repository.data.DataStoreRepository
 import com.example.fragmentvm.repository.RepositoryRetrofit
 import com.example.fragmentvm.utils.StateUIMain
 import com.example.fragmentvm.utils.StateUIVote
@@ -44,7 +44,7 @@ class MainViewModel : ViewModel() {
     lateinit var retrofit: RepositoryRetrofit
 
     @Inject
-    lateinit var ds: DataStoreRepositoryImpl
+    lateinit var ds: DataStoreRepository
 
     private var _cats = MutableLiveData<List<Cat>>()
     val cats: LiveData<List<Cat>>

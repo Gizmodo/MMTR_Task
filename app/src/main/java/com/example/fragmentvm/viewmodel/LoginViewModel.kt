@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.fragmentvm.App
 import com.example.fragmentvm.model.BackendResponse
 import com.example.fragmentvm.model.Payload
-import com.example.fragmentvm.repository.DataStoreRepositoryImpl
+import com.example.fragmentvm.repository.data.DataStoreRepository
 import com.example.fragmentvm.repository.RepositoryRetrofit
 import com.example.fragmentvm.utils.Util
 import com.example.fragmentvm.utils.Util.skipFirst
@@ -36,7 +36,7 @@ class LoginViewModel : ViewModel() {
     }
 
     @Inject
-    lateinit var ds: DataStoreRepositoryImpl
+    lateinit var ds: DataStoreRepository
 
     @Inject
     lateinit var repositoryRetrofit: RepositoryRetrofit
