@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.example.fragmentvm.databinding.MainActivityBinding
-import com.example.fragmentvm.repository.DataStoreRepositoryImpl
+import com.example.fragmentvm.repository.data.DataStoreRepository
 import com.example.fragmentvm.ui.LoginFragmentDirections
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: MainActivityBinding
 
     @Inject
-    lateinit var ds: DataStoreRepositoryImpl
+    lateinit var ds: DataStoreRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -23,8 +23,9 @@ class DetailFragment : Fragment() {
     private val model: SharedViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
     ): View {
         binding = DetailFragmentBinding.inflate(inflater, container, false)
         return binding.root
@@ -41,5 +42,4 @@ class DetailFragment : Fragment() {
             Glide.with(imgDetail).load(it.url).into(imgDetail)
         }
     }
-
 }
