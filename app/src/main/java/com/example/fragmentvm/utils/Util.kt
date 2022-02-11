@@ -9,38 +9,66 @@ import com.google.android.material.textfield.TextInputEditText
 import io.reactivex.rxjava3.core.Observable
 import java.util.concurrent.TimeUnit
 
-class Util {
-    companion object {
-        fun <T> LiveData<T>.skipFirst(): MutableLiveData<T> {
-            val result = MediatorLiveData<T>()
-            var isFirst = true
-            result.addSource(this) {
-                when (isFirst) {
-                    true -> isFirst = false
-                    false -> result.value = it
-                }
-            }
-            return result
+object Util {
+    private const val EMAIL_REGEX = "^[A-Za-z](.*)([@])(.+)(\\.)(.+)"
+
+    fun isEmailValid(email: String): Boolean {
+        return EMAIL_REGEX.toRegex().matches(email)
+    }
+
+    fun isNotEmpty(description: String): Boolean {
+        return description.isNotEmpty()
+    }
+
+    fun <Left, Right, Result> combine(
+        leftLiveData: LiveData<Left>,
+        rightLiveData: LiveData<Right>,
+        merge: (leftValue: Left, rightValue: Right) -> Result,
+    ): LiveData<Result> {
+        val mediator = MediatorLiveData<Result>()
+
+        fun combineLatestData() {
+            val leftValue = leftLiveData.value ?: return
+            val rightValue = rightLiveData.value ?: return
+            val result = merge(leftValue, rightValue)
+            mediator.value = result!!
         }
 
-        fun toObservable(editText: TextInputEditText): Observable<String> {
-            val observable = Observable.create<String> { emitter ->
-                val textWatcher = object : TextWatcher {
-                    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+        mediator.addSource(leftLiveData) { combineLatestData() }
+        mediator.addSource(rightLiveData) { combineLatestData() }
 
-                    override fun onTextChanged(s: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                        s?.toString()?.let { emitter.onNext(it) }
-                    }
+        return mediator
+    }
 
-                    override fun afterTextChanged(p0: Editable?) {}
-                }
-                editText.addTextChangedListener(textWatcher)
-                emitter.setCancellable {
-                    editText.removeTextChangedListener(textWatcher)
-                }
+    fun <T> LiveData<T>.skipFirst(): MutableLiveData<T> {
+        val result = MediatorLiveData<T>()
+        var isFirst = true
+        result.addSource(this) {
+            when (isFirst) {
+                true -> isFirst = false
+                false -> result.value = it
             }
-
-            return observable.debounce(50, TimeUnit.MILLISECONDS)
         }
+        return result
+    }
+
+    fun toObservable(editText: TextInputEditText): Observable<String> {
+        val observable = Observable.create<String> { emitter ->
+            val textWatcher = object : TextWatcher {
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+
+                override fun onTextChanged(s: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    s?.toString()?.let { emitter.onNext(it) }
+                }
+
+                override fun afterTextChanged(p0: Editable?) {}
+            }
+            editText.addTextChangedListener(textWatcher)
+            emitter.setCancellable {
+                editText.removeTextChangedListener(textWatcher)
+            }
+        }
+
+        return observable.debounce(50, TimeUnit.MILLISECONDS)
     }
 }

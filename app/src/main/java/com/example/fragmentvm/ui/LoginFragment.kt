@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.fragmentvm.R
 import com.example.fragmentvm.databinding.LoginFragmentBinding
-import com.example.fragmentvm.utils.Util.Companion.toObservable
+import com.example.fragmentvm.utils.Util.toObservable
 import com.example.fragmentvm.viewmodel.LoginViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
@@ -19,7 +19,6 @@ import io.reactivex.rxjava3.core.BackpressureStrategy
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
-
 
 class LoginFragment : Fragment() {
 
@@ -45,7 +44,8 @@ class LoginFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
         binding = LoginFragmentBinding.inflate(inflater, container, false)

@@ -6,11 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fragmentvm.App
 import com.example.fragmentvm.model.BackendResponse
-import com.example.fragmentvm.repository.DataStoreRepositoryImpl
 import com.example.fragmentvm.repository.RepositoryRetrofit
+import com.example.fragmentvm.repository.data.DataStoreRepository
 import com.example.fragmentvm.utils.SingleLiveEvent
-import com.example.fragmentvm.utils.Util.Companion.skipFirst
-import com.example.fragmentvm.utils.Validator
+import com.example.fragmentvm.utils.Util
+import com.example.fragmentvm.utils.Util.skipFirst
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
 import kotlinx.coroutines.launch
@@ -34,8 +34,7 @@ class ApiViewModel : ViewModel() {
     lateinit var repositoryRetrofit: RepositoryRetrofit
 
     @Inject
-    lateinit var ds: DataStoreRepositoryImpl
-
+    lateinit var ds: DataStoreRepository
 
     init {
         App.instance().appGraph.embed(this)
@@ -44,7 +43,7 @@ class ApiViewModel : ViewModel() {
     }
 
     fun updateApiKey(data: String) {
-        val isValidKey = Validator.isNotEmpty(data)
+        val isValidKey = Util.isNotEmpty(data)
         if (isValidKey) {
             viewModelScope.launch {
                 ds.putString("apikey", data)
@@ -71,7 +70,6 @@ class ApiViewModel : ViewModel() {
                     try {
                         val error: BackendResponse =
                             adapter.fromJson(body?.string())
-//                        _errorLiveData.value = error
                         _errorLiveData.postValue(error)
                     } catch (e: IOException) {
                         Timber.e(e)

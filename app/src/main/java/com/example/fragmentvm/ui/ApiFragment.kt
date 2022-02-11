@@ -11,7 +11,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.example.fragmentvm.R
 import com.example.fragmentvm.databinding.ApiFragmentBinding
-import com.example.fragmentvm.utils.Util.Companion.toObservable
+import com.example.fragmentvm.utils.Util.toObservable
 import com.example.fragmentvm.viewmodel.ApiViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
@@ -37,7 +37,8 @@ class ApiFragment : Fragment() {
     private lateinit var nav: NavController
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
         binding = ApiFragmentBinding.inflate(inflater, container, false)
