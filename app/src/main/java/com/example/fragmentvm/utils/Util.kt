@@ -10,6 +10,7 @@ import io.reactivex.rxjava3.core.Observable
 import java.util.concurrent.TimeUnit
 
 object Util {
+    const val FLAGREG: String = "flagReg"
     private const val EMAIL_REGEX = "^[A-Za-z](.*)([@])(.+)(\\.)(.+)"
 
     fun isEmailValid(email: String): Boolean {

@@ -1,15 +1,14 @@
 package com.example.fragmentvm
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.example.fragmentvm.databinding.MainActivityBinding
-import com.example.fragmentvm.repository.data.DataStoreRepository
 import com.example.fragmentvm.ui.LoginFragmentDirections
-import kotlinx.coroutines.runBlocking
+import com.example.fragmentvm.viewmodel.MainActivityVM
 import timber.log.Timber
-import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
     init {
@@ -18,22 +17,22 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: MainActivityBinding
 
-    @Inject
-    lateinit var ds: DataStoreRepository
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val model: MainActivityVM by viewModels()
         binding = MainActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         if (savedInstanceState == null) {
-            when (runBlocking { ds.getBool("flagReg") }) {
-                true -> {
-                    navHostFragment.findNavController()
-                        .navigate(LoginFragmentDirections.actionLoginFragmentToMainFragment())
+            model.getIsAlreadyRegistered().observe(this) {
+                when (it) {
+                    true -> {
+                        navHostFragment.findNavController()
+                            .navigate(LoginFragmentDirections.actionLoginFragmentToMainFragment())
+                    }
+                    else -> Timber.i("NoAction")
                 }
-                else -> Timber.i("NoAction")
             }
         }
     }
