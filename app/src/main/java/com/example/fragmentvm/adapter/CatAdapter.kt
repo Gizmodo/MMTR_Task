@@ -1,5 +1,6 @@
 package com.example.fragmentvm.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +16,7 @@ import com.example.fragmentvm.utils.GlideImpl
 import com.example.fragmentvm.utils.VotesEnum
 
 class CatAdapter(
-    private val cats: List<Cat>,
+    private val cats: MutableList<Cat>,
     private val onVoteClickListener: (
         cat: Cat,
         position: Int,
@@ -59,6 +60,13 @@ class CatAdapter(
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         val cat = cats[position]
         holder.bind(cat)
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateList(itemsList: List<Cat>) {
+        cats.clear()
+        cats.addAll(itemsList)
+        notifyDataSetChanged()
     }
 
     inner class MainViewHolder(private val binding: RvItemCatBinding) :

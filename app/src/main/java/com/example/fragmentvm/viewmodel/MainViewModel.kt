@@ -8,8 +8,8 @@ import com.example.fragmentvm.App
 import com.example.fragmentvm.model.BackendResponse
 import com.example.fragmentvm.model.Cat
 import com.example.fragmentvm.model.VotePayload
-import com.example.fragmentvm.repository.data.DataStoreRepository
 import com.example.fragmentvm.repository.RepositoryRetrofit
+import com.example.fragmentvm.repository.data.DataStoreRepository
 import com.example.fragmentvm.utils.StateUIMain
 import com.example.fragmentvm.utils.StateUIVote
 import com.example.fragmentvm.utils.VotesEnum
@@ -47,7 +47,7 @@ class MainViewModel : ViewModel() {
     lateinit var ds: DataStoreRepository
 
     private var _cats = MutableLiveData<List<Cat>>()
-    val cats: LiveData<List<Cat>>
+    val catsLiveData: LiveData<List<Cat>>
         get() = _cats
 
     fun vote(cat: Cat, vote: VotesEnum, position: Int) {
@@ -127,7 +127,6 @@ class MainViewModel : ViewModel() {
     }
 
     fun resetVoteState() {
-        Timber.d("Reset vote state")
         _stateUIVote.value = StateUIVote.Empty
     }
 }

@@ -7,9 +7,13 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.fragmentvm.R
@@ -36,7 +40,17 @@ class MainFragment : Fragment() {
     private val sharedModel: SharedViewModel by activityViewModels()
     private lateinit var nav: NavController
     private lateinit var swipe: SwipeRefreshLayout
-    private lateinit var adapter: CatAdapter
+    private lateinit var rv: RecyclerView
+    private var catAdapter = CatAdapter(mutableListOf(),
+        { cat, position, vote ->
+            viewModel.vote(cat, vote, position)
+        }, { cat ->
+            sharedModel.select(cat)
+            nav.navigate(
+                MainFragmentDirections.actionMainFragmentToDetailFragment()
+            )
+        }
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,33 +67,25 @@ class MainFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        binding = MainFragmentBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        binding = MainFragmentBinding.inflate(inflater, container, false)
+        swipe = binding.swipeLayout
+        rv = binding.recyclerview
 
-        viewModel.cats.observe(viewLifecycleOwner) { cats ->
-            swipe.isRefreshing = false
-            binding.recyclerview.also {
-                val animator = it.itemAnimator
-                if (animator is SimpleItemAnimator) {
-                    animator.supportsChangeAnimations = false
-                }
-                it.setHasFixedSize(true)
-                adapter = CatAdapter(
-                    cats,
-                    { cat, position, vote ->
-                        viewModel.vote(cat, vote, position)
-                    }, { cat ->
-                        sharedModel.select(cat)
-                        nav.navigate(
-                            MainFragmentDirections.actionMainFragmentToDetailFragment()
-                        )
-                    }
-                )
-                it.adapter = adapter
+        with(rv) {
+            val animator = itemAnimator
+            if (animator is SimpleItemAnimator) {
+                animator.supportsChangeAnimations = false
             }
+            setHasFixedSize(true)
+            adapter = catAdapter
         }
 
-        swipe = binding.swipeLayout
+        viewModel.catsLiveData.observe(viewLifecycleOwner) { cats ->
+            swipe.isRefreshing = false
+            catAdapter.updateList(cats)
+        }
+
         swipe.setOnRefreshListener {
             swipe.isRefreshing = false
             viewModel.getCats()
@@ -104,7 +110,7 @@ class MainFragment : Fragment() {
         when (state) {
             is StateUIVote.BadResponse -> {
                 showDialog(state.badResponse.message)
-                adapter.notifyItemChanged(state.badResponse.position)
+                catAdapter.notifyItemChanged(state.badResponse.position)
                 viewModel.resetVoteState()
             }
             StateUIVote.Empty -> {
@@ -157,6 +163,6 @@ class MainFragment : Fragment() {
     }
 
     private fun setVoteButton(position: Int, vote: VotesEnum) {
-        adapter.setToggle(position, vote)
+        catAdapter.setToggle(position, vote)
     }
 }
