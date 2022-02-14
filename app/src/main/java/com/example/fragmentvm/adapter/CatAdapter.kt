@@ -1,5 +1,6 @@
 package com.example.fragmentvm.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +16,7 @@ import com.example.fragmentvm.utils.GlideImpl
 import com.example.fragmentvm.utils.VotesEnum
 
 class CatAdapter(
-    private val cats: List<Cat>,
+    private val cats: MutableList<Cat>,
     private val onVoteClickListener: (
         cat: Cat,
         position: Int,
@@ -26,7 +27,8 @@ class CatAdapter(
     ) -> Unit,
 ) :
     RecyclerView.Adapter<CatAdapter.MainViewHolder>() {
-
+    private val requestOptions = RequestOptions().error(R.drawable.ic_error_placeholder)
+    private val transitionOptions = DrawableTransitionOptions().crossFade()
     override fun getItemCount() = cats.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
@@ -35,11 +37,14 @@ class CatAdapter(
         return MainViewHolder(binding)
     }
 
+    private fun isVoteDownAgain(position: Int, vote: VotesEnum): Boolean =
+        (vote.value == VotesEnum.DOWN.value && cats[position].isDisliked)
+
+    private fun isVoteUpAgain(position: Int, vote: VotesEnum): Boolean =
+        (vote.value == VotesEnum.UP.value && cats[position].isLiked)
+
     fun setToggle(position: Int, vote: VotesEnum) {
-        if (
-            (vote.value == VotesEnum.DOWN.value && cats[position].isDisliked) ||
-            (vote.value == VotesEnum.UP.value && cats[position].isLiked)
-        ) {
+        if (isVoteDownAgain(position, vote) || isVoteUpAgain(position, vote)) {
             cats[position].isDisliked = false
             cats[position].isLiked = false
         } else if (vote.value == VotesEnum.UP.value) {
@@ -57,6 +62,13 @@ class CatAdapter(
         holder.bind(cat)
     }
 
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateList(itemsList: List<Cat>) {
+        cats.clear()
+        cats.addAll(itemsList)
+        notifyDataSetChanged()
+    }
+
     inner class MainViewHolder(private val binding: RvItemCatBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -68,12 +80,12 @@ class CatAdapter(
                     .addDefaultRequestListener(GlideImpl.OnCompleted {
                         setProgressBarVisibility(View.GONE)
                     })
-                    .applyDefaultRequestOptions(RequestOptions().error(R.drawable.ic_error_placeholder))
+                    .applyDefaultRequestOptions(requestOptions)
                     .load(model.url)
                     .thumbnail()
                     .centerCrop()
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .transition(DrawableTransitionOptions().crossFade())
+                    .transition(transitionOptions)
                     .into(imgView)
 
                 with(btnVoteDown) {
@@ -93,7 +105,6 @@ class CatAdapter(
                 imgView.setOnClickListener {
                     onClickListener(model)
                 }
-
             }
         }
 

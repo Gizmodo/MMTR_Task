@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class VotePayload(
     @SerializedName("image_id")
-    val image_id: String,
+    val imageId: String,
     @SerializedName("value")
     val value: Int,
 )
