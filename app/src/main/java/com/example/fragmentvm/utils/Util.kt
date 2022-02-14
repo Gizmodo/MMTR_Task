@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit
 
 object Util {
     const val FLAGREG: String = "flagReg"
+    private const val TIMEOUT_KEYBOARD: Long = 50
     private const val EMAIL_REGEX = "^[A-Za-z](.*)([@])(.+)(\\.)(.+)"
 
     fun isEmailValid(email: String): Boolean {
@@ -70,6 +71,6 @@ object Util {
             }
         }
 
-        return observable.debounce(50, TimeUnit.MILLISECONDS)
+        return observable.debounce(TIMEOUT_KEYBOARD, TimeUnit.MILLISECONDS)
     }
 }
