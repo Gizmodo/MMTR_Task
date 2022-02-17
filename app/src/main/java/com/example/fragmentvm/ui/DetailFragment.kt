@@ -6,10 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.example.fragmentvm.databinding.DetailFragmentBinding
-import com.example.fragmentvm.utils.SharedViewModel
 
 class DetailFragment : Fragment() {
 
@@ -17,10 +16,9 @@ class DetailFragment : Fragment() {
         fun instance() = DetailFragment()
     }
 
+    private val args: DetailFragmentArgs by navArgs()
     private lateinit var binding: DetailFragmentBinding
     private lateinit var imgDetail: ImageView
-
-    private val model: SharedViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,12 +32,6 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         imgDetail = binding.imgDetail
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        model.selectedCat.observe(viewLifecycleOwner) {
-            Glide.with(imgDetail).load(it.url).into(imgDetail)
-        }
+        Glide.with(imgDetail).load(args.catUrl).into(imgDetail)
     }
 }

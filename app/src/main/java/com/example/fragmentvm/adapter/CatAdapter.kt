@@ -14,6 +14,7 @@ import com.example.fragmentvm.databinding.RvItemCatBinding
 import com.example.fragmentvm.model.Cat
 import com.example.fragmentvm.utils.GlideImpl
 import com.example.fragmentvm.utils.VotesEnum
+import com.example.fragmentvm.viewmodel.CatViewModel
 
 class CatAdapter(
     private val cats: MutableList<Cat>,
@@ -22,9 +23,7 @@ class CatAdapter(
         position: Int,
         vote: VotesEnum,
     ) -> Unit,
-    private val onClickListener: (
-        cat: Cat,
-    ) -> Unit,
+    private val onClickListener: (Cat) -> Unit,
 ) :
     RecyclerView.Adapter<CatAdapter.MainViewHolder>() {
     private val requestOptions = RequestOptions().error(R.drawable.ic_error_placeholder)
@@ -118,6 +117,8 @@ class CatAdapter(
                     onClickListener(model)
                 }
             }
+            val vm = CatViewModel()
+            vm.setCat(model)
         }
 
         private fun setProgressBarVisibility(state: Int) {

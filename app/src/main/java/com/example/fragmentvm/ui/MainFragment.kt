@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.flowWithLifecycle
@@ -20,10 +19,10 @@ import com.example.fragmentvm.R
 import com.example.fragmentvm.adapter.CatAdapter
 import com.example.fragmentvm.databinding.MainFragmentBinding
 import com.example.fragmentvm.model.BackendResponse
-import com.example.fragmentvm.utils.SharedViewModel
 import com.example.fragmentvm.utils.StateUIMain
 import com.example.fragmentvm.utils.StateUIVote
 import com.example.fragmentvm.utils.VotesEnum
+import com.example.fragmentvm.viewmodel.CatViewModel
 import com.example.fragmentvm.viewmodel.MainViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.launchIn
@@ -36,8 +35,8 @@ class MainFragment : Fragment() {
     }
 
     private lateinit var viewModel: MainViewModel
+    private lateinit var catViewModel: CatViewModel
     private lateinit var binding: MainFragmentBinding
-    private val sharedModel: SharedViewModel by activityViewModels()
     private lateinit var nav: NavController
     private lateinit var swipe: SwipeRefreshLayout
     private lateinit var rv: RecyclerView
@@ -45,10 +44,7 @@ class MainFragment : Fragment() {
         { cat, position, vote ->
             viewModel.vote(cat, vote, position)
         }, { cat ->
-            sharedModel.select(cat)
-            nav.navigate(
-                MainFragmentDirections.actionMainFragmentToDetailFragment()
-            )
+            catViewModel.setCat(cat)
         }
     )
 
@@ -68,6 +64,7 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        catViewModel = ViewModelProvider(this)[CatViewModel::class.java]
         binding = MainFragmentBinding.inflate(inflater, container, false)
         swipe = binding.swipeLayout
         rv = binding.recyclerview
@@ -85,7 +82,9 @@ class MainFragment : Fragment() {
             swipe.isRefreshing = false
             catAdapter.updateList(cats)
         }
-
+        catViewModel.getCat().observe(viewLifecycleOwner) {
+            nav.navigate(MainFragmentDirections.actionMainFragmentToDetailFragment(it.url))
+        }
         swipe.setOnRefreshListener {
             swipe.isRefreshing = false
             viewModel.getCats()
