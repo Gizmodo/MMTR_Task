@@ -57,4 +57,5 @@
     <color name="vote_active">#2D9CDB</color>
     <color name="vote_inactive">#979797</color>
     <color name="progress_indicator">#03DAC5</color>
+    <color name="navbarColor">#219653</color>
 </resources>
