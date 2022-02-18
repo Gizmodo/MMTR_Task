@@ -144,8 +144,8 @@ class LoginFragment : Fragment() {
         subscriptions.add(subscribeEdtEmail)
     }
 
-    override fun onPause() {
+    override fun onDestroy() {
         subscriptions.clear()
-        super.onPause()
+        super.onDestroy()
     }
 }
