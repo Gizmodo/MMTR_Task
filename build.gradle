@@ -1,18 +1,38 @@
 buildscript {
+    ext {
+        sdk = 32
+        retrofit = "2.9.0"
+        glide = "4.13.0"
+        okhttp = "5.0.0-alpha.4"
+        core_ktx = "1.7.0"
+        dagger = "2.41"
+        gson = "2.9.0"
+        material = "1.6.0-alpha02"
+        appcompat = "1.4.1"
+        activity_ktx = "1.4.0"
+        fragment_ktx = "1.4.1"
+        constraintlayout = "2.1.3"
+        datastore = "1.0.0"
+        lifecycle = "2.4.1"
+        coroutines = "1.6.0"
+        nav = "2.4.1"
+        timber = "5.0.1"
+        rxjava = "3.1.3"
+        rxandroid = "3.0.0"
+        swiperefreshlayout = "1.2.0-alpha01"
+    }
     repositories {
         google()
     }
     dependencies {
-        def nav_version = "2.3.5"
-        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav"
         classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.19.0"
     }
 }
-
 plugins {
     id 'com.android.application' version '7.1.0' apply false
     id 'com.android.library' version '7.1.0' apply false
-    id 'org.jetbrains.kotlin.android' version '1.6.10' apply false
+    id 'org.jetbrains.kotlin.android' version '1.6.20-M1' apply false
 }
 
 task clean(type: Delete) {
