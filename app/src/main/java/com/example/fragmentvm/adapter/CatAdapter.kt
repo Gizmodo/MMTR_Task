@@ -14,7 +14,6 @@ import com.example.fragmentvm.databinding.RvItemCatBinding
 import com.example.fragmentvm.model.Cat
 import com.example.fragmentvm.utils.GlideImpl
 import com.example.fragmentvm.utils.VotesEnum
-import com.example.fragmentvm.viewmodel.CatViewModel
 
 class CatAdapter(
     private val cats: MutableList<Cat>,
@@ -117,8 +116,6 @@ class CatAdapter(
                     onClickListener(model)
                 }
             }
-            val vm = CatViewModel()
-            vm.setCat(model)
         }
 
         private fun setProgressBarVisibility(state: Int) {
