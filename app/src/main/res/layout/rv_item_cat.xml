@@ -1,73 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    style="@style/Widget.Material3.CardView.Filled"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardBackgroundColor="@color/white"
-    app:cardCornerRadius="4dp"
-    app:cardElevation="4dp">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <data>
+
+        <variable
+            name="catViewModel"
+            type="com.example.fragmentvm.viewmodel.CatViewModel" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView xmlns:tools="http://schemas.android.com/tools"
+        style="@style/Widget.Material3.CardView.Filled"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="4dp">
 
-        <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:id="@+id/itemProgressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:indeterminate="true"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="@id/imgView"
-            app:layout_constraintEnd_toEndOf="@id/imgView"
-            app:layout_constraintStart_toStartOf="@id/imgView"
-            app:layout_constraintTop_toTopOf="@id/imgView" />
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/imgView"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="221dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="ImageContrastCheck" />
+            android:layout_height="match_parent">
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/itemProgressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@id/imgView"
+                app:layout_constraintEnd_toEndOf="@id/imgView"
+                app:layout_constraintStart_toStartOf="@id/imgView"
+                app:layout_constraintTop_toTopOf="@id/imgView" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgView"
+                android:layout_width="match_parent"
+                android:layout_height="221dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ImageContrastCheck" />
 
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnVoteUp"
-            style="@style/Theme.FragmentVM.Card"
-            android:checkable="true"
-            android:contentDescription="@string/thumbup"
-            app:icon="@drawable/ic_vote_up"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btnVoteDown"
-            app:layout_constraintTop_toBottomOf="@id/imgView"
-            tools:ignore="TouchTargetSizeCheck" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnVoteUp"
+                style="@style/Theme.FragmentVM.Card"
+                android:checkable="true"
+                android:contentDescription="@string/thumbup"
+                app:icon="@drawable/ic_vote_up"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btnVoteDown"
+                app:layout_constraintTop_toBottomOf="@id/imgView"
+                tools:ignore="TouchTargetSizeCheck" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnVoteDown"
-            style="@style/Theme.FragmentVM.Card"
-            android:checkable="true"
-            android:contentDescription="@string/thumbdown"
-            app:icon="@drawable/ic_vote_down"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btnDots"
-            app:layout_constraintTop_toBottomOf="@id/imgView"
-            tools:ignore="TouchTargetSizeCheck" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnVoteDown"
+                style="@style/Theme.FragmentVM.Card"
+                android:checkable="true"
+                android:contentDescription="@string/thumbdown"
+                app:icon="@drawable/ic_vote_down"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btnDots"
+                app:layout_constraintTop_toBottomOf="@id/imgView"
+                tools:ignore="TouchTargetSizeCheck" />
 
-        <Button
-            android:id="@+id/btnDots"
-            style="@style/Theme.FragmentVM.Card"
-            android:contentDescription="@string/dots"
-            app:icon="@drawable/ic_more_vert_24"
-            app:iconTint="@color/vote_inactive"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/imgView"
-            tools:ignore="TouchTargetSizeCheck" />
+            <Button
+                android:id="@+id/btnDots"
+                style="@style/Theme.FragmentVM.Card"
+                android:contentDescription="@string/dots"
+                app:icon="@drawable/ic_more_vert_24"
+                app:iconTint="@color/vote_inactive"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/imgView"
+                tools:ignore="TouchTargetSizeCheck" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-</com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

@@ -46,5 +46,9 @@
         android:id="@+id/detailFragment"
         android:name="com.example.fragmentvm.ui.DetailFragment"
         android:label="detail_fragment"
-        tools:layout="@layout/detail_fragment" />
+        tools:layout="@layout/detail_fragment">
+        <argument
+            android:name="catUrl"
+            app:argType="string" />
+    </fragment>
 </navigation>

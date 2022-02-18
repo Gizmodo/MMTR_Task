@@ -50,6 +50,7 @@ android {
     }
     buildFeatures {
         viewBinding true
+        dataBinding true
     }
     buildTypes {
         release {
@@ -91,10 +92,10 @@ dependencies {
     def okhttp_version = '5.0.0-alpha.4'
     def glide_version = '4.13.0'
     def dagger_version = "2.40.5"
-    def lifecycle_version = "2.4.0"
+    def lifecycle_version = "2.4.1"
     def kotlinx_coroutines_version = "1.6.0"
     def datastore_version = "1.0.0"
-    def nav_version = "2.4.0"
+    def nav_version = "2.4.1"
 
     implementation 'androidx.activity:activity-ktx:1.4.0'
     implementation 'androidx.appcompat:appcompat:1.4.1'

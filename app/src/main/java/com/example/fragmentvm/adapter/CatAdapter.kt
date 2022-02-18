@@ -22,9 +22,7 @@ class CatAdapter(
         position: Int,
         vote: VotesEnum,
     ) -> Unit,
-    private val onClickListener: (
-        cat: Cat,
-    ) -> Unit,
+    private val onClickListener: (Cat) -> Unit,
 ) :
     RecyclerView.Adapter<CatAdapter.MainViewHolder>() {
     private val requestOptions = RequestOptions().error(R.drawable.ic_error_placeholder)
@@ -43,16 +41,28 @@ class CatAdapter(
     private fun isVoteUpAgain(position: Int, vote: VotesEnum): Boolean =
         (vote.value == VotesEnum.UP.value && cats[position].isLiked)
 
+    private fun dismissVote(position: Int) {
+        cats[position].isDisliked = false
+        cats[position].isLiked = false
+    }
+
+    private fun setVoteUp(position: Int) {
+        cats[position].isLiked = true
+        cats[position].isDisliked = false
+    }
+
+    private fun setVoteDown(position: Int) {
+        cats[position].isLiked = false
+        cats[position].isDisliked = true
+    }
+
     fun setToggle(position: Int, vote: VotesEnum) {
         if (isVoteDownAgain(position, vote) || isVoteUpAgain(position, vote)) {
-            cats[position].isDisliked = false
-            cats[position].isLiked = false
+            dismissVote(position)
         } else if (vote.value == VotesEnum.UP.value) {
-            cats[position].isLiked = true
-            cats[position].isDisliked = false
+            setVoteUp(position)
         } else if (vote.value == VotesEnum.DOWN.value) {
-            cats[position].isDisliked = true
-            cats[position].isLiked = false
+            setVoteDown(position)
         }
         notifyItemChanged(position)
     }
