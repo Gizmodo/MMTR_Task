@@ -8,8 +8,8 @@ import com.example.fragmentvm.App
 import com.example.fragmentvm.model.BackendResponse
 import com.example.fragmentvm.model.Cat
 import com.example.fragmentvm.model.VotePayload
-import com.example.fragmentvm.repository.RepositoryRetrofit
 import com.example.fragmentvm.repository.data.DataStoreRepository
+import com.example.fragmentvm.repository.network.RetrofitRepository
 import com.example.fragmentvm.utils.StateUIMain
 import com.example.fragmentvm.utils.StateUIVote
 import com.example.fragmentvm.utils.VotesEnum
@@ -41,7 +41,7 @@ class MainViewModel : ViewModel() {
     }
 
     @Inject
-    lateinit var retrofit: RepositoryRetrofit
+    lateinit var retrofit: RetrofitRepository
 
     @Inject
     lateinit var ds: DataStoreRepository
@@ -55,7 +55,7 @@ class MainViewModel : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             val votePayload = VotePayload(cat.id, vote.value)
-            retrofit.postVoteWithResponse(apikey, votePayload)
+            retrofit.postVote(apikey, votePayload)
                 .subscribe({
                     if (it.isSuccessful) {
                         it.body()?.let { body ->

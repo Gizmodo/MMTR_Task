@@ -1,13 +1,14 @@
-package com.example.fragmentvm
+package com.example.fragmentvm.ui
 
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import com.example.fragmentvm.App
+import com.example.fragmentvm.R
 import com.example.fragmentvm.databinding.MainActivityBinding
-import com.example.fragmentvm.ui.LoginFragmentDirections
-import com.example.fragmentvm.viewmodel.MainActivityVM
+import com.example.fragmentvm.viewmodel.MainActivityViewModel
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
@@ -19,7 +20,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val model: MainActivityVM by viewModels()
+        val model: MainActivityViewModel by viewModels()
         binding = MainActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val navHostFragment =

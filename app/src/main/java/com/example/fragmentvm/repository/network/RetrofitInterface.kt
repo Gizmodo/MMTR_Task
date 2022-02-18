@@ -1,15 +1,14 @@
-package com.example.fragmentvm.di
+package com.example.fragmentvm.repository.network
 
 import com.example.fragmentvm.model.BackendResponse
 import com.example.fragmentvm.model.Cat
-import com.example.fragmentvm.model.Payload
+import com.example.fragmentvm.model.LoginPayload
 import com.example.fragmentvm.model.VotePayload
 import io.reactivex.rxjava3.core.Observable
 import retrofit2.Response
 import retrofit2.http.*
 
-
-interface RetroServiceInterface {
+interface RetrofitInterface {
 
     @GET("images/search")
     fun getCatsObservable(
@@ -20,7 +19,7 @@ interface RetroServiceInterface {
 
     @POST("user/passwordlesssignup")
     fun signUp(
-        @Body document: Payload,
+        @Body document: LoginPayload,
     ): Observable<BackendResponse>
 
     @GET("favourites")
@@ -30,12 +29,6 @@ interface RetroServiceInterface {
 
     @POST("votes")
     fun vote(
-        @Header("x-api-key") apiKey: String,
-        @Body document: VotePayload,
-    ): Observable<BackendResponse>
-
-    @POST("votes")
-    fun voteWithResponse(
         @Header("x-api-key") apiKey: String,
         @Body document: VotePayload,
     ): Observable<Response<BackendResponse>>

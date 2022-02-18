@@ -6,9 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fragmentvm.App
 import com.example.fragmentvm.model.BackendResponse
-import com.example.fragmentvm.model.Payload
+import com.example.fragmentvm.model.LoginPayload
 import com.example.fragmentvm.repository.data.DataStoreRepository
-import com.example.fragmentvm.repository.RepositoryRetrofit
+import com.example.fragmentvm.repository.network.RetrofitRepository
 import com.example.fragmentvm.utils.Util
 import com.example.fragmentvm.utils.Util.skipFirst
 import com.google.gson.Gson
@@ -39,7 +39,7 @@ class LoginViewModel : ViewModel() {
     lateinit var ds: DataStoreRepository
 
     @Inject
-    lateinit var repositoryRetrofit: RepositoryRetrofit
+    lateinit var retrofitRepository: RetrofitRepository
 
     private var _signUpLiveData = MutableLiveData<BackendResponse>()
     val signUpLiveData: LiveData<BackendResponse>
@@ -48,8 +48,8 @@ class LoginViewModel : ViewModel() {
     fun postRequest() {
         val desc = runBlocking { ds.getString("description") }
         val eml = runBlocking { ds.getString("email") }
-        val payload = Payload(desc.toString(), eml.toString())
-        repositoryRetrofit.postSignUp(payload)
+        val loginPayload = LoginPayload(desc.toString(), eml.toString())
+        retrofitRepository.postSignUp(loginPayload)
             .subscribe({
                 _signUpLiveData.value = it
             }, {

@@ -1,5 +1,6 @@
 package com.example.fragmentvm.di
 
+import com.example.fragmentvm.repository.network.RetrofitInterface
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
@@ -15,17 +16,17 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
-class RetroModule {
+class RetrofitModule {
 
     @Singleton
     @Provides
-    fun getRetroServiceInterface(retrofit: Retrofit): RetroServiceInterface {
-        return retrofit.create(RetroServiceInterface::class.java)
+    fun provideRetrofitInterface(retrofit: Retrofit): RetrofitInterface {
+        return retrofit.create(RetrofitInterface::class.java)
     }
 
     @Singleton
     @Provides
-    fun getRetrofitInstance(): Retrofit {
+    fun provideRetrofitInstance(): Retrofit {
         val logging = HttpLoggingInterceptor { message -> Timber.d(message) }
         logging.setLevel(HttpLoggingInterceptor.Level.BASIC)
 

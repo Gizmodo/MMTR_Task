@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fragmentvm.App
 import com.example.fragmentvm.model.BackendResponse
-import com.example.fragmentvm.repository.RepositoryRetrofit
 import com.example.fragmentvm.repository.data.DataStoreRepository
+import com.example.fragmentvm.repository.network.RetrofitRepository
 import com.example.fragmentvm.utils.SingleLiveEvent
 import com.example.fragmentvm.utils.Util
 import com.example.fragmentvm.utils.Util.skipFirst
@@ -31,7 +31,7 @@ class ApiViewModel : ViewModel() {
     fun getIsValidApiKey(): LiveData<Boolean> = _isValidApiKey.skipFirst()
 
     @Inject
-    lateinit var repositoryRetrofit: RepositoryRetrofit
+    lateinit var retrofitRepository: RetrofitRepository
 
     @Inject
     lateinit var ds: DataStoreRepository
@@ -54,7 +54,7 @@ class ApiViewModel : ViewModel() {
 
     fun sendRequest() {
         val apikey = runBlocking { ds.getString("apikey") }
-        repositoryRetrofit.getFavourites(apikey.toString())
+        retrofitRepository.getFavourites(apikey.toString())
             .subscribe({
                 viewModelScope.launch {
                     ds.putBool("flagReg", true)
