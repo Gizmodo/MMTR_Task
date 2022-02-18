@@ -8,7 +8,7 @@ import com.example.fragmentvm.utils.Util.FLAGREG
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
-class MainActivityVM : ViewModel() {
+class MainActivityViewModel : ViewModel() {
     @Inject
     lateinit var dataStore: DataStoreRepository
 

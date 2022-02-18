@@ -29,5 +29,6 @@
         <item name="colorPrimaryInverse">@color/md_theme_light_primaryInverse</item>
         <item name="circularProgressIndicatorStyle">@style/Widget.App.CircularProgressIndicator
         </item>
+        <item name="android:navigationBarColor">@color/navbarColor</item>
     </style>
 </resources>

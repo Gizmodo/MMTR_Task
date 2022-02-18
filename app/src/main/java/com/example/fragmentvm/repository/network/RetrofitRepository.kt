@@ -1,9 +1,8 @@
-package com.example.fragmentvm.repository
+package com.example.fragmentvm.repository.network
 
-import com.example.fragmentvm.di.RetroServiceInterface
 import com.example.fragmentvm.model.BackendResponse
 import com.example.fragmentvm.model.Cat
-import com.example.fragmentvm.model.Payload
+import com.example.fragmentvm.model.LoginPayload
 import com.example.fragmentvm.model.VotePayload
 import com.example.fragmentvm.utils.RxUtils
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -14,12 +13,11 @@ import org.jetbrains.annotations.NotNull
 import retrofit2.Response
 import javax.inject.Inject
 
-
-class RepositoryRetrofit @Inject constructor(
-    private val apiService: RetroServiceInterface,
+class RetrofitRepository @Inject constructor(
+    private val apiService: RetrofitInterface,
 ) {
-    fun postSignUp(payload: Payload): @NonNull Observable<BackendResponse> {
-        return apiService.signUp(payload)
+    fun postSignUp(loginPayload: LoginPayload): @NonNull Observable<BackendResponse> {
+        return apiService.signUp(loginPayload)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
@@ -36,15 +34,10 @@ class RepositoryRetrofit @Inject constructor(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun postVoteWithResponse(
+    fun postVote(
         apiKey: String,
         votePayload: VotePayload,
     ): @NotNull Observable<Response<BackendResponse>> {
-        return apiService.voteWithResponse(apiKey, votePayload)
-            .compose(RxUtils.applyObservableScheduler())
-    }
-
-    fun postVote(apiKey: String, votePayload: VotePayload): @NotNull Observable<BackendResponse> {
         return apiService.vote(apiKey, votePayload)
             .compose(RxUtils.applyObservableScheduler())
     }
