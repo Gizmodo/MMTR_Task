@@ -1,10 +1,10 @@
 package com.example.fragmentvm.di
 
-import com.example.fragmentvm.ui.MainActivity
-import com.example.fragmentvm.viewmodel.ApiViewModel
-import com.example.fragmentvm.viewmodel.LoginViewModel
-import com.example.fragmentvm.viewmodel.MainActivityViewModel
-import com.example.fragmentvm.viewmodel.MainViewModel
+import com.example.fragmentvm.MainActivity
+import com.example.fragmentvm.MainActivityViewModel
+import com.example.fragmentvm.screen.api.ApiViewModel
+import com.example.fragmentvm.screen.login.LoginViewModel
+import com.example.fragmentvm.screen.main.MainViewModel
 import dagger.Component
 import javax.inject.Singleton
 

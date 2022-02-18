@@ -6,7 +6,7 @@
 
         <variable
             name="catViewModel"
-            type="com.example.fragmentvm.viewmodel.CatViewModel" />
+            type="com.example.fragmentvm.screen.main.CatViewModel" />
     </data>
 
     <com.google.android.material.card.MaterialCardView xmlns:tools="http://schemas.android.com/tools"
