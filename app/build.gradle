@@ -88,7 +88,6 @@ detekt {
     setSource(files(projectDir))
 }
 dependencies {
-
     implementation "androidx.core:core-ktx:$core_ktx"
     implementation "androidx.appcompat:appcompat:$appcompat"
     implementation "com.google.android.material:material:$material"

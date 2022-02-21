@@ -5,17 +5,18 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fragmentvm.App
-import ru.mmtr.data.api.network.data.DataStoreRepository
+import com.example.fragmentvm.data.DataStoreRepository
+import com.example.fragmentvm.model.BackendResponse
+import com.example.fragmentvm.network.RetrofitRepository
+import com.example.fragmentvm.utils.SingleLiveEvent
+import com.example.fragmentvm.utils.Util
+import com.example.fragmentvm.utils.Util.skipFirst
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okio.IOException
 import retrofit2.HttpException
-import ru.mmtr.domain.model.BackendResponse
-import ru.mmtr.domain.utils.SingleLiveEvent
-import ru.mmtr.domain.utils.Util
-import ru.mmtr.domain.utils.Util.skipFirst
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -30,7 +31,7 @@ class ApiViewModel : ViewModel() {
     fun getIsValidApiKey(): LiveData<Boolean> = _isValidApiKey.skipFirst()
 
     @Inject
-    lateinit var retrofitRepository: ru.mmtr.data.api.network.RetrofitRepository
+    lateinit var retrofitRepository: RetrofitRepository
 
     @Inject
     lateinit var ds: DataStoreRepository

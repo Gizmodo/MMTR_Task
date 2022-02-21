@@ -1,7 +1,7 @@
 package com.example.fragmentvm.di
 
-import com.example.fragmentvm.MainActivity
-import com.example.fragmentvm.MainActivityViewModel
+import com.example.fragmentvm.screen.MainActivity
+import com.example.fragmentvm.screen.MainActivityViewModel
 import com.example.fragmentvm.screen.api.ApiViewModel
 import com.example.fragmentvm.screen.login.LoginViewModel
 import com.example.fragmentvm.screen.main.MainViewModel
