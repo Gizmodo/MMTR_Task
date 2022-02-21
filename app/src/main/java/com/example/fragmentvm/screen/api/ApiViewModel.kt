@@ -8,6 +8,8 @@ import com.example.fragmentvm.App
 import com.example.fragmentvm.data.DataStoreRepository
 import com.example.fragmentvm.model.BackendResponse
 import com.example.fragmentvm.network.RetrofitRepository
+import com.example.fragmentvm.utils.Constants.DataStore.KEY_API
+import com.example.fragmentvm.utils.Constants.DataStore.KEY_FLAGREG
 import com.example.fragmentvm.utils.SingleLiveEvent
 import com.example.fragmentvm.utils.Util
 import com.example.fragmentvm.utils.Util.skipFirst
@@ -45,19 +47,19 @@ class ApiViewModel : ViewModel() {
         val isValidKey = Util.isNotEmpty(data)
         if (isValidKey) {
             viewModelScope.launch {
-                ds.putString("apikey", data)
+                ds.putString(KEY_API, data)
             }
         }
         _isValidApiKey.postValue(isValidKey)
     }
 
     fun sendRequest() {
-        val apikey = runBlocking { ds.getString("apikey") }
+        val apikey = runBlocking { ds.getString(KEY_API) }
         retrofitRepository.getFavourites(apikey.toString())
             .observeOn(Schedulers.io())
             .subscribe({
                 viewModelScope.launch {
-                    ds.putBool("flagReg", true)
+                    ds.putBool(KEY_FLAGREG, true)
                 }
                 _isSuccessRequest.postValue(true)
             }, {

@@ -1,6 +1,7 @@
 package com.example.fragmentvm.di
 
 import com.example.fragmentvm.network.RetrofitInterface
+import com.example.fragmentvm.utils.Constants.Network.BASE_URL
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
@@ -53,7 +54,7 @@ class RetrofitModule {
             .build()
 
         return Retrofit.Builder()
-            .baseUrl("https://api.thecatapi.com/v1/")
+            .baseUrl(BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .addCallAdapterFactory(RxJava3CallAdapterFactory.create())

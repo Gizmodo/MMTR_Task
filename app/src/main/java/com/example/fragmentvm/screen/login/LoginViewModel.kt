@@ -9,6 +9,8 @@ import com.example.fragmentvm.data.DataStoreRepository
 import com.example.fragmentvm.model.BackendResponse
 import com.example.fragmentvm.model.LoginPayload
 import com.example.fragmentvm.network.RetrofitRepository
+import com.example.fragmentvm.utils.Constants.DataStore.KEY_DESCRIPTION
+import com.example.fragmentvm.utils.Constants.DataStore.KEY_EMAIL
 import com.example.fragmentvm.utils.Util
 import com.example.fragmentvm.utils.Util.skipFirst
 import com.google.gson.Gson
@@ -45,8 +47,8 @@ class LoginViewModel : ViewModel() {
         get() = _signUpLiveData
 
     fun postRequest() {
-        val desc = runBlocking { ds.getString("description") }
-        val eml = runBlocking { ds.getString("email") }
+        val desc = runBlocking { ds.getString(KEY_DESCRIPTION) }
+        val eml = runBlocking { ds.getString(KEY_EMAIL) }
         val loginPayload = LoginPayload(desc.toString(), eml.toString())
         retrofitRepository.postSignUp(loginPayload)
             .observeOn(Schedulers.io())
@@ -77,13 +79,13 @@ class LoginViewModel : ViewModel() {
 
     fun updateEmail(data: String) {
         val isValidEmail = Util.isEmailValid(data)
-        if (isValidEmail) viewModelScope.launch { ds.putString("email", data) }
+        if (isValidEmail) viewModelScope.launch { ds.putString(KEY_EMAIL, data) }
         _isValidEmail.postValue(isValidEmail)
     }
 
     fun updateDescription(data: String) {
         val isValidDescription = Util.isNotEmpty(data)
-        if (isValidDescription) viewModelScope.launch { ds.putString("description", data) }
+        if (isValidDescription) viewModelScope.launch { ds.putString(KEY_DESCRIPTION, data) }
         _isValidDescription.postValue(isValidDescription)
     }
 }
