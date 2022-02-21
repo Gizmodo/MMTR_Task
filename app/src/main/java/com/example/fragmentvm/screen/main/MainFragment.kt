@@ -18,9 +18,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.fragmentvm.R
 import com.example.fragmentvm.adapter.CatAdapter
 import com.example.fragmentvm.databinding.MainFragmentBinding
-import ru.mmtr.domain.model.BackendResponse
-import ru.mmtr.domain.utils.StateUIMain
-import ru.mmtr.domain.utils.StateUIVote
+import com.example.fragmentvm.model.BackendResponse
+import com.example.fragmentvm.utils.StateUIMain
+import com.example.fragmentvm.utils.StateUIVote
+import com.example.fragmentvm.utils.VotesEnum
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -159,7 +160,7 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun setVoteButton(position: Int, vote: ru.mmtr.domain.utils.VotesEnum) {
+    private fun setVoteButton(position: Int, vote: VotesEnum) {
         catAdapter.setToggle(position, vote)
     }
 }

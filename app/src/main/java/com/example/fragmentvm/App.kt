@@ -5,7 +5,7 @@ import com.example.fragmentvm.di.AppGraph
 import com.example.fragmentvm.di.AppModule
 import com.example.fragmentvm.di.DaggerAppGraph
 import com.example.fragmentvm.di.RetrofitModule
-import ru.mmtr.domain.utils.LineNumberDebugTree
+import com.example.fragmentvm.utils.LineNumberDebugTree
 import timber.log.Timber
 
 class App : Application() {

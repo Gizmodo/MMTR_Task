@@ -11,14 +11,16 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.example.fragmentvm.R
 import com.example.fragmentvm.databinding.RvItemCatBinding
-import ru.mmtr.domain.model.Cat
+import com.example.fragmentvm.model.Cat
+import com.example.fragmentvm.utils.GlideImpl
+import com.example.fragmentvm.utils.VotesEnum
 
 class CatAdapter(
     private val cats: MutableList<Cat>,
     private val onVoteClickListener: (
         cat: Cat,
         position: Int,
-        vote: ru.mmtr.domain.utils.VotesEnum,
+        vote: VotesEnum,
     ) -> Unit,
     private val onClickListener: (Cat) -> Unit,
 ) :
@@ -33,11 +35,11 @@ class CatAdapter(
         return MainViewHolder(binding)
     }
 
-    private fun isVoteDownAgain(position: Int, vote: ru.mmtr.domain.utils.VotesEnum): Boolean =
-        (vote.value == ru.mmtr.domain.utils.VotesEnum.DOWN.value && cats[position].isDisliked)
+    private fun isVoteDownAgain(position: Int, vote: VotesEnum): Boolean =
+        (vote.value == VotesEnum.DOWN.value && cats[position].isDisliked)
 
-    private fun isVoteUpAgain(position: Int, vote: ru.mmtr.domain.utils.VotesEnum): Boolean =
-        (vote.value == ru.mmtr.domain.utils.VotesEnum.UP.value && cats[position].isLiked)
+    private fun isVoteUpAgain(position: Int, vote: VotesEnum): Boolean =
+        (vote.value == VotesEnum.UP.value && cats[position].isLiked)
 
     private fun dismissVote(position: Int) {
         cats[position].isDisliked = false
@@ -54,12 +56,12 @@ class CatAdapter(
         cats[position].isDisliked = true
     }
 
-    fun setToggle(position: Int, vote: ru.mmtr.domain.utils.VotesEnum) {
+    fun setToggle(position: Int, vote: VotesEnum) {
         if (isVoteDownAgain(position, vote) || isVoteUpAgain(position, vote)) {
             dismissVote(position)
-        } else if (vote.value == ru.mmtr.domain.utils.VotesEnum.UP.value) {
+        } else if (vote.value == VotesEnum.UP.value) {
             setVoteUp(position)
-        } else if (vote.value == ru.mmtr.domain.utils.VotesEnum.DOWN.value) {
+        } else if (vote.value == VotesEnum.DOWN.value) {
             setVoteDown(position)
         }
         notifyItemChanged(position)
@@ -85,7 +87,7 @@ class CatAdapter(
                 setProgressBarVisibility(View.VISIBLE)
                 Glide
                     .with(itemView.context)
-                    .addDefaultRequestListener(ru.mmtr.domain.utils.GlideImpl.OnCompleted {
+                    .addDefaultRequestListener(GlideImpl.OnCompleted {
                         setProgressBarVisibility(View.GONE)
                     })
                     .applyDefaultRequestOptions(requestOptions)
@@ -99,14 +101,14 @@ class CatAdapter(
                 with(btnVoteDown) {
                     isChecked = model.isDisliked
                     setOnClickListener {
-                        onVoteClickListener(model, adapterPosition, ru.mmtr.domain.utils.VotesEnum.DOWN)
+                        onVoteClickListener(model, adapterPosition, VotesEnum.DOWN)
                     }
                 }
 
                 with(btnVoteUp) {
                     isChecked = model.isLiked
                     setOnClickListener {
-                        onVoteClickListener(model, adapterPosition, ru.mmtr.domain.utils.VotesEnum.UP)
+                        onVoteClickListener(model, adapterPosition, VotesEnum.UP)
                     }
                 }
 

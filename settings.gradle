@@ -17,5 +17,3 @@ dependencyResolutionManagement {
 }
 rootProject.name = "FragmentVM"
 include ':app'
-include ':domain'
-include ':data'

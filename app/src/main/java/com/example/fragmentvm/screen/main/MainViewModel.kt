@@ -5,6 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fragmentvm.App
+import com.example.fragmentvm.data.DataStoreRepository
+import com.example.fragmentvm.model.BackendResponse
+import com.example.fragmentvm.model.Cat
+import com.example.fragmentvm.model.VotePayload
+import com.example.fragmentvm.network.RetrofitRepository
+import com.example.fragmentvm.utils.StateUIMain
+import com.example.fragmentvm.utils.StateUIVote
+import com.example.fragmentvm.utils.VotesEnum
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
 import kotlinx.coroutines.Dispatchers
@@ -14,12 +22,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okio.IOException
 import retrofit2.HttpException
-import ru.mmtr.data.api.network.data.DataStoreRepository
-import ru.mmtr.domain.model.BackendResponse
-import ru.mmtr.domain.model.Cat
-import ru.mmtr.domain.model.VotePayload
-import ru.mmtr.domain.utils.StateUIMain
-import ru.mmtr.domain.utils.StateUIVote
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -39,7 +41,7 @@ class MainViewModel : ViewModel() {
     }
 
     @Inject
-    lateinit var retrofit: ru.mmtr.data.api.network.RetrofitRepository
+    lateinit var retrofit: RetrofitRepository
 
     @Inject
     lateinit var ds: DataStoreRepository
@@ -48,7 +50,7 @@ class MainViewModel : ViewModel() {
     val catsLiveData: LiveData<List<Cat>>
         get() = _cats
 
-    fun vote(cat: Cat, vote: ru.mmtr.domain.utils.VotesEnum, position: Int) {
+    fun vote(cat: Cat, vote: VotesEnum, position: Int) {
         _stateUIVote.value = StateUIVote.Loading
 
         viewModelScope.launch(Dispatchers.IO) {
