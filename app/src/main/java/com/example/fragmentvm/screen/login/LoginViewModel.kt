@@ -22,8 +22,8 @@ import javax.inject.Inject
 
 class LoginViewModel : ViewModel() {
 
-    private var _isValidDescription = MutableLiveData<Boolean>()
-    private var _isValidEmail = MutableLiveData<Boolean>()
+    private var _isValidDescription = MutableLiveData(false)
+    private var _isValidEmail = MutableLiveData(false)
 
     val isValidEmail: MutableLiveData<Boolean> get() = _isValidEmail.skipFirst()
     val isValidDescription: MutableLiveData<Boolean> get() = _isValidDescription.skipFirst()
@@ -31,8 +31,6 @@ class LoginViewModel : ViewModel() {
 
     init {
         App.instance().appGraph.embed(this)
-        this._isValidEmail.value = false
-        this._isValidDescription.value = false
     }
 
     @Inject

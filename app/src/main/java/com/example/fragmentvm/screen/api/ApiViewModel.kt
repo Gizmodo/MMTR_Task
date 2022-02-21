@@ -21,13 +21,13 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class ApiViewModel : ViewModel() {
-    private var _isSuccessRequest = MutableLiveData<Boolean>()
+    private var _isSuccessRequest = MutableLiveData(false)
     fun getIsSuccessRequest(): LiveData<Boolean> = _isSuccessRequest
 
     private var _errorLiveData = SingleLiveEvent<BackendResponse>()
     fun getErrorLiveData(): SingleLiveEvent<BackendResponse> = _errorLiveData
 
-    private var _isValidApiKey = MutableLiveData<Boolean>()
+    private var _isValidApiKey = MutableLiveData(false)
     fun getIsValidApiKey(): LiveData<Boolean> = _isValidApiKey.skipFirst()
 
     @Inject
@@ -38,8 +38,6 @@ class ApiViewModel : ViewModel() {
 
     init {
         App.instance().appGraph.embed(this)
-        this._isValidApiKey.value = false
-        this._isSuccessRequest.value = false
     }
 
     fun updateApiKey(data: String) {
