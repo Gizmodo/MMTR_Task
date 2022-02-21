@@ -10,6 +10,7 @@ import com.example.fragmentvm.model.BackendResponse
 import com.example.fragmentvm.model.Cat
 import com.example.fragmentvm.model.VotePayload
 import com.example.fragmentvm.network.RetrofitRepository
+import com.example.fragmentvm.utils.Constants.DataStore.KEY_API
 import com.example.fragmentvm.utils.StateUIMain
 import com.example.fragmentvm.utils.StateUIVote
 import com.example.fragmentvm.utils.VotesEnum
@@ -37,7 +38,7 @@ class MainViewModel : ViewModel() {
 
     init {
         App.instance().appGraph.embed(this)
-        apikey = runBlocking { ds.getString("apikey").toString() }
+        apikey = runBlocking { ds.getString(KEY_API).toString() }
         getCats()
     }
 
