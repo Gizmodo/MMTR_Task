@@ -10,7 +10,6 @@ import io.reactivex.rxjava3.core.Observable
 import java.util.concurrent.TimeUnit
 
 object Util {
-    const val FLAGREG: String = "flagReg"
     private const val TIMEOUT_KEYBOARD: Long = 50
     private const val EMAIL_REGEX = "^[A-Za-z](.*)([@])(.+)(\\.)(.+)"
 

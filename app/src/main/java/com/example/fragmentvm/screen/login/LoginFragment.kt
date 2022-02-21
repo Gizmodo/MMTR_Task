@@ -99,18 +99,18 @@ class LoginFragment : Fragment() {
         viewModel.isValidEmail.observe(viewLifecycleOwner) {
             tilEmail.isErrorEnabled = !it
             if (it == true) {
-                tilEmail.error = ""
+                tilEmail.error = String()
             } else {
-                tilEmail.error = "Ошибка"
+                tilEmail.error = resources.getString(R.string.error)
             }
         }
 
         viewModel.isValidDescription.observe(viewLifecycleOwner) {
             tilDescription.isErrorEnabled = !it
             if (it == true) {
-                tilDescription.error = ""
+                tilDescription.error = String()
             } else {
-                tilDescription.error = "Ошибка"
+                tilDescription.error = resources.getString(R.string.error)
             }
         }
     }

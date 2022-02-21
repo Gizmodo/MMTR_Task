@@ -15,7 +15,7 @@ import com.example.fragmentvm.utils.Util
 import com.example.fragmentvm.utils.Util.skipFirst
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
-import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okio.IOException
@@ -56,7 +56,7 @@ class ApiViewModel : ViewModel() {
     fun sendRequest() {
         val apikey = runBlocking { ds.getString(KEY_API) }
         retrofitRepository.getFavourites(apikey.toString())
-            .observeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 viewModelScope.launch {
                     ds.putBool(KEY_FLAGREG, true)

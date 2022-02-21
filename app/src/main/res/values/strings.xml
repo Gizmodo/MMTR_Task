@@ -11,4 +11,5 @@
     <string name="thumbup">Like</string>
     <string name="thumbdown">Dislike</string>
     <string name="dots">More</string>
+    <string name="error">Ошибка</string>
 </resources>

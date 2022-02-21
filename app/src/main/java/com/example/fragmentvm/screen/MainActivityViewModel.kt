@@ -3,8 +3,8 @@ package com.example.fragmentvm.screen
 import androidx.lifecycle.ViewModel
 import com.example.fragmentvm.App
 import com.example.fragmentvm.data.DataStoreRepository
+import com.example.fragmentvm.utils.Constants.DataStore.KEY_FLAGREG
 import com.example.fragmentvm.utils.SingleLiveEvent
-import com.example.fragmentvm.utils.Util.FLAGREG
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
@@ -21,7 +21,7 @@ class MainActivityViewModel : ViewModel() {
     }
 
     private fun getFlag() = runBlocking {
-        dataStore.getBool(FLAGREG).let {
+        dataStore.getBool(KEY_FLAGREG).let {
             _isAlreadyRegistered.postValue(it)
         }
     }
