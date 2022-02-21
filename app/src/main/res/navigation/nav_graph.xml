@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.example.fragmentvm.ui.LoginFragment"
+        android:name="com.example.fragmentvm.screen.login.LoginFragment"
         android:label="login_fragment"
         tools:layout="@layout/login_fragment">
         <action
@@ -21,7 +21,7 @@
     </fragment>
     <fragment
         android:id="@+id/apiFragment"
-        android:name="com.example.fragmentvm.ui.ApiFragment"
+        android:name="com.example.fragmentvm.screen.api.ApiFragment"
         android:label="api_fragment"
         tools:layout="@layout/api_fragment">
         <action
@@ -35,7 +35,7 @@
     </fragment>
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.example.fragmentvm.ui.MainFragment"
+        android:name="com.example.fragmentvm.screen.main.MainFragment"
         android:label="main_fragment"
         tools:layout="@layout/main_fragment">
         <action
@@ -44,7 +44,7 @@
     </fragment>
     <fragment
         android:id="@+id/detailFragment"
-        android:name="com.example.fragmentvm.ui.DetailFragment"
+        android:name="com.example.fragmentvm.screen.detail.DetailFragment"
         android:label="detail_fragment"
         tools:layout="@layout/detail_fragment">
         <argument

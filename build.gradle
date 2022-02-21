@@ -29,7 +29,6 @@ buildscript {
         classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.19.0"
     }
 }
-
 plugins {
     id 'com.android.application' version '7.1.0' apply false
     id 'com.android.library' version '7.1.0' apply false

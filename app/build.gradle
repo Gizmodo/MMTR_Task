@@ -83,9 +83,9 @@ detekt {
     allRules = false
     config = files("$rootDir/detekt/detekt.yml")
     baseline = file("$rootDir/detekt/baseline.xml")
-    input = files("src/main/java/com")
     debug = true
     parallel = true
+    setSource(files(projectDir))
 }
 dependencies {
 

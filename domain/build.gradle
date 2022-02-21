@@ -1,0 +1,63 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id "scabbard.gradle" version "0.5.0"
+    id 'androidx.navigation.safeargs'
+    id 'io.gitlab.arturbosch.detekt'
+}
+
+android {
+    compileSdk sdk
+
+    defaultConfig {
+        minSdk 21
+        targetSdk 32
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    buildToolsVersion '32.1.0 rc1'
+}
+scabbard {
+    enabled false
+    failOnError true
+    fullBindingGraphValidation true
+    qualifiedNames false
+    outputFormat "svg"
+}
+detekt {
+    toolVersion = "1.19.0"
+    buildUponDefaultConfig = false
+    allRules = false
+    config = files("$rootDir/detekt/detekt.yml")
+    baseline = file("$rootDir/detekt/baseline.xml")
+    setSource(files(projectDir))
+    debug = true
+    parallel = true
+}
+dependencies {
+    implementation "androidx.core:core-ktx:$core_ktx"
+    implementation "androidx.appcompat:appcompat:$appcompat"
+    implementation "com.google.android.material:material:$material"
+    implementation "com.google.code.gson:gson:$gson"
+    implementation "com.github.bumptech.glide:glide:$glide"
+    kapt "com.github.bumptech.glide:compiler:$glide"
+    implementation "io.reactivex.rxjava3:rxandroid:$rxandroid"
+    implementation "io.reactivex.rxjava3:rxjava:$rxjava"
+    implementation "com.jakewharton.timber:timber:$timber"
+}
