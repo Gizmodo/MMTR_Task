@@ -15,6 +15,7 @@ import com.example.fragmentvm.utils.StateUIVote
 import com.example.fragmentvm.utils.VotesEnum
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
+import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -56,6 +57,7 @@ class MainViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             val votePayload = VotePayload(cat.id, vote.value)
             retrofit.postVote(apikey, votePayload)
+                .observeOn(Schedulers.io())
                 .subscribe({
                     if (it.isSuccessful) {
                         it.body()?.let { body ->
@@ -110,6 +112,7 @@ class MainViewModel : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             retrofit.getCats(apikey)
+                .observeOn(Schedulers.io())
                 .subscribe(
                     {
                         if (it.isEmpty()) {

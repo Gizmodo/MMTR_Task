@@ -13,6 +13,7 @@ import com.example.fragmentvm.utils.Util
 import com.example.fragmentvm.utils.Util.skipFirst
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
+import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okio.IOException
@@ -48,6 +49,7 @@ class LoginViewModel : ViewModel() {
         val eml = runBlocking { ds.getString("email") }
         val loginPayload = LoginPayload(desc.toString(), eml.toString())
         retrofitRepository.postSignUp(loginPayload)
+            .observeOn(Schedulers.io())
             .subscribe({
                 _signUpLiveData.value = it
             }, {
