@@ -70,8 +70,8 @@ class ApiFragment : Fragment() {
             btnNext.isEnabled = it
             tilApiKey.isErrorEnabled = !it
             when (it) {
-                true -> tilApiKey.error = ""
-                false -> tilApiKey.error = "Ошибка"
+                true -> tilApiKey.error = String()
+                false -> tilApiKey.error = resources.getString(R.string.error)
             }
         }
 
