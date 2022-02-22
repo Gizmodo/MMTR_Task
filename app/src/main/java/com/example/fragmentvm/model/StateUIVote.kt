@@ -1,4 +1,4 @@
-package com.example.fragmentvm.utils
+package com.example.fragmentvm.model
 
 sealed class StateUIVote<out T> {
     object Empty : StateUIVote<Nothing>()

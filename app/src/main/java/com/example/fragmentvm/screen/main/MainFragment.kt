@@ -19,9 +19,9 @@ import com.example.fragmentvm.R
 import com.example.fragmentvm.adapter.CatAdapter
 import com.example.fragmentvm.databinding.MainFragmentBinding
 import com.example.fragmentvm.model.BackendResponse
-import com.example.fragmentvm.utils.StateUIMain
-import com.example.fragmentvm.utils.StateUIVote
-import com.example.fragmentvm.utils.VotesEnum
+import com.example.fragmentvm.model.StateUIMain
+import com.example.fragmentvm.model.StateUIVote
+import com.example.fragmentvm.model.VotesEnum
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
