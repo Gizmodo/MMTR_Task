@@ -1,10 +1,10 @@
 package com.example.fragmentvm.network
 
+import com.example.fragmentvm.utils.RxUtils
 import com.example.fragmentvm.model.BackendResponse
 import com.example.fragmentvm.model.Cat
 import com.example.fragmentvm.model.LoginPayload
 import com.example.fragmentvm.model.VotePayload
-import com.example.fragmentvm.utils.RxUtils
 import io.reactivex.rxjava3.annotations.NonNull
 import io.reactivex.rxjava3.core.Observable
 import org.jetbrains.annotations.NotNull

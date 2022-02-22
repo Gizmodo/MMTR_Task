@@ -12,6 +12,7 @@ import com.example.fragmentvm.network.RetrofitRepository
 import com.example.fragmentvm.utils.Constants.DataStore.KEY_DESCRIPTION
 import com.example.fragmentvm.utils.Constants.DataStore.KEY_EMAIL
 import com.example.fragmentvm.utils.Util
+import com.example.fragmentvm.utils.Util.isEmail
 import com.example.fragmentvm.utils.Util.skipFirst
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
@@ -78,13 +79,13 @@ class LoginViewModel : ViewModel() {
         }
 
     fun updateEmail(data: String) {
-        val isValidEmail = Util.isEmailValid(data)
+        val isValidEmail = data.isEmail()
         if (isValidEmail) viewModelScope.launch { ds.putString(KEY_EMAIL, data) }
         _isValidEmail.postValue(isValidEmail)
     }
 
     fun updateDescription(data: String) {
-        val isValidDescription = Util.isNotEmpty(data)
+        val isValidDescription = data.isNotEmpty()
         if (isValidDescription) viewModelScope.launch { ds.putString(KEY_DESCRIPTION, data) }
         _isValidDescription.postValue(isValidDescription)
     }

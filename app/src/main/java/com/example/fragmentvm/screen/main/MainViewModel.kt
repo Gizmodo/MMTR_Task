@@ -11,9 +11,9 @@ import com.example.fragmentvm.model.Cat
 import com.example.fragmentvm.model.VotePayload
 import com.example.fragmentvm.network.RetrofitRepository
 import com.example.fragmentvm.utils.Constants.DataStore.KEY_API
-import com.example.fragmentvm.utils.StateUIMain
-import com.example.fragmentvm.utils.StateUIVote
-import com.example.fragmentvm.utils.VotesEnum
+import com.example.fragmentvm.model.StateUIMain
+import com.example.fragmentvm.model.StateUIVote
+import com.example.fragmentvm.model.VotesEnum
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers

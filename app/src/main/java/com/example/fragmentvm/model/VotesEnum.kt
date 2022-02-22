@@ -1,4 +1,4 @@
-package com.example.fragmentvm.utils
+package com.example.fragmentvm.model
 
 enum class VotesEnum(val value: Int = -1) {
     UNDEFINED(-1),

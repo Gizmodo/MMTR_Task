@@ -2,6 +2,7 @@ package com.example.fragmentvm.utils
 
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,15 +12,8 @@ import java.util.concurrent.TimeUnit
 
 object Util {
     private const val TIMEOUT_KEYBOARD: Long = 50
-    private const val EMAIL_REGEX = "^[A-Za-z](.*)([@])(.+)(\\.)(.+)"
 
-    fun isEmailValid(email: String): Boolean {
-        return EMAIL_REGEX.toRegex().matches(email)
-    }
-
-    fun isNotEmpty(description: String): Boolean {
-        return description.isNotEmpty()
-    }
+    fun String.isEmail(): Boolean = Patterns.EMAIL_ADDRESS.matcher(this).matches()
 
     fun <Left, Right, Result> combine(
         leftLiveData: LiveData<Left>,

@@ -11,9 +11,9 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.example.fragmentvm.R
 import com.example.fragmentvm.databinding.RvItemCatBinding
-import com.example.fragmentvm.model.Cat
 import com.example.fragmentvm.utils.GlideImpl
-import com.example.fragmentvm.utils.VotesEnum
+import com.example.fragmentvm.model.Cat
+import com.example.fragmentvm.model.VotesEnum
 
 class CatAdapter(
     private val cats: MutableList<Cat>,

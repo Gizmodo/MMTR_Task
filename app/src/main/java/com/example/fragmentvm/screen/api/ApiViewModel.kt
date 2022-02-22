@@ -11,7 +11,6 @@ import com.example.fragmentvm.network.RetrofitRepository
 import com.example.fragmentvm.utils.Constants.DataStore.KEY_API
 import com.example.fragmentvm.utils.Constants.DataStore.KEY_FLAGREG
 import com.example.fragmentvm.utils.SingleLiveEvent
-import com.example.fragmentvm.utils.Util
 import com.example.fragmentvm.utils.Util.skipFirst
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
@@ -44,7 +43,7 @@ class ApiViewModel : ViewModel() {
     }
 
     fun updateApiKey(data: String) {
-        val isValidKey = Util.isNotEmpty(data)
+        val isValidKey = data.isNotEmpty()
         if (isValidKey) {
             viewModelScope.launch {
                 ds.putString(KEY_API, data)
