@@ -1,4 +1,4 @@
-package com.example.fragmentvm.model
+package com.example.fragmentvm.model.vote
 
 import com.google.gson.annotations.SerializedName
 

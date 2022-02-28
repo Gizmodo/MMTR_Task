@@ -1,8 +1,8 @@
-package com.example.fragmentvm.model
+package com.example.fragmentvm.model.cat
 
 import com.google.gson.annotations.SerializedName
 
-data class Cat(
+data class CatModel(
     val breeds: List<Any>,
     var height: Int,
     val id: String,

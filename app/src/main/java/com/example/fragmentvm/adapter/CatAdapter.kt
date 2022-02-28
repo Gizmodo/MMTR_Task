@@ -11,23 +11,23 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.example.fragmentvm.R
 import com.example.fragmentvm.databinding.RvItemCatBinding
+import com.example.fragmentvm.model.cat.CatModel
+import com.example.fragmentvm.model.vote.VotesEnum
 import com.example.fragmentvm.utils.GlideImpl
-import com.example.fragmentvm.model.Cat
-import com.example.fragmentvm.model.VotesEnum
 
 class CatAdapter(
-    private val cats: MutableList<Cat>,
+    private val catModels: MutableList<CatModel>,
     private val onVoteClickListener: (
-        cat: Cat,
+        catModel: CatModel,
         position: Int,
         vote: VotesEnum,
     ) -> Unit,
-    private val onClickListener: (Cat) -> Unit,
+    private val onClickListener: (CatModel) -> Unit,
 ) :
     RecyclerView.Adapter<CatAdapter.MainViewHolder>() {
     private val requestOptions = RequestOptions().error(R.drawable.ic_error_placeholder)
     private val transitionOptions = DrawableTransitionOptions().crossFade()
-    override fun getItemCount() = cats.size
+    override fun getItemCount() = catModels.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -36,24 +36,24 @@ class CatAdapter(
     }
 
     private fun isVoteDownAgain(position: Int, vote: VotesEnum): Boolean =
-        (vote.value == VotesEnum.DOWN.value && cats[position].isDisliked)
+        (vote.value == VotesEnum.DOWN.value && catModels[position].isDisliked)
 
     private fun isVoteUpAgain(position: Int, vote: VotesEnum): Boolean =
-        (vote.value == VotesEnum.UP.value && cats[position].isLiked)
+        (vote.value == VotesEnum.UP.value && catModels[position].isLiked)
 
     private fun dismissVote(position: Int) {
-        cats[position].isDisliked = false
-        cats[position].isLiked = false
+        catModels[position].isDisliked = false
+        catModels[position].isLiked = false
     }
 
     private fun setVoteUp(position: Int) {
-        cats[position].isLiked = true
-        cats[position].isDisliked = false
+        catModels[position].isLiked = true
+        catModels[position].isDisliked = false
     }
 
     private fun setVoteDown(position: Int) {
-        cats[position].isLiked = false
-        cats[position].isDisliked = true
+        catModels[position].isLiked = false
+        catModels[position].isDisliked = true
     }
 
     fun setToggle(position: Int, vote: VotesEnum) {
@@ -68,21 +68,21 @@ class CatAdapter(
     }
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
-        val cat = cats[position]
+        val cat = catModels[position]
         holder.bind(cat)
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun updateList(itemsList: List<Cat>) {
-        cats.clear()
-        cats.addAll(itemsList)
+    fun updateList(itemsList: List<CatModel>) {
+        catModels.clear()
+        catModels.addAll(itemsList)
         notifyDataSetChanged()
     }
 
     inner class MainViewHolder(private val binding: RvItemCatBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(model: Cat) {
+        fun bind(model: CatModel) {
             with(binding) {
                 setProgressBarVisibility(View.VISIBLE)
                 Glide

@@ -18,10 +18,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.fragmentvm.R
 import com.example.fragmentvm.adapter.CatAdapter
 import com.example.fragmentvm.databinding.MainFragmentBinding
-import com.example.fragmentvm.model.BackendResponse
-import com.example.fragmentvm.model.StateUIMain
-import com.example.fragmentvm.model.StateUIVote
-import com.example.fragmentvm.model.VotesEnum
+import com.example.fragmentvm.model.backend.BackendResponse
+import com.example.fragmentvm.model.states.StateMain
+import com.example.fragmentvm.model.states.StateVote
+import com.example.fragmentvm.model.vote.VotesEnum
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -104,45 +104,45 @@ class MainFragment : Fragment() {
             .launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
-    private fun handleVoteState(state: StateUIVote<BackendResponse>) {
+    private fun handleVoteState(state: StateVote<BackendResponse>) {
         when (state) {
-            is StateUIVote.BadResponse -> {
+            is StateVote.BadResponse -> {
                 showDialog(state.badResponse.message)
                 catAdapter.notifyItemChanged(state.badResponse.position)
                 viewModel.resetVoteState()
             }
-            StateUIVote.Empty -> {
+            StateVote.Empty -> {
                 Timber.d("Empty")
             }
-            is StateUIVote.Error -> {
+            is StateVote.Error -> {
                 Timber.d("Error")
             }
-            StateUIVote.Finished -> {
+            StateVote.Finished -> {
                 Timber.d("Finished")
             }
-            StateUIVote.Loading -> {
+            StateVote.Loading -> {
                 Timber.d("Loading")
             }
-            is StateUIVote.Success -> {
+            is StateVote.Success -> {
                 setVoteButton(state.item.position, state.item.vote)
                 viewModel.resetVoteState()
             }
         }
     }
 
-    private fun handleUIState(state: StateUIMain) {
+    private fun handleUIState(state: StateMain) {
         when (state) {
-            StateUIMain.Empty -> {
+            StateMain.Empty -> {
                 binding.progressBar.visibility = View.GONE
             }
-            is StateUIMain.Error -> {
+            is StateMain.Error -> {
                 Toast.makeText(context, state.t.message, Toast.LENGTH_LONG)
                     .show()
             }
-            StateUIMain.Loading -> {
+            StateMain.Loading -> {
                 binding.progressBar.visibility = View.VISIBLE
             }
-            StateUIMain.Finished -> {
+            StateMain.Finished -> {
                 binding.progressBar.visibility = View.GONE
             }
         }

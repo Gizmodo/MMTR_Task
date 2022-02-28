@@ -2,13 +2,13 @@ package com.example.fragmentvm.screen.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import com.example.fragmentvm.model.Cat
+import com.example.fragmentvm.model.cat.CatModel
 import com.example.fragmentvm.utils.SingleLiveEvent
 
 class CatViewModel : ViewModel() {
-    private val _cat = SingleLiveEvent<Cat>()
-    fun getCat(): LiveData<Cat> = _cat
-    fun setCat(item: Cat) {
-        _cat.value = item
+    private val _catModel = SingleLiveEvent<CatModel>()
+    fun getCat(): LiveData<CatModel> = _catModel
+    fun setCat(item: CatModel) {
+        _catModel.value = item
     }
 }

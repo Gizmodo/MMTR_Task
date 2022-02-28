@@ -1,8 +1,8 @@
-package com.example.fragmentvm.model
+package com.example.fragmentvm.screen.login
 
 import com.google.gson.annotations.SerializedName
 
-data class LoginPayload(
+data class LoginModel(
     @SerializedName("appDescription")
     val appDescription: String,
     @SerializedName("email")

@@ -1,4 +1,4 @@
-package com.example.fragmentvm.data
+package com.example.fragmentvm.datastore
 
 interface DataStoreRepository {
     suspend fun putString(key: String, value: String)

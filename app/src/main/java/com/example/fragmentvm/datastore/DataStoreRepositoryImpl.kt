@@ -1,4 +1,4 @@
-package com.example.fragmentvm.data
+package com.example.fragmentvm.datastore
 
 import android.content.Context
 import androidx.datastore.core.DataStore
