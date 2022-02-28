@@ -5,8 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fragmentvm.App
-import com.example.fragmentvm.data.DataStoreRepository
-import com.example.fragmentvm.model.BackendResponse
+import com.example.fragmentvm.datastore.DataStoreRepository
+import com.example.fragmentvm.model.backend.BackendResponse
 import com.example.fragmentvm.network.RetrofitRepository
 import com.example.fragmentvm.utils.Constants.DataStore.KEY_API
 import com.example.fragmentvm.utils.Constants.DataStore.KEY_FLAGREG

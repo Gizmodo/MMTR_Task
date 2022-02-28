@@ -5,9 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fragmentvm.App
-import com.example.fragmentvm.data.DataStoreRepository
-import com.example.fragmentvm.model.BackendResponse
-import com.example.fragmentvm.model.LoginPayload
+import com.example.fragmentvm.datastore.DataStoreRepository
+import com.example.fragmentvm.model.backend.BackendResponse
 import com.example.fragmentvm.network.RetrofitRepository
 import com.example.fragmentvm.utils.Constants.DataStore.KEY_DESCRIPTION
 import com.example.fragmentvm.utils.Constants.DataStore.KEY_EMAIL
@@ -50,8 +49,8 @@ class LoginViewModel : ViewModel() {
     fun postRequest() {
         val desc = runBlocking { ds.getString(KEY_DESCRIPTION) }
         val eml = runBlocking { ds.getString(KEY_EMAIL) }
-        val loginPayload = LoginPayload(desc.toString(), eml.toString())
-        retrofitRepository.postSignUp(loginPayload)
+        val loginModel = LoginModel(desc.toString(), eml.toString())
+        retrofitRepository.postSignUp(loginModel)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 _signUpLiveData.value = it

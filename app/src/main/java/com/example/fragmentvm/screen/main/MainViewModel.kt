@@ -5,15 +5,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fragmentvm.App
-import com.example.fragmentvm.data.DataStoreRepository
-import com.example.fragmentvm.model.BackendResponse
-import com.example.fragmentvm.model.Cat
-import com.example.fragmentvm.model.VotePayload
+import com.example.fragmentvm.datastore.DataStoreRepository
+import com.example.fragmentvm.model.backend.BackendResponse
+import com.example.fragmentvm.model.cat.CatModel
+import com.example.fragmentvm.model.states.StateMain
+import com.example.fragmentvm.model.states.StateVote
+import com.example.fragmentvm.model.vote.VotePayload
+import com.example.fragmentvm.model.vote.VotesEnum
 import com.example.fragmentvm.network.RetrofitRepository
 import com.example.fragmentvm.utils.Constants.DataStore.KEY_API
-import com.example.fragmentvm.model.StateUIMain
-import com.example.fragmentvm.model.StateUIVote
-import com.example.fragmentvm.model.VotesEnum
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -28,11 +28,11 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class MainViewModel : ViewModel() {
-    private val _stateUIMain = MutableStateFlow<StateUIMain>(StateUIMain.Empty)
-    fun getStateUIMain(): StateFlow<StateUIMain> = _stateUIMain
+    private val _stateUIMain = MutableStateFlow<StateMain>(StateMain.Empty)
+    fun getStateUIMain(): StateFlow<StateMain> = _stateUIMain
 
-    private val _stateUIVote = MutableStateFlow<StateUIVote<BackendResponse>>(StateUIVote.Empty)
-    fun getStateUIVote(): StateFlow<StateUIVote<BackendResponse>> = _stateUIVote
+    private val _stateUIVote = MutableStateFlow<StateVote<BackendResponse>>(StateVote.Empty)
+    fun getStateUIVote(): StateFlow<StateVote<BackendResponse>> = _stateUIVote
 
     private var apikey: String
 
@@ -48,15 +48,15 @@ class MainViewModel : ViewModel() {
     @Inject
     lateinit var ds: DataStoreRepository
 
-    private var _cats = MutableLiveData<List<Cat>>()
-    val catsLiveData: LiveData<List<Cat>>
+    private var _cats = MutableLiveData<List<CatModel>>()
+    val catsLiveData: LiveData<List<CatModel>>
         get() = _cats
 
-    fun vote(cat: Cat, vote: VotesEnum, position: Int) {
-        _stateUIVote.value = StateUIVote.Loading
+    fun vote(catModel: CatModel, vote: VotesEnum, position: Int) {
+        _stateUIVote.value = StateVote.Loading
 
         viewModelScope.launch(Dispatchers.IO) {
-            val votePayload = VotePayload(cat.id, vote.value)
+            val votePayload = VotePayload(catModel.id, vote.value)
             retrofit.postVote(apikey, votePayload)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
@@ -64,7 +64,7 @@ class MainViewModel : ViewModel() {
                         it.body()?.let { body ->
                             body.position = position
                             body.vote = vote
-                            _stateUIVote.value = StateUIVote.Success(body)
+                            _stateUIVote.value = StateVote.Success(body)
                         }
                     } else {
                         Timber.d("400")
@@ -78,10 +78,10 @@ class MainViewModel : ViewModel() {
                                     adapter.fromJson(body.string())
                                 error.position = position
                                 error.vote = vote
-                                _stateUIVote.value = StateUIVote.BadResponse(error)
+                                _stateUIVote.value = StateVote.BadResponse(error)
                             } catch (e: IOException) {
                                 Timber.e(e)
-                                _stateUIVote.value = StateUIVote.Error(e)
+                                _stateUIVote.value = StateVote.Error(e)
                             }
                         }
                     }
@@ -96,20 +96,20 @@ class MainViewModel : ViewModel() {
                                 adapter.fromJson(body?.string())
                             error.position = position
                             error.vote = vote
-                            _stateUIVote.value = StateUIVote.BadResponse(error)
+                            _stateUIVote.value = StateVote.BadResponse(error)
                         } catch (e: IOException) {
                             Timber.e(it)
-                            _stateUIVote.value = StateUIVote.Error(it)
+                            _stateUIVote.value = StateVote.Error(it)
                         }
                     }
                     Timber.e(it)
-                    _stateUIVote.value = StateUIVote.Error(it)
+                    _stateUIVote.value = StateVote.Error(it)
                 })
         }
     }
 
     fun getCats() {
-        _stateUIMain.value = StateUIMain.Loading
+        _stateUIMain.value = StateMain.Loading
 
         viewModelScope.launch(Dispatchers.IO) {
             retrofit.getCats(apikey)
@@ -117,20 +117,20 @@ class MainViewModel : ViewModel() {
                 .subscribe(
                     {
                         if (it.isEmpty()) {
-                            _stateUIMain.value = StateUIMain.Empty
+                            _stateUIMain.value = StateMain.Empty
                         } else {
-                            _stateUIMain.value = StateUIMain.Finished
+                            _stateUIMain.value = StateMain.Finished
                             _cats.postValue(it)
                         }
                     },
                     {
                         Timber.e(it)
-                        _stateUIMain.value = StateUIMain.Error(it)
+                        _stateUIMain.value = StateMain.Error(it)
                     })
         }
     }
 
     fun resetVoteState() {
-        _stateUIVote.value = StateUIVote.Empty
+        _stateUIVote.value = StateVote.Empty
     }
 }

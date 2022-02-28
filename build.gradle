@@ -2,8 +2,8 @@ buildscript {
     ext {
         sdk = 32
         retrofit = "2.9.0"
-        glide = "4.13.0"
-        okhttp = "5.0.0-alpha.4"
+        glide = '4.13.1'
+        okhttp = '5.0.0-alpha.5'
         core_ktx = "1.7.0"
         dagger = "2.41"
         gson = "2.9.0"

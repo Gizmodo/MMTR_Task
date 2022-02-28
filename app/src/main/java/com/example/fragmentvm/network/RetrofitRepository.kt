@@ -1,10 +1,10 @@
 package com.example.fragmentvm.network
 
+import com.example.fragmentvm.model.backend.BackendResponse
+import com.example.fragmentvm.model.cat.CatModel
+import com.example.fragmentvm.model.vote.VotePayload
+import com.example.fragmentvm.screen.login.LoginModel
 import com.example.fragmentvm.utils.RxUtils
-import com.example.fragmentvm.model.BackendResponse
-import com.example.fragmentvm.model.Cat
-import com.example.fragmentvm.model.LoginPayload
-import com.example.fragmentvm.model.VotePayload
 import io.reactivex.rxjava3.annotations.NonNull
 import io.reactivex.rxjava3.core.Observable
 import org.jetbrains.annotations.NotNull
@@ -14,8 +14,8 @@ import javax.inject.Inject
 class RetrofitRepository @Inject constructor(
     private val apiService: RetrofitInterface,
 ) {
-    fun postSignUp(loginPayload: LoginPayload): @NonNull Observable<BackendResponse> {
-        return apiService.signUp(loginPayload)
+    fun postSignUp(loginModel: LoginModel): @NonNull Observable<BackendResponse> {
+        return apiService.signUp(loginModel)
             .compose(RxUtils.applySubscriberScheduler())
     }
 
@@ -24,7 +24,7 @@ class RetrofitRepository @Inject constructor(
             .compose(RxUtils.applySubscriberScheduler())
     }
 
-    fun getCats(apiKey: String): @NotNull Observable<List<Cat>> {
+    fun getCats(apiKey: String): @NotNull Observable<List<CatModel>> {
         return apiService.getCatsObservable(apiKey)
             .compose(RxUtils.applySubscriberScheduler())
     }
