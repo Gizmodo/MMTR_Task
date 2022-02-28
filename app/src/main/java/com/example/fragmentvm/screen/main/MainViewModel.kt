@@ -14,15 +14,13 @@ import com.example.fragmentvm.model.vote.VotePayload
 import com.example.fragmentvm.model.vote.VotesEnum
 import com.example.fragmentvm.network.RetrofitRepository
 import com.example.fragmentvm.utils.Constants.DataStore.KEY_API
-import com.google.gson.Gson
-import com.google.gson.TypeAdapter
+import com.example.fragmentvm.utils.Util.parseResponseError
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import okio.IOException
 import retrofit2.HttpException
 import timber.log.Timber
 import javax.inject.Inject
@@ -67,37 +65,26 @@ class MainViewModel : ViewModel() {
                             _stateUIVote.value = StateVote.Success(body)
                         }
                     } else {
-                        Timber.d("400")
                         it.errorBody()?.let { body ->
                             Timber.d("Body response not null")
-                            val gson = Gson()
-                            val adapter: TypeAdapter<BackendResponse> =
-                                gson.getAdapter(BackendResponse::class.java)
                             try {
-                                val error: BackendResponse =
-                                    adapter.fromJson(body.string())
+                                val error = parseResponseError(body)
                                 error.position = position
                                 error.vote = vote
                                 _stateUIVote.value = StateVote.BadResponse(error)
-                            } catch (e: IOException) {
+                            } catch (e: Exception) {
                                 Timber.e(e)
-                                _stateUIVote.value = StateVote.Error(e)
                             }
                         }
                     }
                 }, {
                     if (it is HttpException) {
-                        val body = it.response()?.errorBody()
-                        val gson = Gson()
-                        val adapter: TypeAdapter<BackendResponse> =
-                            gson.getAdapter(BackendResponse::class.java)
                         try {
-                            val error: BackendResponse =
-                                adapter.fromJson(body?.string())
+                            val error = parseResponseError(it.response()?.errorBody())
                             error.position = position
                             error.vote = vote
                             _stateUIVote.value = StateVote.BadResponse(error)
-                        } catch (e: IOException) {
+                        } catch (e: Exception) {
                             Timber.e(it)
                             _stateUIVote.value = StateVote.Error(it)
                         }

@@ -11,15 +11,12 @@ import com.example.fragmentvm.network.RetrofitRepository
 import com.example.fragmentvm.utils.Constants.DataStore.KEY_API
 import com.example.fragmentvm.utils.Constants.DataStore.KEY_FLAGREG
 import com.example.fragmentvm.utils.SingleLiveEvent
+import com.example.fragmentvm.utils.Util.parseResponseError
 import com.example.fragmentvm.utils.Util.skipFirst
-import com.google.gson.Gson
-import com.google.gson.TypeAdapter
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import okio.IOException
 import retrofit2.HttpException
-import timber.log.Timber
 import javax.inject.Inject
 
 class ApiViewModel : ViewModel() {
@@ -64,16 +61,8 @@ class ApiViewModel : ViewModel() {
             }, {
                 _isSuccessRequest.postValue(false)
                 if (it is HttpException) {
-                    val body = it.response()?.errorBody()
-                    val gson = Gson()
-                    val adapter: TypeAdapter<BackendResponse> =
-                        gson.getAdapter(BackendResponse::class.java)
-                    try {
-                        val error: BackendResponse =
-                            adapter.fromJson(body?.string())
+                    parseResponseError(it.response()?.errorBody()).let { error ->
                         _errorLiveData.postValue(error)
-                    } catch (e: IOException) {
-                        Timber.e(e)
                     }
                 }
             })

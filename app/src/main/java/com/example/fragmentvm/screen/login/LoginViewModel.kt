@@ -12,15 +12,12 @@ import com.example.fragmentvm.utils.Constants.DataStore.KEY_DESCRIPTION
 import com.example.fragmentvm.utils.Constants.DataStore.KEY_EMAIL
 import com.example.fragmentvm.utils.Util
 import com.example.fragmentvm.utils.Util.isEmail
+import com.example.fragmentvm.utils.Util.parseResponseError
 import com.example.fragmentvm.utils.Util.skipFirst
-import com.google.gson.Gson
-import com.google.gson.TypeAdapter
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import okio.IOException
 import retrofit2.HttpException
-import timber.log.Timber
 import javax.inject.Inject
 
 class LoginViewModel : ViewModel() {
@@ -56,24 +53,15 @@ class LoginViewModel : ViewModel() {
                 _signUpLiveData.value = it
             }, {
                 if (it is HttpException) {
-                    val body = it.response()?.errorBody()
-                    val gson = Gson()
-                    val adapter: TypeAdapter<BackendResponse> =
-                        gson.getAdapter(BackendResponse::class.java)
-                    try {
-                        val error: BackendResponse =
-                            adapter.fromJson(body?.string())
+                    parseResponseError(it.response()?.errorBody())?.let { error ->
                         _signUpLiveData.value = error
-                    } catch (e: IOException) {
-                        Timber.e(e)
                     }
                 }
             })
     }
 
     private var _combined: LiveData<Boolean> =
-        Util.combine(_isValidEmail, _isValidDescription)
-        { left, right ->
+        Util.combine(_isValidEmail, _isValidDescription) { left, right ->
             return@combine left.and(right)
         }
 
