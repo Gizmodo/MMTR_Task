@@ -11,6 +11,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.example.fragmentvm.R
 import com.example.fragmentvm.databinding.ApiFragmentBinding
+import com.example.fragmentvm.utils.Constants.Network.HTTP_CODE_401
 import com.example.fragmentvm.utils.Util.toObservable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
@@ -77,7 +78,7 @@ class ApiFragment : Fragment() {
 
         viewModel.getErrorLiveData().observe(viewLifecycleOwner) {
             when (it.status) {
-                401 -> showDialog(it.message)
+                HTTP_CODE_401 -> showDialog(it.message)
             }
         }
 

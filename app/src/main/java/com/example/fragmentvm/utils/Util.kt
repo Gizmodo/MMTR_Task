@@ -6,8 +6,12 @@ import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.fragmentvm.model.backend.BackendResponse
 import com.google.android.material.textfield.TextInputEditText
+import com.google.gson.Gson
+import com.google.gson.TypeAdapter
 import io.reactivex.rxjava3.core.Observable
+import okhttp3.ResponseBody
 import java.util.concurrent.TimeUnit
 
 object Util {
@@ -63,7 +67,13 @@ object Util {
                 editText.removeTextChangedListener(textWatcher)
             }
         }
-
         return observable.debounce(TIMEOUT_KEYBOARD, TimeUnit.MILLISECONDS)
+    }
+
+    fun parseResponseError(errorBody: ResponseBody?): BackendResponse {
+        val gson = Gson()
+        val adapter: TypeAdapter<BackendResponse> =
+            gson.getAdapter(BackendResponse::class.java)
+        return adapter.fromJson(errorBody?.string())
     }
 }

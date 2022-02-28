@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.fragmentvm.R
 import com.example.fragmentvm.databinding.LoginFragmentBinding
+import com.example.fragmentvm.utils.Constants.Network.HTTP_CODE_400
 import com.example.fragmentvm.utils.Util.toObservable
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
@@ -87,7 +88,7 @@ class LoginFragment : Fragment() {
             .signUpLiveData
             .observe(viewLifecycleOwner) {
                 when (it.status) {
-                    400 -> showDialog(it.message)
+                    HTTP_CODE_400 -> showDialog(it.message)
                     else -> navigateNextFragment()
                 }
             }

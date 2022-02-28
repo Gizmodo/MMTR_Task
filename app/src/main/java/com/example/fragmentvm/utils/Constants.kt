@@ -10,5 +10,7 @@ class Constants {
 
     object Network {
         const val BASE_URL = "https://api.thecatapi.com/v1/"
+        const val HTTP_CODE_400 = 400
+        const val HTTP_CODE_401 = 401
     }
 }
