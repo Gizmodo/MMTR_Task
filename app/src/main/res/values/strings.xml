@@ -12,4 +12,5 @@
     <string name="thumbdown">Dislike</string>
     <string name="dots">More</string>
     <string name="error">Ошибка</string>
+    <string name="cat_image">Cat image</string>
 </resources>
