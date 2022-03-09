@@ -22,6 +22,7 @@ import com.example.fragmentvm.model.backend.BackendResponse
 import com.example.fragmentvm.model.states.StateMain
 import com.example.fragmentvm.model.states.StateVote
 import com.example.fragmentvm.model.vote.VotesEnum
+import com.example.fragmentvm.screen.detail.DetailBottomSheet
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -38,6 +39,7 @@ class MainFragment : Fragment() {
     private lateinit var nav: NavController
     private lateinit var swipe: SwipeRefreshLayout
     private lateinit var rv: RecyclerView
+
     private var catAdapter = CatAdapter(mutableListOf(),
         { cat, position, vote ->
             viewModel.vote(cat, vote, position)
@@ -64,8 +66,8 @@ class MainFragment : Fragment() {
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         catViewModel = ViewModelProvider(this)[CatViewModel::class.java]
         binding = MainFragmentBinding.inflate(inflater, container, false)
-        swipe = binding.swipeLayout
-        rv = binding.recyclerview
+        swipe = binding.swipeLayout!!
+        rv = binding.recyclerview!!
 
         with(rv) {
             val animator = itemAnimator
@@ -80,10 +82,12 @@ class MainFragment : Fragment() {
             swipe.isRefreshing = false
             catAdapter.updateList(cats)
         }
-        catViewModel.getCat().observe(viewLifecycleOwner) {
-            nav.navigate(MainFragmentDirections.actionMainFragmentToDetailFragment(
-                it.url))
+
+        catViewModel.getCat().observe(viewLifecycleOwner) { cat ->
+            val bottomSheet = DetailBottomSheet.instance(cat.url)
+            bottomSheet.show(parentFragmentManager, bottomSheet.toString())
         }
+
         swipe.setOnRefreshListener {
             swipe.isRefreshing = false
             viewModel.getCats()
@@ -133,17 +137,17 @@ class MainFragment : Fragment() {
     private fun handleUIState(state: StateMain) {
         when (state) {
             StateMain.Empty -> {
-                binding.progressBar.visibility = View.GONE
+                binding.progressBar!!.visibility = View.GONE
             }
             is StateMain.Error -> {
                 Toast.makeText(context, state.t.message, Toast.LENGTH_LONG)
                     .show()
             }
             StateMain.Loading -> {
-                binding.progressBar.visibility = View.VISIBLE
+                binding.progressBar!!.visibility = View.VISIBLE
             }
             StateMain.Finished -> {
-                binding.progressBar.visibility = View.GONE
+                binding.progressBar!!.visibility = View.GONE
             }
         }
     }
