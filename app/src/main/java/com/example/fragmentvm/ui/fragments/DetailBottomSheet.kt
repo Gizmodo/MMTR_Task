@@ -1,4 +1,4 @@
-package com.example.fragmentvm.screen.detail
+package com.example.fragmentvm.ui.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -24,7 +24,6 @@ class DetailBottomSheet : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?,
     ): View {
         binding = BottomSheetBinding.inflate(inflater)
-
         return binding.root
     }
 
@@ -32,7 +31,7 @@ class DetailBottomSheet : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         val url = requireArguments().getString(ARG_URL_KEY)
         binding.apply {
-            Glide.with(imgDetail).load(url).into(imgDetail)
+            Glide.with(imgDetail).load(url).centerCrop().into(imgDetail)
         }
     }
 }
