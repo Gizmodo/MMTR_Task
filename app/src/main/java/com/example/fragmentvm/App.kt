@@ -1,10 +1,10 @@
 package com.example.fragmentvm
 
 import android.app.Application
-import com.example.fragmentvm.di.AppGraph
-import com.example.fragmentvm.di.AppModule
-import com.example.fragmentvm.di.DaggerAppGraph
-import com.example.fragmentvm.di.RetrofitModule
+import com.example.fragmentvm.core.di.AppGraph
+import com.example.fragmentvm.core.di.AppModule
+import com.example.fragmentvm.core.di.DaggerAppGraph
+import com.example.fragmentvm.core.di.RetrofitModule
 import timber.log.Timber
 
 class App : Application() {
