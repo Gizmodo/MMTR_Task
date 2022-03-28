@@ -9,12 +9,13 @@ import com.example.fragmentvm.core.utils.Constants
 import com.example.fragmentvm.core.utils.Util
 import com.example.fragmentvm.data.RetrofitRepository
 import com.example.fragmentvm.data.model.cat.CatDtoMapper
+import com.example.fragmentvm.data.model.vote.VoteDtoMapper
 import com.example.fragmentvm.domain.DataStoreInterface
 import com.example.fragmentvm.domain.model.CatDomain
+import com.example.fragmentvm.domain.model.VoteDomain
 import com.example.fragmentvm.model.backend.BackendResponse
 import com.example.fragmentvm.model.states.StateMain
 import com.example.fragmentvm.model.states.StateVote
-import com.example.fragmentvm.model.vote.VotePayload
 import com.example.fragmentvm.model.vote.VotesEnum
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.Dispatchers
@@ -55,8 +56,8 @@ class MainViewModel: ViewModel() {
         _stateUIVote.value = StateVote.Loading
 
         viewModelScope.launch(Dispatchers.IO) {
-            val votePayload = VotePayload(catModel.id, vote.value)
-            retrofit.postVote(apikey, votePayload)
+            val votePayload = VoteDomain(catModel.id, vote.value)
+            retrofit.postVote(apikey, VoteDtoMapper().mapFromDomainModel(votePayload))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     if (it.isSuccessful) {

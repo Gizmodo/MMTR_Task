@@ -2,8 +2,8 @@ package com.example.fragmentvm.data
 
 import com.example.fragmentvm.data.model.cat.CatDto
 import com.example.fragmentvm.data.model.login.LoginDto
+import com.example.fragmentvm.data.model.vote.VoteDto
 import com.example.fragmentvm.model.backend.BackendResponse
-import com.example.fragmentvm.model.vote.VotePayload
 import io.reactivex.rxjava3.core.Observable
 import retrofit2.Response
 import retrofit2.http.*
@@ -30,6 +30,6 @@ interface RetrofitInterface {
     @POST("votes")
     fun vote(
         @Header("x-api-key") apiKey: String,
-        @Body document: VotePayload,
+        @Body document: VoteDto,
     ): Observable<Response<BackendResponse>>
 }
