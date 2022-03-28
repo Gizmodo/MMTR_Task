@@ -1,8 +1,8 @@
-package com.example.fragmentvm.domain
+package com.example.fragmentvm.data
 
+import com.example.fragmentvm.data.model.cat.CatDto
+import com.example.fragmentvm.data.model.login.LoginDto
 import com.example.fragmentvm.model.backend.BackendResponse
-import com.example.fragmentvm.model.cat.CatModel
-import com.example.fragmentvm.model.login.LoginModel
 import com.example.fragmentvm.model.vote.VotePayload
 import io.reactivex.rxjava3.core.Observable
 import retrofit2.Response
@@ -15,11 +15,11 @@ interface RetrofitInterface {
         @Header("x-api-key") apiKey: String,
         @Query("limit") limit: Int = 20,
         @Query("size") size: String = "small",
-    ): Observable<List<CatModel>>
+    ): Observable<List<CatDto>>
 
     @POST("user/passwordlesssignup")
     fun signUp(
-        @Body document: LoginModel,
+        @Body document: LoginDto,
     ): Observable<BackendResponse>
 
     @GET("favourites")

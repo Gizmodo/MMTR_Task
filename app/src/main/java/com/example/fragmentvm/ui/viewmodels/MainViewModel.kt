@@ -5,16 +5,17 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fragmentvm.App
-import com.example.fragmentvm.core.utils.Constants.DataStore.KEY_API
-import com.example.fragmentvm.core.utils.Util.parseResponseError
+import com.example.fragmentvm.core.utils.Constants
+import com.example.fragmentvm.core.utils.Util
+import com.example.fragmentvm.data.RetrofitRepository
+import com.example.fragmentvm.data.model.cat.CatDtoMapper
 import com.example.fragmentvm.domain.DataStoreInterface
+import com.example.fragmentvm.domain.model.CatDomain
 import com.example.fragmentvm.model.backend.BackendResponse
-import com.example.fragmentvm.model.cat.CatModel
 import com.example.fragmentvm.model.states.StateMain
 import com.example.fragmentvm.model.states.StateVote
 import com.example.fragmentvm.model.vote.VotePayload
 import com.example.fragmentvm.model.vote.VotesEnum
-import com.example.fragmentvm.data.RetrofitRepository
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +26,7 @@ import retrofit2.HttpException
 import timber.log.Timber
 import javax.inject.Inject
 
-class MainViewModel : ViewModel() {
+class MainViewModel: ViewModel() {
     private val _stateUIMain = MutableStateFlow<StateMain>(StateMain.Empty)
     fun getStateUIMain(): StateFlow<StateMain> = _stateUIMain
 
@@ -36,7 +37,7 @@ class MainViewModel : ViewModel() {
 
     init {
         App.instance().appGraph.embed(this)
-        apikey = runBlocking { ds.getString(KEY_API).toString() }
+        apikey = runBlocking { ds.getString(Constants.DataStore.KEY_API).toString() }
         getCats()
     }
 
@@ -46,11 +47,11 @@ class MainViewModel : ViewModel() {
     @Inject
     lateinit var ds: DataStoreInterface
 
-    private var _cats = MutableLiveData<List<CatModel>>()
-    val catsLiveData: LiveData<List<CatModel>>
+    private var _cats = MutableLiveData<List<CatDomain>>()
+    val catsLiveData: LiveData<List<CatDomain>>
         get() = _cats
 
-    fun vote(catModel: CatModel, vote: VotesEnum, position: Int) {
+    fun vote(catModel: CatDomain, vote: VotesEnum, position: Int) {
         _stateUIVote.value = StateVote.Loading
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -68,7 +69,7 @@ class MainViewModel : ViewModel() {
                         it.errorBody()?.let { body ->
                             Timber.d("Body response not null")
                             try {
-                                val error = parseResponseError(body)
+                                val error = Util.parseResponseError(body)
                                 error.position = position
                                 error.vote = vote
                                 _stateUIVote.value = StateVote.BadResponse(error)
@@ -80,7 +81,7 @@ class MainViewModel : ViewModel() {
                 }, {
                     if (it is HttpException) {
                         try {
-                            val error = parseResponseError(it.response()?.errorBody())
+                            val error = Util.parseResponseError(it.response()?.errorBody())
                             error.position = position
                             error.vote = vote
                             _stateUIVote.value = StateVote.BadResponse(error)
@@ -107,7 +108,7 @@ class MainViewModel : ViewModel() {
                             _stateUIMain.value = StateMain.Empty
                         } else {
                             _stateUIMain.value = StateMain.Finished
-                            _cats.postValue(it)
+                            _cats.postValue(CatDtoMapper().toDomainList(it))
                         }
                     },
                     {

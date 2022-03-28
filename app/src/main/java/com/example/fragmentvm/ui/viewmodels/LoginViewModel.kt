@@ -11,10 +11,11 @@ import com.example.fragmentvm.core.utils.Util
 import com.example.fragmentvm.core.utils.Util.isEmail
 import com.example.fragmentvm.core.utils.Util.parseResponseError
 import com.example.fragmentvm.core.utils.Util.skipFirst
-import com.example.fragmentvm.domain.DataStoreInterface
-import com.example.fragmentvm.model.backend.BackendResponse
 import com.example.fragmentvm.data.RetrofitRepository
-import com.example.fragmentvm.model.login.LoginModel
+import com.example.fragmentvm.data.model.login.LoginDtoMapper
+import com.example.fragmentvm.domain.DataStoreInterface
+import com.example.fragmentvm.domain.model.LoginDomain
+import com.example.fragmentvm.model.backend.BackendResponse
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -47,14 +48,14 @@ class LoginViewModel : ViewModel() {
     fun postRequest() {
         val desc = runBlocking { ds.getString(KEY_DESCRIPTION) }
         val eml = runBlocking { ds.getString(KEY_EMAIL) }
-        val loginModel = LoginModel(desc.toString(), eml.toString())
+        val loginModel = LoginDtoMapper().mapFromDomainModel(LoginDomain(desc.toString(), eml.toString()))
         retrofitRepository.postSignUp(loginModel)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 _signUpLiveData.value = it
             }, {
                 if (it is HttpException) {
-                    parseResponseError(it.response()?.errorBody())?.let { error ->
+                    parseResponseError(it.response()?.errorBody()).let { error ->
                         _signUpLiveData.value = error
                     }
                 }

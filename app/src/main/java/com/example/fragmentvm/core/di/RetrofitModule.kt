@@ -1,7 +1,7 @@
 package com.example.fragmentvm.core.di
 
 import com.example.fragmentvm.core.utils.Constants.Network.BASE_URL
-import com.example.fragmentvm.domain.RetrofitInterface
+import com.example.fragmentvm.data.RetrofitInterface
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides

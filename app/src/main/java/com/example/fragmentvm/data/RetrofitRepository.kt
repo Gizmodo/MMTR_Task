@@ -1,10 +1,9 @@
 package com.example.fragmentvm.data
 
 import com.example.fragmentvm.core.utils.RxUtils
-import com.example.fragmentvm.model.login.LoginModel
-import com.example.fragmentvm.domain.RetrofitInterface
+import com.example.fragmentvm.data.model.cat.CatDto
+import com.example.fragmentvm.data.model.login.LoginDto
 import com.example.fragmentvm.model.backend.BackendResponse
-import com.example.fragmentvm.model.cat.CatModel
 import com.example.fragmentvm.model.vote.VotePayload
 import io.reactivex.rxjava3.annotations.NonNull
 import io.reactivex.rxjava3.core.Observable
@@ -15,8 +14,8 @@ import javax.inject.Inject
 class RetrofitRepository @Inject constructor(
     private val apiService: RetrofitInterface,
 ) {
-    fun postSignUp(loginModel: LoginModel): @NonNull Observable<BackendResponse> {
-        return apiService.signUp(loginModel)
+    fun postSignUp(loginDto: LoginDto): @NonNull Observable<BackendResponse> {
+        return apiService.signUp(loginDto)
             .compose(RxUtils.applySubscriberScheduler())
     }
 
@@ -25,7 +24,7 @@ class RetrofitRepository @Inject constructor(
             .compose(RxUtils.applySubscriberScheduler())
     }
 
-    fun getCats(apiKey: String): @NotNull Observable<List<CatModel>> {
+    fun getCats(apiKey: String): @NotNull Observable<List<CatDto>> {
         return apiService.getCatsObservable(apiKey)
             .compose(RxUtils.applySubscriberScheduler())
     }

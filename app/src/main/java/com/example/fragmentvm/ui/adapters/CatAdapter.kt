@@ -12,17 +12,17 @@ import com.bumptech.glide.request.RequestOptions
 import com.example.fragmentvm.R
 import com.example.fragmentvm.core.utils.GlideImpl
 import com.example.fragmentvm.databinding.RvItemCatBinding
-import com.example.fragmentvm.model.cat.CatModel
+import com.example.fragmentvm.domain.model.CatDomain
 import com.example.fragmentvm.model.vote.VotesEnum
 
 class CatAdapter(
-    private val catModels: MutableList<CatModel>,
+    private val catModels: MutableList<CatDomain>,
     private val onVoteClickListener: (
-        catModel: CatModel,
+        catModel: CatDomain,
         position: Int,
         vote: VotesEnum,
     ) -> Unit,
-    private val onClickListener: (CatModel) -> Unit,
+    private val onClickListener: (CatDomain) -> Unit,
 ) :
     RecyclerView.Adapter<CatAdapter.MainViewHolder>() {
     private val requestOptions = RequestOptions().error(R.drawable.ic_error_placeholder)
@@ -73,7 +73,7 @@ class CatAdapter(
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun updateList(itemsList: List<CatModel>) {
+    fun updateList(itemsList: List<CatDomain>) {
         catModels.clear()
         catModels.addAll(itemsList)
         notifyDataSetChanged()
@@ -82,7 +82,7 @@ class CatAdapter(
     inner class MainViewHolder(private val binding: RvItemCatBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(model: CatModel) {
+        fun bind(model: CatDomain) {
             with(binding) {
                 setProgressBarVisibility(View.VISIBLE)
                 Glide
