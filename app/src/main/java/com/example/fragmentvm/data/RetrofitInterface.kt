@@ -2,7 +2,7 @@ package com.example.fragmentvm.data
 
 import com.example.fragmentvm.data.model.cat.CatDto
 import com.example.fragmentvm.data.model.login.LoginDto
-import com.example.fragmentvm.data.model.login.LoginResponseDto
+import com.example.fragmentvm.data.model.response.BackendResponseDto
 import com.example.fragmentvm.data.model.vote.VoteDto
 import com.example.fragmentvm.model.backend.BackendResponse
 import io.reactivex.rxjava3.core.Observable
@@ -21,12 +21,12 @@ interface RetrofitInterface {
     @POST("user/passwordlesssignup")
     fun signUp(
         @Body document: LoginDto,
-    ): Observable<LoginResponseDto> // TODO: продолжить
+    ): Observable<BackendResponseDto>
 
     @GET("favourites")
-    fun favourites(
+    fun getApiKey(
         @Query("api_key") apiKey: String,
-    ): Observable<List<BackendResponse>>
+    ): Observable<List<BackendResponseDto>>
 
     @POST("votes")
     fun vote(

@@ -9,15 +9,15 @@ import com.example.fragmentvm.core.utils.Constants.DataStore.KEY_DESCRIPTION
 import com.example.fragmentvm.core.utils.Constants.DataStore.KEY_EMAIL
 import com.example.fragmentvm.core.utils.Util
 import com.example.fragmentvm.core.utils.Util.isEmail
-import com.example.fragmentvm.core.utils.Util.parseResponseLoginError
+import com.example.fragmentvm.core.utils.Util.parseBackendResponseError
 import com.example.fragmentvm.core.utils.Util.skipFirst
 import com.example.fragmentvm.data.RetrofitRepository
 import com.example.fragmentvm.data.model.login.LoginDtoMapper
-import com.example.fragmentvm.data.model.login.LoginResponseDto
-import com.example.fragmentvm.data.model.login.LoginResponseDtoMapper
+import com.example.fragmentvm.data.model.response.BackendResponseDto
+import com.example.fragmentvm.data.model.response.BackendResponseDtoMapper
 import com.example.fragmentvm.domain.DataStoreInterface
+import com.example.fragmentvm.domain.model.login.BackendResponseDomain
 import com.example.fragmentvm.domain.model.login.LoginDomain
-import com.example.fragmentvm.domain.model.login.LoginResponseDomain
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -43,8 +43,8 @@ class LoginViewModel : ViewModel() {
     @Inject
     lateinit var retrofitRepository: RetrofitRepository
 
-    private var _signUpLiveData = MutableLiveData<LoginResponseDomain>()
-    val signUpLiveData: LiveData<LoginResponseDomain>
+    private var _signUpLiveData = MutableLiveData<BackendResponseDomain>()
+    val signUpLiveData: LiveData<BackendResponseDomain>
         get() = _signUpLiveData
 
     fun postRequest() {
@@ -55,12 +55,12 @@ class LoginViewModel : ViewModel() {
         retrofitRepository.postSignUp(loginModel)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                _signUpLiveData.value = LoginResponseDtoMapper().mapToDomainModel(it)
+                _signUpLiveData.value = BackendResponseDtoMapper().mapToDomainModel(it)
             }, {
                 if (it is HttpException) {
-                    parseResponseLoginError(it.response()
-                        ?.errorBody()).let { error: LoginResponseDto ->
-                        _signUpLiveData.value = LoginResponseDtoMapper().mapToDomainModel(error)
+                    parseBackendResponseError(it.response()
+                        ?.errorBody()).let { error: BackendResponseDto ->
+                        _signUpLiveData.value = BackendResponseDtoMapper().mapToDomainModel(error)
                     }
                 }
             })

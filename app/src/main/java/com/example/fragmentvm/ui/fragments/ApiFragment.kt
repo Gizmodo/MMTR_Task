@@ -95,7 +95,7 @@ class ApiFragment : Fragment() {
         tilApiKey = binding.tilApikey
 
         btnNext.setOnClickListener {
-            viewModel.sendRequest()
+            viewModel.sendApiKey()
         }
 
         btnBack.setOnClickListener {

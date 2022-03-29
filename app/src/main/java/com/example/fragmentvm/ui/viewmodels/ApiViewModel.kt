@@ -8,11 +8,13 @@ import com.example.fragmentvm.App
 import com.example.fragmentvm.core.utils.Constants.DataStore.KEY_API
 import com.example.fragmentvm.core.utils.Constants.DataStore.KEY_FLAGREG
 import com.example.fragmentvm.core.utils.SingleLiveEvent
-import com.example.fragmentvm.core.utils.Util.parseResponseError
+import com.example.fragmentvm.core.utils.Util.parseBackendResponseError
 import com.example.fragmentvm.core.utils.Util.skipFirst
 import com.example.fragmentvm.data.RetrofitRepository
+import com.example.fragmentvm.data.model.response.BackendResponseDto
+import com.example.fragmentvm.data.model.response.BackendResponseDtoMapper
 import com.example.fragmentvm.domain.DataStoreInterface
-import com.example.fragmentvm.model.backend.BackendResponse
+import com.example.fragmentvm.domain.model.login.BackendResponseDomain
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -23,8 +25,8 @@ class ApiViewModel : ViewModel() {
     private var _isSuccessRequest = MutableLiveData(false)
     fun getIsSuccessRequest(): LiveData<Boolean> = _isSuccessRequest
 
-    private var _errorLiveData = SingleLiveEvent<BackendResponse>()
-    fun getErrorLiveData(): SingleLiveEvent<BackendResponse> = _errorLiveData
+    private var _errorLiveData = SingleLiveEvent<BackendResponseDomain>()
+    fun getErrorLiveData(): SingleLiveEvent<BackendResponseDomain> = _errorLiveData
 
     private var _isValidApiKey = MutableLiveData(false)
     fun getIsValidApiKey(): LiveData<Boolean> = _isValidApiKey.skipFirst()
@@ -49,9 +51,9 @@ class ApiViewModel : ViewModel() {
         _isValidApiKey.postValue(isValidKey)
     }
 
-    fun sendRequest() {
+    fun sendApiKey() {
         val apikey = runBlocking { ds.getString(KEY_API) }
-        retrofitRepository.getFavourites(apikey.toString())
+        retrofitRepository.sendApiKey(apikey.toString())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 viewModelScope.launch {
@@ -61,10 +63,18 @@ class ApiViewModel : ViewModel() {
             }, {
                 _isSuccessRequest.postValue(false)
                 if (it is HttpException) {
-                    parseResponseError(it.response()?.errorBody()).let { error ->
-                        _errorLiveData.postValue(error)
+                    parseBackendResponseError(it.response()
+                        ?.errorBody()).let { error: BackendResponseDto ->
+                        _errorLiveData.postValue(BackendResponseDtoMapper().mapToDomainModel(error))
                     }
                 }
+
+                /*if (it is HttpException) {
+                    parseResponseLoginError(it.response()
+                        ?.errorBody()).let { error: BackendResponseDto ->
+                        _signUpLiveData.value = BackendResponseDtoMapper().mapToDomainModel(error)
+                    }
+                }*/
             })
     }
 }

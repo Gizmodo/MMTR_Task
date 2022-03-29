@@ -6,7 +6,7 @@ import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.fragmentvm.data.model.login.LoginResponseDto
+import com.example.fragmentvm.data.model.response.BackendResponseDto
 import com.example.fragmentvm.model.backend.BackendResponse
 import com.google.android.material.textfield.TextInputEditText
 import com.google.gson.Gson
@@ -78,10 +78,10 @@ object Util {
         return adapter.fromJson(errorBody?.string())
     }
 
-    fun parseResponseLoginError(errorBody: ResponseBody?): LoginResponseDto {
+    fun parseBackendResponseError(errorBody: ResponseBody?): BackendResponseDto {
         val gson = Gson()
-        val adapter: TypeAdapter<LoginResponseDto> =
-            gson.getAdapter(LoginResponseDto::class.java)
+        val adapter: TypeAdapter<BackendResponseDto> =
+            gson.getAdapter(BackendResponseDto::class.java)
         return adapter.fromJson(errorBody?.string())
     }
 }
