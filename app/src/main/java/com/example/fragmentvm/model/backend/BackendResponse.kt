@@ -1,6 +1,6 @@
 package com.example.fragmentvm.model.backend
 
-import com.example.fragmentvm.model.vote.VotesEnum
+import com.example.fragmentvm.ui.utils.VotesEnum
 
 data class BackendResponse(
     val level: String,

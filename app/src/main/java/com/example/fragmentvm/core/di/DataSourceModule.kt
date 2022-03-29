@@ -1,7 +1,7 @@
 package com.example.fragmentvm.core.di
 
-import com.example.fragmentvm.domain.DataStoreInterface
 import com.example.fragmentvm.data.DataStoreRepository
+import com.example.fragmentvm.domain.DataStoreInterface
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton

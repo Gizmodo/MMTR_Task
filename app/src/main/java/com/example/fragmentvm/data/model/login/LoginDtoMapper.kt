@@ -1,6 +1,6 @@
 package com.example.fragmentvm.data.model.login
 
-import com.example.fragmentvm.domain.model.LoginDomain
+import com.example.fragmentvm.domain.model.login.LoginDomain
 import com.example.fragmentvm.domain.utils.DomainMapper
 
 class LoginDtoMapper : DomainMapper<LoginDto, LoginDomain> {

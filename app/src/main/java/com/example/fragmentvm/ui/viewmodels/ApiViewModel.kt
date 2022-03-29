@@ -10,9 +10,9 @@ import com.example.fragmentvm.core.utils.Constants.DataStore.KEY_FLAGREG
 import com.example.fragmentvm.core.utils.SingleLiveEvent
 import com.example.fragmentvm.core.utils.Util.parseResponseError
 import com.example.fragmentvm.core.utils.Util.skipFirst
+import com.example.fragmentvm.data.RetrofitRepository
 import com.example.fragmentvm.domain.DataStoreInterface
 import com.example.fragmentvm.model.backend.BackendResponse
-import com.example.fragmentvm.data.RetrofitRepository
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking

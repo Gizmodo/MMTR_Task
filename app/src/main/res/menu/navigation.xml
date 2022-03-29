@@ -15,6 +15,5 @@
     <item
         android:id="@+id/menu_4"
         android:icon="@drawable/ic_hamburger"
-        android:title="List"
-         />
+        android:title="List" />
 </menu>

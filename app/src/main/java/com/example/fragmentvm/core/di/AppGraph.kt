@@ -17,7 +17,7 @@ import javax.inject.Singleton
     ]
 )
 interface AppGraph {
-//    fun embed(vm: MainViewModel)
+    //    fun embed(vm: MainViewModel)
     fun embed(vm: ApiViewModel)
     fun embed(vm: LoginViewModel)
     fun embed(vm: MainActivityViewModel)

@@ -14,9 +14,9 @@ import com.example.fragmentvm.domain.DataStoreInterface
 import com.example.fragmentvm.domain.model.CatDomain
 import com.example.fragmentvm.domain.model.VoteDomain
 import com.example.fragmentvm.model.backend.BackendResponse
-import com.example.fragmentvm.model.states.StateMain
-import com.example.fragmentvm.model.states.StateVote
-import com.example.fragmentvm.model.vote.VotesEnum
+import com.example.fragmentvm.ui.utils.StateMain
+import com.example.fragmentvm.ui.utils.StateVote
+import com.example.fragmentvm.ui.utils.VotesEnum
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +27,7 @@ import retrofit2.HttpException
 import timber.log.Timber
 import javax.inject.Inject
 
-class MainViewModel: ViewModel() {
+class MainViewModel : ViewModel() {
     private val _stateUIMain = MutableStateFlow<StateMain>(StateMain.Empty)
     fun getStateUIMain(): StateFlow<StateMain> = _stateUIMain
 

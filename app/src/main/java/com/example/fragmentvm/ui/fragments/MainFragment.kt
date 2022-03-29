@@ -18,10 +18,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.fragmentvm.R
 import com.example.fragmentvm.databinding.MainFragmentBinding
 import com.example.fragmentvm.model.backend.BackendResponse
-import com.example.fragmentvm.model.states.StateMain
-import com.example.fragmentvm.model.states.StateVote
-import com.example.fragmentvm.model.vote.VotesEnum
 import com.example.fragmentvm.ui.adapters.CatAdapter
+import com.example.fragmentvm.ui.utils.StateMain
+import com.example.fragmentvm.ui.utils.StateVote
+import com.example.fragmentvm.ui.utils.VotesEnum
 import com.example.fragmentvm.ui.viewmodels.CatViewModel
 import com.example.fragmentvm.ui.viewmodels.MainViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder

@@ -16,6 +16,7 @@ class DetailBottomSheet : BottomSheetDialogFragment() {
             arguments = bundleOf(ARG_URL_KEY to urlKey)
         }
     }
+
     private lateinit var binding: BottomSheetBinding
 
     override fun onCreateView(

@@ -3,6 +3,7 @@ package com.example.fragmentvm.data
 import com.example.fragmentvm.core.utils.RxUtils
 import com.example.fragmentvm.data.model.cat.CatDto
 import com.example.fragmentvm.data.model.login.LoginDto
+import com.example.fragmentvm.data.model.login.LoginResponseDto
 import com.example.fragmentvm.data.model.vote.VoteDto
 import com.example.fragmentvm.model.backend.BackendResponse
 import io.reactivex.rxjava3.annotations.NonNull
@@ -14,7 +15,7 @@ import javax.inject.Inject
 class RetrofitRepository @Inject constructor(
     private val apiService: RetrofitInterface,
 ) {
-    fun postSignUp(loginDto: LoginDto): @NonNull Observable<BackendResponse> {
+    fun postSignUp(loginDto: LoginDto): @NonNull Observable<LoginResponseDto> {
         return apiService.signUp(loginDto)
             .compose(RxUtils.applySubscriberScheduler())
     }
