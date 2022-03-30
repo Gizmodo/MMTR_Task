@@ -9,11 +9,15 @@ import com.example.fragmentvm.core.utils.Constants
 import com.example.fragmentvm.core.utils.Util
 import com.example.fragmentvm.data.RetrofitRepository
 import com.example.fragmentvm.data.model.cat.CatDtoMapper
-import com.example.fragmentvm.data.model.vote.VoteDtoMapper
+import com.example.fragmentvm.data.model.response.BackendResponseDto
+import com.example.fragmentvm.data.model.response.BackendResponseDtoMapper
+import com.example.fragmentvm.data.model.vote.request.VoteRequestMapper
+import com.example.fragmentvm.data.model.vote.response.VoteResponseDto
+import com.example.fragmentvm.data.model.vote.response.VoteResponseMapper
 import com.example.fragmentvm.domain.DataStoreInterface
-import com.example.fragmentvm.domain.model.CatDomain
-import com.example.fragmentvm.domain.model.VoteDomain
-import com.example.fragmentvm.model.backend.BackendResponse
+import com.example.fragmentvm.domain.model.cat.CatDomain
+import com.example.fragmentvm.domain.model.vote.VoteRequestDomain
+import com.example.fragmentvm.domain.model.vote.VoteResponseDomain
 import com.example.fragmentvm.ui.utils.StateMain
 import com.example.fragmentvm.ui.utils.StateVote
 import com.example.fragmentvm.ui.utils.VotesEnum
@@ -23,7 +27,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import retrofit2.HttpException
+import okhttp3.ResponseBody
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -31,8 +35,8 @@ class MainViewModel : ViewModel() {
     private val _stateUIMain = MutableStateFlow<StateMain>(StateMain.Empty)
     fun getStateUIMain(): StateFlow<StateMain> = _stateUIMain
 
-    private val _stateUIVote = MutableStateFlow<StateVote<BackendResponse>>(StateVote.Empty)
-    fun getStateUIVote(): StateFlow<StateVote<BackendResponse>> = _stateUIVote
+    private val _stateUIVote = MutableStateFlow<StateVote<VoteResponseDomain>>(StateVote.Empty)
+    fun getStateUIVote(): StateFlow<StateVote<VoteResponseDomain>> = _stateUIVote
 
     private var apikey: String
 
@@ -54,45 +58,42 @@ class MainViewModel : ViewModel() {
 
     fun vote(catModel: CatDomain, vote: VotesEnum, position: Int) {
         _stateUIVote.value = StateVote.Loading
-
         viewModelScope.launch(Dispatchers.IO) {
-            val votePayload = VoteDomain(catModel.id, vote.value)
-            retrofit.postVote(apikey, VoteDtoMapper().mapFromDomainModel(votePayload))
+            val voteRequest = VoteRequestMapper()
+                .mapFromDomainModel(
+                    VoteRequestDomain(catModel.id, vote)
+                )
+            retrofit.postVote(apikey, voteRequest)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     if (it.isSuccessful) {
-                        it.body()?.let { body ->
-                            body.position = position
-                            body.vote = vote
-                            _stateUIVote.value = StateVote.Success(body)
+                        it.body()?.let { body: VoteResponseDto ->
+                            val voteResponse: VoteResponseDomain =
+                                VoteResponseMapper().mapToDomainModel(body)
+                            voteResponse.position = position
+                            voteResponse.vote = vote
+                            _stateUIVote.value = StateVote.Success(voteResponse)
                         }
                     } else {
-                        it.errorBody()?.let { body ->
+                        it.errorBody()?.let { body: ResponseBody ->
                             Timber.d("Body response not null")
                             try {
-                                val error = Util.parseResponseError(body)
-                                error.position = position
-                                error.vote = vote
-                                _stateUIVote.value = StateVote.BadResponse(error)
+                                val error: BackendResponseDto = Util.parseBackendResponseError(body)
+                                val parsed = BackendResponseDtoMapper().mapToDomainModel(error)
+                                val voteResponse = VoteResponseDomain(
+                                    position = position,
+                                    vote = vote,
+                                    message = parsed.message,
+                                )
+                                _stateUIVote.value = StateVote.UnSuccess(voteResponse)
                             } catch (e: Exception) {
                                 Timber.e(e)
                             }
                         }
                     }
                 }, {
-                    if (it is HttpException) {
-                        try {
-                            val error = Util.parseResponseError(it.response()?.errorBody())
-                            error.position = position
-                            error.vote = vote
-                            _stateUIVote.value = StateVote.BadResponse(error)
-                        } catch (e: Exception) {
-                            Timber.e(it)
-                            _stateUIVote.value = StateVote.Error(it)
-                        }
-                    }
-                    Timber.e(it)
                     _stateUIVote.value = StateVote.Error(it)
+                    Timber.e(it)
                 })
         }
     }

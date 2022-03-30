@@ -12,7 +12,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.example.fragmentvm.R
 import com.example.fragmentvm.core.utils.GlideImpl
 import com.example.fragmentvm.databinding.RvItemCatBinding
-import com.example.fragmentvm.domain.model.CatDomain
+import com.example.fragmentvm.domain.model.cat.CatDomain
 import com.example.fragmentvm.ui.utils.VotesEnum
 
 class CatAdapter(

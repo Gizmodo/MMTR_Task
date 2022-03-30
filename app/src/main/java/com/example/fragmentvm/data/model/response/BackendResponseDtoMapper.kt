@@ -1,6 +1,6 @@
 package com.example.fragmentvm.data.model.response
 
-import com.example.fragmentvm.domain.model.login.BackendResponseDomain
+import com.example.fragmentvm.domain.model.BackendResponseDomain
 import com.example.fragmentvm.domain.utils.DomainMapper
 
 class BackendResponseDtoMapper : DomainMapper<BackendResponseDto, BackendResponseDomain> {

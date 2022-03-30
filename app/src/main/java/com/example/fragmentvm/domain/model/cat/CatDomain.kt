@@ -1,4 +1,4 @@
-package com.example.fragmentvm.domain.model
+package com.example.fragmentvm.domain.model.cat
 
 data class CatDomain(
     val id: String,

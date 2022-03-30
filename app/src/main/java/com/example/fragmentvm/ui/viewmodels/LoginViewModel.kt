@@ -16,7 +16,7 @@ import com.example.fragmentvm.data.model.login.LoginDtoMapper
 import com.example.fragmentvm.data.model.response.BackendResponseDto
 import com.example.fragmentvm.data.model.response.BackendResponseDtoMapper
 import com.example.fragmentvm.domain.DataStoreInterface
-import com.example.fragmentvm.domain.model.login.BackendResponseDomain
+import com.example.fragmentvm.domain.model.BackendResponseDomain
 import com.example.fragmentvm.domain.model.login.LoginDomain
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.launch

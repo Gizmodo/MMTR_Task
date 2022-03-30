@@ -1,4 +1,4 @@
-package com.example.fragmentvm.domain.model.login
+package com.example.fragmentvm.domain.model
 
 data class BackendResponseDomain(
     val message: String,

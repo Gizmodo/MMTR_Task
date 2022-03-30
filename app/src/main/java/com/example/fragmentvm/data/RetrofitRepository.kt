@@ -4,8 +4,8 @@ import com.example.fragmentvm.core.utils.RxUtils
 import com.example.fragmentvm.data.model.cat.CatDto
 import com.example.fragmentvm.data.model.login.LoginDto
 import com.example.fragmentvm.data.model.response.BackendResponseDto
-import com.example.fragmentvm.data.model.vote.VoteDto
-import com.example.fragmentvm.model.backend.BackendResponse
+import com.example.fragmentvm.data.model.vote.request.VoteRequestDto
+import com.example.fragmentvm.data.model.vote.response.VoteResponseDto
 import io.reactivex.rxjava3.annotations.NonNull
 import io.reactivex.rxjava3.core.Observable
 import org.jetbrains.annotations.NotNull
@@ -32,9 +32,9 @@ class RetrofitRepository @Inject constructor(
 
     fun postVote(
         apiKey: String,
-        votePayload: VoteDto,
-    ): @NotNull Observable<Response<BackendResponse>> {
-        return apiService.vote(apiKey, votePayload)
+        vote: VoteRequestDto,
+    ): @NotNull Observable<Response<VoteResponseDto>> {
+        return apiService.vote(apiKey, vote)
             .compose(RxUtils.applySubscriberScheduler())
     }
 }

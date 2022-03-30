@@ -1,6 +1,6 @@
 package com.example.fragmentvm.data.model.cat
 
-import com.example.fragmentvm.domain.model.CatDomain
+import com.example.fragmentvm.domain.model.cat.CatDomain
 import com.example.fragmentvm.domain.utils.DomainMapper
 
 class CatDtoMapper : DomainMapper<CatDto, CatDomain> {

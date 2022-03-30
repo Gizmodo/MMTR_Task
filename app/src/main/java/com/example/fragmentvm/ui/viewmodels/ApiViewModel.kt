@@ -14,7 +14,7 @@ import com.example.fragmentvm.data.RetrofitRepository
 import com.example.fragmentvm.data.model.response.BackendResponseDto
 import com.example.fragmentvm.data.model.response.BackendResponseDtoMapper
 import com.example.fragmentvm.domain.DataStoreInterface
-import com.example.fragmentvm.domain.model.login.BackendResponseDomain
+import com.example.fragmentvm.domain.model.BackendResponseDomain
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -68,13 +68,6 @@ class ApiViewModel : ViewModel() {
                         _errorLiveData.postValue(BackendResponseDtoMapper().mapToDomainModel(error))
                     }
                 }
-
-                /*if (it is HttpException) {
-                    parseResponseLoginError(it.response()
-                        ?.errorBody()).let { error: BackendResponseDto ->
-                        _signUpLiveData.value = BackendResponseDtoMapper().mapToDomainModel(error)
-                    }
-                }*/
             })
     }
 }
