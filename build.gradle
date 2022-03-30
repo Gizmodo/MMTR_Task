@@ -1,25 +1,25 @@
 buildscript {
     ext {
-        sdk = 32
-        retrofit = "2.9.0"
-        glide = '4.13.1'
-        okhttp = '5.0.0-alpha.5'
-        core_ktx = "1.7.0"
-        dagger = "2.41"
-        gson = "2.9.0"
-        material = "1.6.0-alpha02"
-        appcompat = "1.4.1"
         activity_ktx = "1.4.0"
-        fragment_ktx = "1.4.1"
+        appcompat = "1.4.1"
         constraintlayout = "2.1.3"
-        datastore = "1.0.0"
-        lifecycle = "2.4.1"
+        core_ktx = "1.7.0"
         coroutines = "1.6.0"
+        dagger = "2.41"
+        datastore = "1.0.0"
+        fragment_ktx = "1.4.1"
+        glide = "4.13.1"
+        gson = "2.9.0"
+        lifecycle = "2.4.1"
+        material = "1.6.0-beta01"
         nav = "2.4.1"
-        timber = "5.0.1"
-        rxjava = "3.1.3"
+        okhttp = "5.0.0-alpha.6"
+        retrofit = "2.9.0"
         rxandroid = "3.0.0"
+        rxjava = "3.1.4"
+        sdk = 32
         swiperefreshlayout = "1.2.0-alpha01"
+        timber = "5.0.1"
     }
     repositories {
         google()
@@ -32,7 +32,7 @@ buildscript {
 plugins {
     id 'com.android.application' version '7.1.0' apply false
     id 'com.android.library' version '7.1.0' apply false
-    id 'org.jetbrains.kotlin.android' version '1.6.20-M1' apply false
+    id 'org.jetbrains.kotlin.android' version '1.6.20-RC2' apply false
 }
 
 task clean(type: Delete) {

@@ -17,11 +17,11 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.fragmentvm.R
 import com.example.fragmentvm.databinding.MainFragmentBinding
-import com.example.fragmentvm.model.backend.BackendResponse
-import com.example.fragmentvm.model.states.StateMain
-import com.example.fragmentvm.model.states.StateVote
-import com.example.fragmentvm.model.vote.VotesEnum
+import com.example.fragmentvm.domain.model.vote.VoteResponseDomain
 import com.example.fragmentvm.ui.adapters.CatAdapter
+import com.example.fragmentvm.ui.utils.StateMain
+import com.example.fragmentvm.ui.utils.StateVote
+import com.example.fragmentvm.ui.utils.VotesEnum
 import com.example.fragmentvm.ui.viewmodels.CatViewModel
 import com.example.fragmentvm.ui.viewmodels.MainViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -105,31 +105,23 @@ class MainFragment : Fragment() {
 
         viewModel.getStateUIVote()
             .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
-            .onEach { handleVoteState(it) }
+            .onEach { handleVoteStateNew(it) }
             .launchIn(viewLifecycleOwner.lifecycleScope)
     }
 
-    private fun handleVoteState(state: StateVote<BackendResponse>) {
+    private fun handleVoteStateNew(state: StateVote<VoteResponseDomain>) {
         when (state) {
-            is StateVote.BadResponse -> {
-                showDialog(state.badResponse.message)
-                catAdapter.notifyItemChanged(state.badResponse.position)
+            StateVote.Empty -> Timber.d("Empty")
+            is StateVote.Error -> Timber.d("Error")
+            StateVote.Finished -> Timber.d("Finished")
+            StateVote.Loading -> Timber.d("Loading")
+            is StateVote.Success -> {
+                setVoteButton(state.data.position, state.data.vote)
                 viewModel.resetVoteState()
             }
-            StateVote.Empty -> {
-                Timber.d("Empty")
-            }
-            is StateVote.Error -> {
-                Timber.d("Error")
-            }
-            StateVote.Finished -> {
-                Timber.d("Finished")
-            }
-            StateVote.Loading -> {
-                Timber.d("Loading")
-            }
-            is StateVote.Success -> {
-                setVoteButton(state.item.position, state.item.vote)
+            is StateVote.UnSuccess -> {
+                showDialog(state.data.message)
+                catAdapter.notifyItemChanged(state.data.position)
                 viewModel.resetVoteState()
             }
         }

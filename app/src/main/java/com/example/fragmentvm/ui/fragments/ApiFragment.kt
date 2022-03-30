@@ -10,9 +10,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.example.fragmentvm.R
-import com.example.fragmentvm.databinding.ApiFragmentBinding
 import com.example.fragmentvm.core.utils.Constants.Network.HTTP_CODE_401
 import com.example.fragmentvm.core.utils.Util.toObservable
+import com.example.fragmentvm.databinding.ApiFragmentBinding
 import com.example.fragmentvm.ui.viewmodels.ApiViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
@@ -95,17 +95,12 @@ class ApiFragment : Fragment() {
         tilApiKey = binding.tilApikey
 
         btnNext.setOnClickListener {
-            viewModel.sendRequest()
+            viewModel.sendApiKey()
         }
 
         btnBack.setOnClickListener {
             navigateBack()
         }
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this)[ApiViewModel::class.java]
     }
 
     private fun initFieldsObservers() {

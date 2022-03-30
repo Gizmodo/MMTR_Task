@@ -9,12 +9,15 @@ import com.example.fragmentvm.core.utils.Constants.DataStore.KEY_DESCRIPTION
 import com.example.fragmentvm.core.utils.Constants.DataStore.KEY_EMAIL
 import com.example.fragmentvm.core.utils.Util
 import com.example.fragmentvm.core.utils.Util.isEmail
-import com.example.fragmentvm.core.utils.Util.parseResponseError
+import com.example.fragmentvm.core.utils.Util.parseBackendResponseError
 import com.example.fragmentvm.core.utils.Util.skipFirst
-import com.example.fragmentvm.domain.DataStoreInterface
-import com.example.fragmentvm.model.backend.BackendResponse
 import com.example.fragmentvm.data.RetrofitRepository
-import com.example.fragmentvm.model.login.LoginModel
+import com.example.fragmentvm.data.model.login.LoginDtoMapper
+import com.example.fragmentvm.data.model.response.BackendResponseDto
+import com.example.fragmentvm.data.model.response.BackendResponseDtoMapper
+import com.example.fragmentvm.domain.DataStoreInterface
+import com.example.fragmentvm.domain.model.BackendResponseDomain
+import com.example.fragmentvm.domain.model.login.LoginDomain
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -40,22 +43,24 @@ class LoginViewModel : ViewModel() {
     @Inject
     lateinit var retrofitRepository: RetrofitRepository
 
-    private var _signUpLiveData = MutableLiveData<BackendResponse>()
-    val signUpLiveData: LiveData<BackendResponse>
+    private var _signUpLiveData = MutableLiveData<BackendResponseDomain>()
+    val signUpLiveData: LiveData<BackendResponseDomain>
         get() = _signUpLiveData
 
     fun postRequest() {
         val desc = runBlocking { ds.getString(KEY_DESCRIPTION) }
         val eml = runBlocking { ds.getString(KEY_EMAIL) }
-        val loginModel = LoginModel(desc.toString(), eml.toString())
+        val loginModel =
+            LoginDtoMapper().mapFromDomainModel(LoginDomain(desc.toString(), eml.toString()))
         retrofitRepository.postSignUp(loginModel)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                _signUpLiveData.value = it
+                _signUpLiveData.value = BackendResponseDtoMapper().mapToDomainModel(it)
             }, {
                 if (it is HttpException) {
-                    parseResponseError(it.response()?.errorBody())?.let { error ->
-                        _signUpLiveData.value = error
+                    parseBackendResponseError(it.response()
+                        ?.errorBody()).let { error: BackendResponseDto ->
+                        _signUpLiveData.value = BackendResponseDtoMapper().mapToDomainModel(error)
                     }
                 }
             })

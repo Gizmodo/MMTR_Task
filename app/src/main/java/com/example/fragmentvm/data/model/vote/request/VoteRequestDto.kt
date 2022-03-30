@@ -1,8 +1,8 @@
-package com.example.fragmentvm.model.vote
+package com.example.fragmentvm.data.model.vote.request
 
 import com.google.gson.annotations.SerializedName
 
-data class VotePayload(
+data class VoteRequestDto(
     @SerializedName("image_id")
     val imageId: String,
     @SerializedName("value")

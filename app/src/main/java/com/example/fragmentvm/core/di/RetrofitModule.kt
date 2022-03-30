@@ -1,7 +1,7 @@
 package com.example.fragmentvm.core.di
 
 import com.example.fragmentvm.core.utils.Constants.Network.BASE_URL
-import com.example.fragmentvm.domain.RetrofitInterface
+import com.example.fragmentvm.data.RetrofitInterface
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
@@ -29,7 +29,7 @@ class RetrofitModule {
     @Provides
     fun provideRetrofitInstance(): Retrofit {
         val logging = HttpLoggingInterceptor { message -> Timber.d(message) }
-        logging.setLevel(HttpLoggingInterceptor.Level.BASIC)
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY)
 
         val gson = GsonBuilder().setLenient().create()
 

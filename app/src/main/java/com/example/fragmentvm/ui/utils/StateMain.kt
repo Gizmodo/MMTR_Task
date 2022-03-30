@@ -1,4 +1,4 @@
-package com.example.fragmentvm.model.states
+package com.example.fragmentvm.ui.utils
 
 sealed class StateMain {
     object Empty : StateMain()

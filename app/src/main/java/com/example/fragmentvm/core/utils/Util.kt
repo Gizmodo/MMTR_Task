@@ -6,7 +6,7 @@ import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.fragmentvm.model.backend.BackendResponse
+import com.example.fragmentvm.data.model.response.BackendResponseDto
 import com.google.android.material.textfield.TextInputEditText
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
@@ -70,10 +70,10 @@ object Util {
         return observable.debounce(TIMEOUT_KEYBOARD, TimeUnit.MILLISECONDS)
     }
 
-    fun parseResponseError(errorBody: ResponseBody?): BackendResponse {
+    fun parseBackendResponseError(errorBody: ResponseBody?): BackendResponseDto {
         val gson = Gson()
-        val adapter: TypeAdapter<BackendResponse> =
-            gson.getAdapter(BackendResponse::class.java)
+        val adapter: TypeAdapter<BackendResponseDto> =
+            gson.getAdapter(BackendResponseDto::class.java)
         return adapter.fromJson(errorBody?.string())
     }
 }
