@@ -2,37 +2,24 @@ package com.example.fragmentvm.ui.adapters
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.bumptech.glide.request.RequestOptions
-import com.example.fragmentvm.R
-import com.example.fragmentvm.core.utils.GlideImpl
 import com.example.fragmentvm.databinding.RvItemCatBinding
 import com.example.fragmentvm.domain.model.cat.CatDomain
 import com.example.fragmentvm.ui.utils.VotesEnum
 
 class CatAdapter(
     private val catModels: MutableList<CatDomain>,
-    private val onVoteClickListener: (
-        catModel: CatDomain,
-        position: Int,
-        vote: VotesEnum,
-    ) -> Unit,
-    private val onClickListener: (CatDomain) -> Unit,
-) :
-    RecyclerView.Adapter<CatAdapter.MainViewHolder>() {
-    private val requestOptions = RequestOptions().error(R.drawable.ic_error_placeholder)
-    private val transitionOptions = DrawableTransitionOptions().crossFade()
+    private val onVoteClicked: (CatDomain, Int, VotesEnum) -> Unit,
+    private val onItemClicked: (CatDomain) -> Unit,
+) : RecyclerView.Adapter<MainViewHolder>() {
     override fun getItemCount() = catModels.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = RvItemCatBinding.inflate(inflater, parent, false)
-        return MainViewHolder(binding)
+
+        return MainViewHolder(binding,onItemClicked, onVoteClicked)
     }
 
     private fun isVoteDownAgain(position: Int, vote: VotesEnum): Boolean =
@@ -77,49 +64,5 @@ class CatAdapter(
         catModels.clear()
         catModels.addAll(itemsList)
         notifyDataSetChanged()
-    }
-
-    inner class MainViewHolder(private val binding: RvItemCatBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-
-        fun bind(model: CatDomain) {
-            with(binding) {
-                setProgressBarVisibility(View.VISIBLE)
-                Glide
-                    .with(itemView.context)
-                    .addDefaultRequestListener(GlideImpl.OnCompleted {
-                        setProgressBarVisibility(View.GONE)
-                    })
-                    .applyDefaultRequestOptions(requestOptions)
-                    .load(model.url)
-                    .thumbnail()
-                    .centerCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .transition(transitionOptions)
-                    .into(imgView)
-
-                with(btnVoteDown) {
-                    isChecked = model.isDisliked
-                    setOnClickListener {
-                        onVoteClickListener(model, adapterPosition, VotesEnum.DOWN)
-                    }
-                }
-
-                with(btnVoteUp) {
-                    isChecked = model.isLiked
-                    setOnClickListener {
-                        onVoteClickListener(model, adapterPosition, VotesEnum.UP)
-                    }
-                }
-
-                imgView.setOnClickListener {
-                    onClickListener(model)
-                }
-            }
-        }
-
-        private fun setProgressBarVisibility(state: Int) {
-            binding.itemProgressBar.visibility = state
-        }
     }
 }
