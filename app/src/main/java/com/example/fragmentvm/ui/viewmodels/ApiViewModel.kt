@@ -10,7 +10,7 @@ import com.example.fragmentvm.core.utils.Constants.DataStore.KEY_FLAGREG
 import com.example.fragmentvm.core.utils.SingleLiveEvent
 import com.example.fragmentvm.core.utils.Util.parseBackendResponseError
 import com.example.fragmentvm.core.utils.Util.skipFirst
-import com.example.fragmentvm.data.RetrofitRepository
+import com.example.fragmentvm.data.repository.CatRepository
 import com.example.fragmentvm.data.model.response.BackendResponseDto
 import com.example.fragmentvm.data.model.response.BackendResponseDtoMapper
 import com.example.fragmentvm.domain.DataStoreInterface
@@ -32,7 +32,7 @@ class ApiViewModel : ViewModel() {
     fun getIsValidApiKey(): LiveData<Boolean> = _isValidApiKey.skipFirst()
 
     @Inject
-    lateinit var retrofitRepository: RetrofitRepository
+    lateinit var catRepository: CatRepository
 
     @Inject
     lateinit var ds: DataStoreInterface
@@ -53,7 +53,7 @@ class ApiViewModel : ViewModel() {
 
     fun sendApiKey() {
         val apikey = runBlocking { ds.getString(KEY_API) }
-        retrofitRepository.sendApiKey(apikey.toString())
+        catRepository.sendApiKey(apikey.toString())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 viewModelScope.launch {

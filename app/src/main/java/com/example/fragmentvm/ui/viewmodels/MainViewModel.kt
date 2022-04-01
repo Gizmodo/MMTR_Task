@@ -4,34 +4,41 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
 import com.example.fragmentvm.App
 import com.example.fragmentvm.core.utils.Constants
 import com.example.fragmentvm.core.utils.Util
-import com.example.fragmentvm.data.RetrofitRepository
 import com.example.fragmentvm.data.model.cat.CatDtoMapper
 import com.example.fragmentvm.data.model.response.BackendResponseDto
 import com.example.fragmentvm.data.model.response.BackendResponseDtoMapper
 import com.example.fragmentvm.data.model.vote.request.VoteRequestMapper
 import com.example.fragmentvm.data.model.vote.response.VoteResponseDto
 import com.example.fragmentvm.data.model.vote.response.VoteResponseMapper
+import com.example.fragmentvm.data.repository.CatRepository
 import com.example.fragmentvm.domain.DataStoreInterface
+import com.example.fragmentvm.domain.model.UiAction
 import com.example.fragmentvm.domain.model.cat.CatDomain
 import com.example.fragmentvm.domain.model.vote.VoteRequestDomain
 import com.example.fragmentvm.domain.model.vote.VoteResponseDomain
+import com.example.fragmentvm.temp.CatResponseItem
 import com.example.fragmentvm.ui.utils.StateMain
 import com.example.fragmentvm.ui.utils.StateVote
 import com.example.fragmentvm.ui.utils.VotesEnum
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody
 import timber.log.Timber
 import javax.inject.Inject
 
+private const val VISIBLE_THRESHOLD = 5
+private const val LAST_SEARCH_QUERY: String = "last_search_query"
+private const val DEFAULT_QUERY = "Android"
+
 class MainViewModel : ViewModel() {
+
     private val _stateUIMain = MutableStateFlow<StateMain>(StateMain.Empty)
     fun getStateUIMain(): StateFlow<StateMain> = _stateUIMain
 
@@ -40,14 +47,61 @@ class MainViewModel : ViewModel() {
 
     private var apikey: String
 
+//    val state: StateFlow<UiState>
+//    val pagingDataFlow: Flow<PagingData<CatResponseItem>>
+
     init {
         App.instance().appGraph.embed(this)
         apikey = runBlocking { ds.getString(Constants.DataStore.KEY_API).toString() }
-        getCats()
+        val initialQuery: String = DEFAULT_QUERY
+        val lastQueryScrolled: String = DEFAULT_QUERY
+        val actionStateFlow = MutableSharedFlow<UiAction>()
+        val searches = actionStateFlow
+            .filterIsInstance<UiAction.Search>()
+            .distinctUntilChanged()
+            .onStart { emit(UiAction.Search(query = initialQuery)) }
+        val queriesScrolled = actionStateFlow
+            .filterIsInstance<UiAction.Scroll>()
+            .distinctUntilChanged()
+            // This is shared to keep the flow "hot" while caching the last query scrolled,
+            // otherwise each flatMapLatest invocation would lose the last query scrolled,
+            .shareIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+                replay = 1
+            )
+            .onStart { emit(UiAction.Scroll(currentQuery = lastQueryScrolled)) }
+        pagingDataFlow = searches
+            .flatMapLatest { searchRepo(queryString = it.query) }
+            .cachedIn(viewModelScope)
+
+        state = combine(
+            searches,
+            queriesScrolled,
+            ::Pair
+        ).map { (search, scroll) ->
+            UiState(
+                query = search.query,
+                lastQueryScrolled = scroll.currentQuery,
+                // If the search query matches the scroll query, the user has scrolled
+                hasNotScrolledForCurrentSearch = search.query != scroll.currentQuery
+            )
+        }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000),
+                initialValue = UiState()
+            )
+
+        accept = { action ->
+            viewModelScope.launch { actionStateFlow.emit(action) }
+        }
+
+//        getCats()
     }
 
     @Inject
-    lateinit var retrofit: RetrofitRepository
+    lateinit var repository: CatRepository
 
     @Inject
     lateinit var ds: DataStoreInterface
@@ -63,7 +117,7 @@ class MainViewModel : ViewModel() {
                 .mapFromDomainModel(
                     VoteRequestDomain(catModel.id, vote)
                 )
-            retrofit.postVote(apikey, voteRequest)
+            repository.postVote(apikey, voteRequest)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     if (it.isSuccessful) {
@@ -102,7 +156,7 @@ class MainViewModel : ViewModel() {
         _stateUIMain.value = StateMain.Loading
 
         viewModelScope.launch(Dispatchers.IO) {
-            retrofit.getCats(apikey)
+            repository.getCats(apikey)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     {
@@ -122,5 +176,14 @@ class MainViewModel : ViewModel() {
 
     fun resetVoteState() {
         _stateUIVote.value = StateVote.Empty
+    }
+
+    private fun searchRepo(queryString: String): Flow<PagingData<CatResponseItem>> =
+        repository.searchReposNew()
+
+    override fun onCleared() {
+//        savedStateHandle[LAST_SEARCH_QUERY] = state.value.query
+//        savedStateHandle[LAST_QUERY_SCROLLED] = state.value.lastQueryScrolled
+        super.onCleared()
     }
 }
