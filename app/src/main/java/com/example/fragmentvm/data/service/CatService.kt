@@ -5,7 +5,6 @@ import com.example.fragmentvm.data.model.login.LoginDto
 import com.example.fragmentvm.data.model.response.BackendResponseDto
 import com.example.fragmentvm.data.model.vote.request.VoteRequestDto
 import com.example.fragmentvm.data.model.vote.response.VoteResponseDto
-import com.example.fragmentvm.temp.CatResponse
 import io.reactivex.rxjava3.core.Observable
 import retrofit2.Response
 import retrofit2.http.*
@@ -16,12 +15,12 @@ interface CatService {
         @Header("x-api-key") apiKey: String,
         @Query("page") page: Int,
         @Query("limit") itemsPerPage: Int = 2,
-    ): CatResponse
+    ): List<CatDto>
 
     @GET("images/search")
     fun getCatsObservable(
         @Header("x-api-key") apiKey: String,
-        @Query("limit") limit: Int = 20,
+        @Query("limit") limit: Int = 10,
         @Query("size") size: String = "small",
     ): Observable<List<CatDto>>
 

@@ -29,7 +29,7 @@ class RetrofitModule {
     @Provides
     fun provideRetrofitInstance(): Retrofit {
         val logging = HttpLoggingInterceptor { message -> Timber.d(message) }
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY)
+        logging.setLevel(HttpLoggingInterceptor.Level.BASIC)
 
         val gson = GsonBuilder().setLenient().create()
 

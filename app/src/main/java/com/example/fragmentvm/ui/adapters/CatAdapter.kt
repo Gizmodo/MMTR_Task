@@ -13,13 +13,14 @@ class CatAdapter(
     private val onVoteClicked: (CatDomain, Int, VotesEnum) -> Unit,
     private val onItemClicked: (CatDomain) -> Unit,
 ) : RecyclerView.Adapter<MainViewHolder>() {
+
     override fun getItemCount() = catModels.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = RvItemCatBinding.inflate(inflater, parent, false)
 
-        return MainViewHolder(binding,onItemClicked, onVoteClicked)
+        return MainViewHolder(binding, onItemClicked, onVoteClicked)
     }
 
     private fun isVoteDownAgain(position: Int, vote: VotesEnum): Boolean =

@@ -1,4 +1,4 @@
-package com.example.fragmentvm.ui.adapters
+package com.example.fragmentvm.ui.viewmodels
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
@@ -12,7 +12,7 @@ import com.example.fragmentvm.databinding.RvItemCatBinding
 import com.example.fragmentvm.domain.model.cat.CatDomain
 import com.example.fragmentvm.ui.utils.VotesEnum
 
-class MainViewHolder(
+class CatViewHolder(
     private val binding: RvItemCatBinding,
     private val onItemClicked: (CatDomain) -> Unit,
     private val onVoteClicked: (CatDomain, Int, VotesEnum) -> Unit,

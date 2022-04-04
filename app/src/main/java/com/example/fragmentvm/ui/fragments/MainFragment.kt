@@ -19,14 +19,18 @@ import com.example.fragmentvm.R
 import com.example.fragmentvm.databinding.MainFragmentBinding
 import com.example.fragmentvm.domain.model.vote.VoteResponseDomain
 import com.example.fragmentvm.ui.adapters.CatAdapter
+import com.example.fragmentvm.ui.adapters.ReposAdapter
 import com.example.fragmentvm.ui.utils.StateMain
 import com.example.fragmentvm.ui.utils.StateVote
 import com.example.fragmentvm.ui.utils.VotesEnum
 import com.example.fragmentvm.ui.viewmodels.CatViewModel
 import com.example.fragmentvm.ui.viewmodels.MainViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class MainFragment : Fragment() {
@@ -48,6 +52,12 @@ class MainFragment : Fragment() {
             catViewModel.setCat(cat)
         }
     )
+    private var newCatAdapter = ReposAdapter(
+        { cat, position, vote ->
+            viewModel.vote(cat, vote, position)
+        }, { cat ->
+            catViewModel.setCat(cat)
+        })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +69,7 @@ class MainFragment : Fragment() {
         observeUIStates()
     }
 
+    private var locationUpdatesJob: Job? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -76,12 +87,20 @@ class MainFragment : Fragment() {
                 animator.supportsChangeAnimations = false
             }
             setHasFixedSize(true)
-            adapter = catAdapter
+            adapter = newCatAdapter
+//            adapter = catAdapter
         }
 
         viewModel.catsLiveData.observe(viewLifecycleOwner) { cats ->
             swipe.isRefreshing = false
             catAdapter.updateList(cats)
+        }
+
+        locationUpdatesJob = lifecycleScope.launch {
+            Timber.d("locationUpdatesJob")
+            viewModel.cats.collectLatest { pagedData ->
+                newCatAdapter.submitData(pagedData)
+            }
         }
 
         catViewModel.getCat().observe(viewLifecycleOwner) { cat ->
@@ -95,6 +114,11 @@ class MainFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        locationUpdatesJob?.cancel()
+        super.onDestroyView()
     }
 
     private fun observeUIStates() {
