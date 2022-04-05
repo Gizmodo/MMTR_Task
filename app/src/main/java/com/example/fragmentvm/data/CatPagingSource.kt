@@ -19,6 +19,8 @@ private const val CATAPI_STARTING_PAGE_INDEX = 1
 
 class CatPagingSource : PagingSource<Int, CatDomain>() {
     private var apikey: String
+    override val keyReuseSupported: Boolean
+        get() = true
 
     init {
         App.instance().appGraph.embed(this)

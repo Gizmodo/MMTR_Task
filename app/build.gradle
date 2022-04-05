@@ -36,7 +36,7 @@ def generateVersionName() {
 
 android {
     compileSdk sdk
-    buildToolsVersion '33.0.0 rc1'
+    buildToolsVersion '33.0.0 rc2'
 
     defaultConfig {
         applicationId "com.example.fragmentvm"
