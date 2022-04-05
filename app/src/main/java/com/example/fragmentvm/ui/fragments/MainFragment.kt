@@ -91,8 +91,14 @@ class MainFragment : Fragment() {
                 }
             }
 
-            viewModel.cats.collectLatest {
+            /*  viewModel.catsLiveData.observe(viewLifecycleOwner) {
+                  Timber.d("LiveData Cats -> $it")
+              }*/
+            viewModel.catsFlow.collectLatest {
                 catAdapter.submitData(it)
+                catAdapter.updateList(
+                    catAdapter.snapshot().items
+                )
             }
         }
         catViewModel.getCat().observe(viewLifecycleOwner) { cat ->

@@ -19,7 +19,6 @@ class CatPagingAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CatViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = RvItemCatBinding.inflate(inflater, parent, false)
-
         return CatViewHolder(binding, onItemClicked, onVoteClicked)
     }
 

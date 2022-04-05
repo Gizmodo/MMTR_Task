@@ -4,12 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
-import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.fragmentvm.App
 import com.example.fragmentvm.core.utils.Constants
 import com.example.fragmentvm.core.utils.Util
-import com.example.fragmentvm.data.CatPagingSource
+import com.example.fragmentvm.data.datasource.CatPagingSource
 import com.example.fragmentvm.data.model.response.BackendResponseDto
 import com.example.fragmentvm.data.model.response.BackendResponseDtoMapper
 import com.example.fragmentvm.data.model.vote.request.VoteRequestMapper
@@ -25,7 +24,6 @@ import com.example.fragmentvm.ui.utils.StateVote
 import com.example.fragmentvm.ui.utils.VotesEnum
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -50,9 +48,15 @@ class MainViewModel : ViewModel() {
 //              getCats()
     }
 
-    val cats: Flow<PagingData<CatDomain>> = Pager(PagingConfig(10))
-    { CatPagingSource() }.flow
+    val catsFlow = Pager(PagingConfig(pageSize = 10, initialLoadSize = 10))
+    { CatPagingSource() }
+        .flow
         .cachedIn(viewModelScope)
+
+    /*val catsLiveData = Pager(PagingConfig(pageSize = 10, initialLoadSize = 10))
+    { CatPagingSource() }
+        .liveData
+        .cachedIn(viewModelScope)*/
 
     @Inject
     lateinit var repository: CatRepository

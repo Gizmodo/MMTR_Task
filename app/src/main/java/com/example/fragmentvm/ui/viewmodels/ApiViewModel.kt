@@ -10,9 +10,9 @@ import com.example.fragmentvm.core.utils.Constants.DataStore.KEY_FLAGREG
 import com.example.fragmentvm.core.utils.SingleLiveEvent
 import com.example.fragmentvm.core.utils.Util.parseBackendResponseError
 import com.example.fragmentvm.core.utils.Util.skipFirst
-import com.example.fragmentvm.data.repository.CatRepository
 import com.example.fragmentvm.data.model.response.BackendResponseDto
 import com.example.fragmentvm.data.model.response.BackendResponseDtoMapper
+import com.example.fragmentvm.data.repository.CatRepository
 import com.example.fragmentvm.domain.DataStoreInterface
 import com.example.fragmentvm.domain.model.BackendResponseDomain
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers

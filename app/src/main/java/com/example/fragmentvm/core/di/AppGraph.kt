@@ -1,6 +1,6 @@
 package com.example.fragmentvm.core.di
 
-import com.example.fragmentvm.data.CatPagingSource
+import com.example.fragmentvm.data.datasource.CatPagingSource
 import com.example.fragmentvm.ui.activity.MainActivity
 import com.example.fragmentvm.ui.viewmodels.ApiViewModel
 import com.example.fragmentvm.ui.viewmodels.LoginViewModel
