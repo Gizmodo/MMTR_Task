@@ -1,7 +1,5 @@
 package com.example.fragmentvm.ui.viewmodels
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
@@ -12,7 +10,6 @@ import com.example.fragmentvm.App
 import com.example.fragmentvm.core.utils.Constants
 import com.example.fragmentvm.core.utils.Util
 import com.example.fragmentvm.data.CatPagingSource
-import com.example.fragmentvm.data.model.cat.CatDtoMapper
 import com.example.fragmentvm.data.model.response.BackendResponseDto
 import com.example.fragmentvm.data.model.response.BackendResponseDtoMapper
 import com.example.fragmentvm.data.model.vote.request.VoteRequestMapper
@@ -53,19 +50,15 @@ class MainViewModel : ViewModel() {
 //              getCats()
     }
 
-    val cats: Flow<PagingData<CatDomain>> = Pager(config = PagingConfig(pageSize = 10), pagingSourceFactory = {
-        CatPagingSource()
-    }).flow.cachedIn(viewModelScope)
+    val cats: Flow<PagingData<CatDomain>> = Pager(PagingConfig(10))
+    { CatPagingSource() }.flow
+        .cachedIn(viewModelScope)
 
     @Inject
     lateinit var repository: CatRepository
 
     @Inject
     lateinit var ds: DataStoreInterface
-
-    private var _cats = MutableLiveData<List<CatDomain>>()
-    val catsLiveData: LiveData<List<CatDomain>>
-        get() = _cats
 
     fun vote(catModel: CatDomain, vote: VotesEnum, position: Int) {
         _stateUIVote.value = StateVote.Loading
@@ -109,26 +102,8 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun getCats() {
-        _stateUIMain.value = StateMain.Loading
-
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.getCats(apikey)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    {
-                        if (it.isEmpty()) {
-                            _stateUIMain.value = StateMain.Empty
-                        } else {
-                            _stateUIMain.value = StateMain.Finished
-                            _cats.postValue(CatDtoMapper().toDomainList(it))
-                        }
-                    },
-                    {
-                        Timber.e(it)
-                        _stateUIMain.value = StateMain.Error(it)
-                    })
-        }
+    fun setState(state: StateMain) {
+        _stateUIMain.value = state
     }
 
     fun resetVoteState() {

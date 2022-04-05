@@ -16,8 +16,8 @@ import javax.inject.Inject
 class CatRepository @Inject constructor(
     private val apiService: CatService,
 ) {
-    suspend fun searchCats(key: String, page: Int, itemsPerPage: Int): List<CatDto> {
-        return apiService.searchRepos(apiKey = key, page = page, itemsPerPage = itemsPerPage)
+    suspend fun getCats(key: String, page: Int, itemsPerPage: Int): List<CatDto> {
+        return apiService.getCats(apiKey = key, page = page, itemsPerPage = itemsPerPage)
     }
 
     fun postSignUp(loginDto: LoginDto): @NonNull Observable<BackendResponseDto> {
@@ -27,11 +27,6 @@ class CatRepository @Inject constructor(
 
     fun sendApiKey(apikey: String): @NonNull Observable<List<BackendResponseDto>> {
         return apiService.getApiKey(apikey)
-            .compose(RxUtils.applySubscriberScheduler())
-    }
-
-    fun getCats(apiKey: String): @NotNull Observable<List<CatDto>> {
-        return apiService.getCatsObservable(apiKey)
             .compose(RxUtils.applySubscriberScheduler())
     }
 

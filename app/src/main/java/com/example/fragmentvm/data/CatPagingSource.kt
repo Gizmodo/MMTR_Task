@@ -11,11 +11,8 @@ import com.example.fragmentvm.domain.DataStoreInterface
 import com.example.fragmentvm.domain.model.cat.CatDomain
 import kotlinx.coroutines.runBlocking
 import retrofit2.HttpException
-import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
-
-private const val CATAPI_STARTING_PAGE_INDEX = 1
 
 class CatPagingSource : PagingSource<Int, CatDomain>() {
     private var apikey: String
@@ -28,26 +25,20 @@ class CatPagingSource : PagingSource<Int, CatDomain>() {
     }
 
     @Inject
-    lateinit var repository: CatRepository
+    lateinit var catRepository: CatRepository
 
     @Inject
     lateinit var ds: DataStoreInterface
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, CatDomain> {
-        val position = params.key ?: CATAPI_STARTING_PAGE_INDEX
         return try {
-            Timber.d(params.toString())
-            val response: List<CatDto> = repository.searchCats(apikey, position, params.loadSize)
+            val nextPage = params.key ?: 1
+            val response: List<CatDto> = catRepository.getCats(apikey, nextPage, params.loadSize)
             val repos: List<CatDomain> = CatDtoMapper().toDomainList(response)
-            val nextKey = if (repos.isEmpty()) {
-                null
-            } else {
-                position + (params.loadSize / NETWORK_PAGE_SIZE)
-            }
             LoadResult.Page(
                 data = repos,
-                prevKey = if (position == CATAPI_STARTING_PAGE_INDEX) null else position - 1,
-                nextKey = nextKey
+                prevKey = if (nextPage == 1) null else nextPage - 1,
+                nextKey = nextPage + 1
             )
         } catch (exception: IOException) {
             return LoadResult.Error(exception)
@@ -61,9 +52,5 @@ class CatPagingSource : PagingSource<Int, CatDomain>() {
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
                 ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
         }
-    }
-
-    companion object {
-        const val NETWORK_PAGE_SIZE = 15
     }
 }

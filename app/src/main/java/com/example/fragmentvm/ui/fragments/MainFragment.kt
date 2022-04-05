@@ -12,25 +12,23 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.fragmentvm.R
 import com.example.fragmentvm.databinding.MainFragmentBinding
 import com.example.fragmentvm.domain.model.vote.VoteResponseDomain
-import com.example.fragmentvm.ui.adapters.CatAdapter
-import com.example.fragmentvm.ui.adapters.ReposAdapter
+import com.example.fragmentvm.ui.adapters.CatPagingAdapter
 import com.example.fragmentvm.ui.utils.StateMain
 import com.example.fragmentvm.ui.utils.StateVote
 import com.example.fragmentvm.ui.utils.VotesEnum
 import com.example.fragmentvm.ui.viewmodels.CatViewModel
 import com.example.fragmentvm.ui.viewmodels.MainViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class MainFragment : Fragment() {
@@ -45,14 +43,8 @@ class MainFragment : Fragment() {
     private lateinit var swipe: SwipeRefreshLayout
     private lateinit var rv: RecyclerView
 
-    private var catAdapter = CatAdapter(mutableListOf(),
-        { cat, position, vote ->
-            viewModel.vote(cat, vote, position)
-        }, { cat ->
-            catViewModel.setCat(cat)
-        }
-    )
-    private var newCatAdapter = ReposAdapter(
+    private var catAdapter = CatPagingAdapter(
+        mutableListOf(),
         { cat, position, vote ->
             viewModel.vote(cat, vote, position)
         }, { cat ->
@@ -69,7 +61,6 @@ class MainFragment : Fragment() {
         observeUIStates()
     }
 
-    private var locationUpdatesJob: Job? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -87,22 +78,23 @@ class MainFragment : Fragment() {
                 animator.supportsChangeAnimations = false
             }
             setHasFixedSize(true)
-            adapter = newCatAdapter
-//            adapter = catAdapter
+            adapter = catAdapter
         }
 
-        viewModel.catsLiveData.observe(viewLifecycleOwner) { cats ->
-            swipe.isRefreshing = false
-            catAdapter.updateList(cats)
-        }
+        lifecycleScope.launchWhenCreated {
+            catAdapter.addLoadStateListener { loadState ->
+                if (loadState.source.refresh is LoadState.Loading) {
+                    viewModel.setState(StateMain.Loading)
+                }
+                if (loadState.source.refresh is LoadState.NotLoading) {
+                    viewModel.setState(StateMain.Finished)
+                }
+            }
 
-        locationUpdatesJob = lifecycleScope.launch {
-            Timber.d("locationUpdatesJob")
-            viewModel.cats.collectLatest { pagedData ->
-                newCatAdapter.submitData(pagedData)
+            viewModel.cats.collectLatest {
+                catAdapter.submitData(it)
             }
         }
-
         catViewModel.getCat().observe(viewLifecycleOwner) { cat ->
             val bottomSheet = DetailBottomSheet.instance(cat.url)
             bottomSheet.show(parentFragmentManager, bottomSheet.toString())
@@ -110,15 +102,10 @@ class MainFragment : Fragment() {
 
         swipe.setOnRefreshListener {
             swipe.isRefreshing = false
-            viewModel.getCats()
+            catAdapter.refresh()
         }
 
         return binding.root
-    }
-
-    override fun onDestroyView() {
-        locationUpdatesJob?.cancel()
-        super.onDestroyView()
     }
 
     private fun observeUIStates() {
@@ -155,6 +142,7 @@ class MainFragment : Fragment() {
         when (state) {
             StateMain.Empty -> {
                 binding.progressBar!!.visibility = View.GONE
+                binding.swipeLayout?.isEnabled = true
             }
             is StateMain.Error -> {
                 Toast.makeText(context, state.t.message, Toast.LENGTH_LONG)
@@ -162,9 +150,11 @@ class MainFragment : Fragment() {
             }
             StateMain.Loading -> {
                 binding.progressBar!!.visibility = View.VISIBLE
+                binding.swipeLayout?.isEnabled = false
             }
             StateMain.Finished -> {
                 binding.progressBar!!.visibility = View.GONE
+                binding.swipeLayout?.isEnabled = true
             }
         }
     }

@@ -11,18 +11,11 @@ import retrofit2.http.*
 
 interface CatService {
     @GET("images/search")
-    suspend fun searchRepos(
+    suspend fun getCats(
         @Header("x-api-key") apiKey: String,
         @Query("page") page: Int,
-        @Query("limit") itemsPerPage: Int = 2,
+        @Query("limit") itemsPerPage: Int = 10,
     ): List<CatDto>
-
-    @GET("images/search")
-    fun getCatsObservable(
-        @Header("x-api-key") apiKey: String,
-        @Query("limit") limit: Int = 10,
-        @Query("size") size: String = "small",
-    ): Observable<List<CatDto>>
 
     @POST("user/passwordlesssignup")
     fun signUp(
