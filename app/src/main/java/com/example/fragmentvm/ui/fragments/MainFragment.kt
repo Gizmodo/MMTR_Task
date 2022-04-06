@@ -10,8 +10,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
-import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
@@ -19,7 +17,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.fragmentvm.R
 import com.example.fragmentvm.databinding.MainFragmentBinding
 import com.example.fragmentvm.domain.model.vote.VoteResponseDomain
-import com.example.fragmentvm.ui.adapters.CatPagingAdapter
+import com.example.fragmentvm.ui.adapter.CatPagingAdapter
 import com.example.fragmentvm.ui.utils.StateMain
 import com.example.fragmentvm.ui.utils.StateVote
 import com.example.fragmentvm.ui.utils.VotesEnum
@@ -39,22 +37,15 @@ class MainFragment : Fragment() {
     private lateinit var viewModel: MainViewModel
     private lateinit var catViewModel: CatViewModel
     private lateinit var binding: MainFragmentBinding
-    private lateinit var nav: NavController
     private lateinit var swipe: SwipeRefreshLayout
     private lateinit var rv: RecyclerView
 
     private var catAdapter = CatPagingAdapter(
-        mutableListOf(),
         { cat, position, vote ->
             viewModel.vote(cat, vote, position)
         }, { cat ->
             catViewModel.setCat(cat)
         })
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        nav = findNavController()
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -90,15 +81,8 @@ class MainFragment : Fragment() {
                     viewModel.setState(StateMain.Finished)
                 }
             }
-
-            /*  viewModel.catsLiveData.observe(viewLifecycleOwner) {
-                  Timber.d("LiveData Cats -> $it")
-              }*/
             viewModel.catsFlow.collectLatest {
                 catAdapter.submitData(it)
-                catAdapter.updateList(
-                    catAdapter.snapshot().items
-                )
             }
         }
         catViewModel.getCat().observe(viewLifecycleOwner) { cat ->

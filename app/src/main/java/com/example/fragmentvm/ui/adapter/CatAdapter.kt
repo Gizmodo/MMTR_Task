@@ -1,32 +1,27 @@
-package com.example.fragmentvm.ui.adapters
+package com.example.fragmentvm.ui.adapter
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.paging.PagingDataAdapter
-import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
 import com.example.fragmentvm.databinding.RvItemCatBinding
 import com.example.fragmentvm.domain.model.cat.CatDomain
 import com.example.fragmentvm.ui.utils.VotesEnum
-import com.example.fragmentvm.ui.viewmodels.CatViewHolder
+import com.example.fragmentvm.ui.viewholder.MainViewHolder
 
-class CatPagingAdapter(
+class CatAdapter(
     private val catModels: MutableList<CatDomain>,
     private val onVoteClicked: (CatDomain, Int, VotesEnum) -> Unit,
     private val onItemClicked: (CatDomain) -> Unit,
-) : PagingDataAdapter<CatDomain, CatViewHolder>(CatComparator) {
+) : RecyclerView.Adapter<MainViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CatViewHolder {
+    override fun getItemCount() = catModels.size
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = RvItemCatBinding.inflate(inflater, parent, false)
-        return CatViewHolder(binding, onItemClicked, onVoteClicked)
-    }
 
-    override fun onBindViewHolder(holder: CatViewHolder, position: Int) {
-        val item = getItem(position)
-        if (item != null) {
-            holder.bind(item)
-        }
+        return MainViewHolder(binding, onItemClicked, onVoteClicked)
     }
 
     private fun isVoteDownAgain(position: Int, vote: VotesEnum): Boolean =
@@ -51,10 +46,7 @@ class CatPagingAdapter(
     }
 
     fun setToggle(position: Int, vote: VotesEnum) {
-        if (
-            isVoteDownAgain(position, vote) ||
-            isVoteUpAgain(position, vote)
-        ) {
+        if (isVoteDownAgain(position, vote) || isVoteUpAgain(position, vote)) {
             dismissVote(position)
         } else if (vote.value == VotesEnum.UP.value) {
             setVoteUp(position)
@@ -64,20 +56,15 @@ class CatPagingAdapter(
         notifyItemChanged(position)
     }
 
+    override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
+        val cat = catModels[position]
+        holder.bind(cat)
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     fun updateList(itemsList: List<CatDomain>) {
         catModels.clear()
         catModels.addAll(itemsList)
         notifyDataSetChanged()
-    }
-
-    companion object {
-        private val CatComparator = object : DiffUtil.ItemCallback<CatDomain>() {
-            override fun areItemsTheSame(oldItem: CatDomain, newItem: CatDomain): Boolean =
-                oldItem.id == newItem.id
-
-            override fun areContentsTheSame(oldItem: CatDomain, newItem: CatDomain): Boolean =
-                oldItem == newItem
-        }
     }
 }

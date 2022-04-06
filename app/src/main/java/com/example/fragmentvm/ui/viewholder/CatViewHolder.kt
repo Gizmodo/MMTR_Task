@@ -1,4 +1,4 @@
-package com.example.fragmentvm.ui.viewmodels
+package com.example.fragmentvm.ui.viewholder
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView

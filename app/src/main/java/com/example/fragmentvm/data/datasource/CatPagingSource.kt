@@ -11,7 +11,6 @@ import com.example.fragmentvm.domain.DataStoreInterface
 import com.example.fragmentvm.domain.model.cat.CatDomain
 import kotlinx.coroutines.runBlocking
 import retrofit2.HttpException
-import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
 

@@ -45,18 +45,12 @@ class MainViewModel : ViewModel() {
     init {
         App.instance().appGraph.embed(this)
         apikey = runBlocking { ds.getString(Constants.DataStore.KEY_API).toString() }
-//              getCats()
     }
 
     val catsFlow = Pager(PagingConfig(pageSize = 10, initialLoadSize = 10))
     { CatPagingSource() }
         .flow
         .cachedIn(viewModelScope)
-
-    /*val catsLiveData = Pager(PagingConfig(pageSize = 10, initialLoadSize = 10))
-    { CatPagingSource() }
-        .liveData
-        .cachedIn(viewModelScope)*/
 
     @Inject
     lateinit var repository: CatRepository
