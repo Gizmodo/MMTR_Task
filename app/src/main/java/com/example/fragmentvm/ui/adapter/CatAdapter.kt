@@ -1,4 +1,4 @@
-package com.example.fragmentvm.ui.adapters
+package com.example.fragmentvm.ui.adapter
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -7,19 +7,21 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.fragmentvm.databinding.RvItemCatBinding
 import com.example.fragmentvm.domain.model.cat.CatDomain
 import com.example.fragmentvm.ui.utils.VotesEnum
+import com.example.fragmentvm.ui.viewholder.MainViewHolder
 
 class CatAdapter(
     private val catModels: MutableList<CatDomain>,
     private val onVoteClicked: (CatDomain, Int, VotesEnum) -> Unit,
     private val onItemClicked: (CatDomain) -> Unit,
 ) : RecyclerView.Adapter<MainViewHolder>() {
+
     override fun getItemCount() = catModels.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = RvItemCatBinding.inflate(inflater, parent, false)
 
-        return MainViewHolder(binding,onItemClicked, onVoteClicked)
+        return MainViewHolder(binding, onItemClicked, onVoteClicked)
     }
 
     private fun isVoteDownAgain(position: Int, vote: VotesEnum): Boolean =

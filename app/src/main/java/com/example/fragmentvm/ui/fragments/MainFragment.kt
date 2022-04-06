@@ -10,21 +10,21 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
-import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.fragmentvm.R
 import com.example.fragmentvm.databinding.MainFragmentBinding
 import com.example.fragmentvm.domain.model.vote.VoteResponseDomain
-import com.example.fragmentvm.ui.adapters.CatAdapter
+import com.example.fragmentvm.ui.adapter.CatPagingAdapter
 import com.example.fragmentvm.ui.utils.StateMain
 import com.example.fragmentvm.ui.utils.StateVote
 import com.example.fragmentvm.ui.utils.VotesEnum
 import com.example.fragmentvm.ui.viewmodels.CatViewModel
 import com.example.fragmentvm.ui.viewmodels.MainViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
@@ -37,22 +37,15 @@ class MainFragment : Fragment() {
     private lateinit var viewModel: MainViewModel
     private lateinit var catViewModel: CatViewModel
     private lateinit var binding: MainFragmentBinding
-    private lateinit var nav: NavController
     private lateinit var swipe: SwipeRefreshLayout
     private lateinit var rv: RecyclerView
 
-    private var catAdapter = CatAdapter(mutableListOf(),
+    private var catAdapter = CatPagingAdapter(
         { cat, position, vote ->
             viewModel.vote(cat, vote, position)
         }, { cat ->
             catViewModel.setCat(cat)
-        }
-    )
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        nav = findNavController()
-    }
+        })
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -79,11 +72,19 @@ class MainFragment : Fragment() {
             adapter = catAdapter
         }
 
-        viewModel.catsLiveData.observe(viewLifecycleOwner) { cats ->
-            swipe.isRefreshing = false
-            catAdapter.updateList(cats)
+        lifecycleScope.launchWhenCreated {
+            catAdapter.addLoadStateListener { loadState ->
+                if (loadState.source.refresh is LoadState.Loading) {
+                    viewModel.setState(StateMain.Loading)
+                }
+                if (loadState.source.refresh is LoadState.NotLoading) {
+                    viewModel.setState(StateMain.Finished)
+                }
+            }
+            viewModel.catsFlow.collectLatest {
+                catAdapter.submitData(it)
+            }
         }
-
         catViewModel.getCat().observe(viewLifecycleOwner) { cat ->
             val bottomSheet = DetailBottomSheet.instance(cat.url)
             bottomSheet.show(parentFragmentManager, bottomSheet.toString())
@@ -91,7 +92,7 @@ class MainFragment : Fragment() {
 
         swipe.setOnRefreshListener {
             swipe.isRefreshing = false
-            viewModel.getCats()
+            catAdapter.refresh()
         }
 
         return binding.root
@@ -131,6 +132,7 @@ class MainFragment : Fragment() {
         when (state) {
             StateMain.Empty -> {
                 binding.progressBar!!.visibility = View.GONE
+                binding.swipeLayout?.isEnabled = true
             }
             is StateMain.Error -> {
                 Toast.makeText(context, state.t.message, Toast.LENGTH_LONG)
@@ -138,9 +140,11 @@ class MainFragment : Fragment() {
             }
             StateMain.Loading -> {
                 binding.progressBar!!.visibility = View.VISIBLE
+                binding.swipeLayout?.isEnabled = false
             }
             StateMain.Finished -> {
                 binding.progressBar!!.visibility = View.GONE
+                binding.swipeLayout?.isEnabled = true
             }
         }
     }

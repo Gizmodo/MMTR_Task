@@ -1,4 +1,4 @@
-package com.example.fragmentvm.ui.adapters
+package com.example.fragmentvm.ui.viewholder
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
@@ -20,7 +20,6 @@ class MainViewHolder(
 
     private val requestOptions = RequestOptions().error(R.drawable.ic_error_placeholder)
     private val transitionOptions = DrawableTransitionOptions().crossFade()
-
     fun bind(model: CatDomain) {
         with(binding) {
             imgView.setOnClickListener {
