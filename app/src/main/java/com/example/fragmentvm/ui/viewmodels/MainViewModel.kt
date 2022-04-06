@@ -1,19 +1,20 @@
 package com.example.fragmentvm.ui.viewmodels
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
 import com.example.fragmentvm.App
 import com.example.fragmentvm.core.utils.Constants
 import com.example.fragmentvm.core.utils.Util
-import com.example.fragmentvm.data.RetrofitRepository
-import com.example.fragmentvm.data.model.cat.CatDtoMapper
+import com.example.fragmentvm.data.datasource.CatPagingSource
 import com.example.fragmentvm.data.model.response.BackendResponseDto
 import com.example.fragmentvm.data.model.response.BackendResponseDtoMapper
 import com.example.fragmentvm.data.model.vote.request.VoteRequestMapper
 import com.example.fragmentvm.data.model.vote.response.VoteResponseDto
 import com.example.fragmentvm.data.model.vote.response.VoteResponseMapper
+import com.example.fragmentvm.data.repository.CatRepository
 import com.example.fragmentvm.domain.DataStoreInterface
 import com.example.fragmentvm.domain.model.cat.CatDomain
 import com.example.fragmentvm.domain.model.vote.VoteRequestDomain
@@ -32,6 +33,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class MainViewModel : ViewModel() {
+
     private val _stateUIMain = MutableStateFlow<StateMain>(StateMain.Empty)
     fun getStateUIMain(): StateFlow<StateMain> = _stateUIMain
 
@@ -43,18 +45,18 @@ class MainViewModel : ViewModel() {
     init {
         App.instance().appGraph.embed(this)
         apikey = runBlocking { ds.getString(Constants.DataStore.KEY_API).toString() }
-        getCats()
     }
 
+    val catsFlow = Pager(PagingConfig(pageSize = 10, initialLoadSize = 10))
+    { CatPagingSource() }
+        .flow
+        .cachedIn(viewModelScope)
+
     @Inject
-    lateinit var retrofit: RetrofitRepository
+    lateinit var repository: CatRepository
 
     @Inject
     lateinit var ds: DataStoreInterface
-
-    private var _cats = MutableLiveData<List<CatDomain>>()
-    val catsLiveData: LiveData<List<CatDomain>>
-        get() = _cats
 
     fun vote(catModel: CatDomain, vote: VotesEnum, position: Int) {
         _stateUIVote.value = StateVote.Loading
@@ -63,7 +65,7 @@ class MainViewModel : ViewModel() {
                 .mapFromDomainModel(
                     VoteRequestDomain(catModel.id, vote)
                 )
-            retrofit.postVote(apikey, voteRequest)
+            repository.postVote(apikey, voteRequest)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     if (it.isSuccessful) {
@@ -98,26 +100,8 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun getCats() {
-        _stateUIMain.value = StateMain.Loading
-
-        viewModelScope.launch(Dispatchers.IO) {
-            retrofit.getCats(apikey)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    {
-                        if (it.isEmpty()) {
-                            _stateUIMain.value = StateMain.Empty
-                        } else {
-                            _stateUIMain.value = StateMain.Finished
-                            _cats.postValue(CatDtoMapper().toDomainList(it))
-                        }
-                    },
-                    {
-                        Timber.e(it)
-                        _stateUIMain.value = StateMain.Error(it)
-                    })
-        }
+    fun setState(state: StateMain) {
+        _stateUIMain.value = state
     }
 
     fun resetVoteState() {

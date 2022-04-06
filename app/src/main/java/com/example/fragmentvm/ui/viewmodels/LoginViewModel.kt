@@ -11,10 +11,10 @@ import com.example.fragmentvm.core.utils.Util
 import com.example.fragmentvm.core.utils.Util.isEmail
 import com.example.fragmentvm.core.utils.Util.parseBackendResponseError
 import com.example.fragmentvm.core.utils.Util.skipFirst
-import com.example.fragmentvm.data.RetrofitRepository
 import com.example.fragmentvm.data.model.login.LoginDtoMapper
 import com.example.fragmentvm.data.model.response.BackendResponseDto
 import com.example.fragmentvm.data.model.response.BackendResponseDtoMapper
+import com.example.fragmentvm.data.repository.CatRepository
 import com.example.fragmentvm.domain.DataStoreInterface
 import com.example.fragmentvm.domain.model.BackendResponseDomain
 import com.example.fragmentvm.domain.model.login.LoginDomain
@@ -41,7 +41,7 @@ class LoginViewModel : ViewModel() {
     lateinit var ds: DataStoreInterface
 
     @Inject
-    lateinit var retrofitRepository: RetrofitRepository
+    lateinit var catRepository: CatRepository
 
     private var _signUpLiveData = MutableLiveData<BackendResponseDomain>()
     val signUpLiveData: LiveData<BackendResponseDomain>
@@ -52,7 +52,7 @@ class LoginViewModel : ViewModel() {
         val eml = runBlocking { ds.getString(KEY_EMAIL) }
         val loginModel =
             LoginDtoMapper().mapFromDomainModel(LoginDomain(desc.toString(), eml.toString()))
-        retrofitRepository.postSignUp(loginModel)
+        catRepository.postSignUp(loginModel)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 _signUpLiveData.value = BackendResponseDtoMapper().mapToDomainModel(it)
