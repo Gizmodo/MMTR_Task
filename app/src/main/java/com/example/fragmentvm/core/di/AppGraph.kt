@@ -2,10 +2,7 @@ package com.example.fragmentvm.core.di
 
 import com.example.fragmentvm.data.datasource.CatPagingSource
 import com.example.fragmentvm.ui.activity.MainActivity
-import com.example.fragmentvm.ui.viewmodels.ApiViewModel
-import com.example.fragmentvm.ui.viewmodels.LoginViewModel
-import com.example.fragmentvm.ui.viewmodels.MainActivityViewModel
-import com.example.fragmentvm.ui.viewmodels.MainViewModel
+import com.example.fragmentvm.ui.viewmodels.*
 import dagger.Component
 import javax.inject.Singleton
 
@@ -25,4 +22,5 @@ interface AppGraph {
     fun embed(activity: MainActivity)
     fun embed(vm: MainViewModel)
     fun embed(vm: CatPagingSource)
+    fun embed(vm: CatViewModel)
 }

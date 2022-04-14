@@ -2,6 +2,8 @@ package com.example.fragmentvm.data.repository
 
 import com.example.fragmentvm.core.utils.RxUtils
 import com.example.fragmentvm.data.model.cat.CatDto
+import com.example.fragmentvm.data.model.favourite.post.FavoriteRequestDto
+import com.example.fragmentvm.data.model.favourite.post.FavouriteResponseDto
 import com.example.fragmentvm.data.model.login.LoginDto
 import com.example.fragmentvm.data.model.response.BackendResponseDto
 import com.example.fragmentvm.data.model.vote.request.VoteRequestDto
@@ -35,6 +37,14 @@ class CatRepository @Inject constructor(
         vote: VoteRequestDto,
     ): @NotNull Observable<Response<VoteResponseDto>> {
         return apiService.vote(apiKey, vote)
+            .compose(RxUtils.applySubscriberScheduler())
+    }
+
+    fun postFavourite(
+        apiKey: String,
+        payload: FavoriteRequestDto,
+    ): @NotNull Observable<Response<FavouriteResponseDto>> {
+        return apiService.postFavourite(apiKey, payload)
             .compose(RxUtils.applySubscriberScheduler())
     }
 }

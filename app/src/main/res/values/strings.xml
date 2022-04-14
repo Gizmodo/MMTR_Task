@@ -8,9 +8,10 @@
     <string name="title">Error</string>
     <string name="accept">OK</string>
     <string name="back">Back</string>
-    <string name="thumbup">Like</string>
-    <string name="thumbdown">Dislike</string>
+    <string name="like">Like</string>
+    <string name="dislike">Dislike</string>
     <string name="dots">More</string>
     <string name="error">Ошибка</string>
     <string name="cat_image">Cat image</string>
+    <string name="favourite">Favourite</string>
 </resources>

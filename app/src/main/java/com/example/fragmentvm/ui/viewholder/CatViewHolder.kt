@@ -16,6 +16,7 @@ class CatViewHolder(
     private val binding: RvItemCatBinding,
     private val onItemClicked: (CatDomain) -> Unit,
     private val onVoteClicked: (CatDomain, Int, VotesEnum) -> Unit,
+    private val onFavouriteClicked: (CatDomain) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private val requestOptions = RequestOptions().error(R.drawable.ic_error_placeholder)
@@ -24,6 +25,9 @@ class CatViewHolder(
         with(binding) {
             imgView.setOnClickListener {
                 onItemClicked(model)
+            }
+            btnFavourite.setOnClickListener {
+                onFavouriteClicked(model)
             }
 
             with(btnVoteDown) {

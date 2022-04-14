@@ -15,7 +15,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.fragmentvm.R
+import com.example.fragmentvm.core.utils.StatefulData
 import com.example.fragmentvm.databinding.MainFragmentBinding
+import com.example.fragmentvm.domain.model.BackendResponseDomain
 import com.example.fragmentvm.domain.model.vote.VoteResponseDomain
 import com.example.fragmentvm.ui.adapter.CatPagingAdapter
 import com.example.fragmentvm.ui.utils.StateMain
@@ -45,7 +47,10 @@ class MainFragment : Fragment() {
             viewModel.vote(cat, vote, position)
         }, { cat ->
             catViewModel.setCat(cat)
-        })
+        }, { cat ->
+            catViewModel.setFavourite(cat)
+        }
+    )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -62,7 +67,7 @@ class MainFragment : Fragment() {
         binding = MainFragmentBinding.inflate(inflater, container, false)
         swipe = binding.swipeLayout!!
         rv = binding.recyclerview!!
-
+//        this.findNavController()            .navigate(MainFragmentDirections.actionMainFragmentToFavouriteFragment())
         with(rv) {
             val animator = itemAnimator
             if (animator is SimpleItemAnimator) {
@@ -84,7 +89,35 @@ class MainFragment : Fragment() {
             viewModel.catsFlow.collectLatest {
                 catAdapter.submitData(it)
             }
+            catViewModel.getStateUI().collectLatest {
+                when (it) {
+                    StateVote.Empty -> TODO()
+                    is StateVote.Error -> TODO()
+                    StateVote.Finished -> TODO()
+                    StateVote.Loading -> TODO()
+                    is StateVote.Success -> {
+                        Timber.d("Success")
+                    }
+                    is StateVote.UnSuccess -> {
+                        Timber.d(it.data.message)
+                    }
+                }
+            }
+            catViewModel.getStatefulData().collectLatest {
+                when (it) {
+                    is StatefulData.Error -> {
+                        Timber.d(it.message)
+                    }
+                    StatefulData.Loading -> {
+                        Timber.d("Loading")
+                    }
+                    is StatefulData.Success -> {
+                        Timber.d("Success")
+                    }
+                }
+            }
         }
+
         catViewModel.getCat().observe(viewLifecycleOwner) { cat ->
             val bottomSheet = DetailBottomSheet.instance(cat.url)
             bottomSheet.show(parentFragmentManager, bottomSheet.toString())
@@ -108,6 +141,29 @@ class MainFragment : Fragment() {
             .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
             .onEach { handleVoteStateNew(it) }
             .launchIn(viewLifecycleOwner.lifecycleScope)
+
+        catViewModel.test
+            .flowWithLifecycle(
+                viewLifecycleOwner.lifecycle,
+                Lifecycle.State.STARTED
+            )
+            .onEach { handleFavouriteClick(it) }
+            .launchIn(viewLifecycleOwner.lifecycleScope)
+
+    }
+
+    private fun handleFavouriteClick(it: StatefulData<BackendResponseDomain>) {
+        when(it){
+            is StatefulData.Error -> {
+                Timber.d(it.message)
+            }
+            StatefulData.Loading -> {
+                Timber.d("Loading")
+            }
+            is StatefulData.Success -> {
+                Timber.d("Success")
+            }
+        }
     }
 
     private fun handleVoteStateNew(state: StateVote<VoteResponseDomain>) {

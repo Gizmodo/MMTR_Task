@@ -41,6 +41,9 @@
         <action
             android:id="@+id/action_mainFragment_to_detailFragment"
             app:destination="@id/detailFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_favouriteFragment"
+            app:destination="@id/favouriteFragment" />
     </fragment>
     <fragment
         android:id="@+id/detailFragment"
@@ -51,4 +54,9 @@
             android:name="catUrl"
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/favouriteFragment"
+        android:name="com.example.fragmentvm.ui.fragments.FavouriteFragment"
+        android:label="favourite_fragment"
+        tools:layout="@layout/favourite_fragment" />
 </navigation>

@@ -42,12 +42,22 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="ImageContrastCheck" />
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFavourite"
+                style="@style/Theme.FragmentVM.Card"
+                android:checkable="true"
+                android:contentDescription="@string/favourite"
+                app:icon="@drawable/ic_favourite"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btnVoteUp"
+                app:layout_constraintTop_toBottomOf="@id/imgView"
+                tools:ignore="TouchTargetSizeCheck" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnVoteUp"
                 style="@style/Theme.FragmentVM.Card"
                 android:checkable="true"
-                android:contentDescription="@string/thumbup"
+                android:contentDescription="@string/like"
                 app:icon="@drawable/ic_vote_up"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/btnVoteDown"
@@ -58,7 +68,7 @@
                 android:id="@+id/btnVoteDown"
                 style="@style/Theme.FragmentVM.Card"
                 android:checkable="true"
-                android:contentDescription="@string/thumbdown"
+                android:contentDescription="@string/dislike"
                 app:icon="@drawable/ic_vote_down"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/btnDots"
