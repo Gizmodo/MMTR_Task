@@ -46,6 +46,7 @@
                 android:id="@+id/btnFavourite"
                 style="@style/Theme.FragmentVM.Card"
                 android:checkable="true"
+                android:checked="false"
                 android:contentDescription="@string/favourite"
                 app:icon="@drawable/ic_favourite"
                 app:layout_constraintBottom_toBottomOf="parent"

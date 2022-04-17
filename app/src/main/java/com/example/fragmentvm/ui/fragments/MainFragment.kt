@@ -153,19 +153,23 @@ class MainFragment : Fragment() {
     }
 
     private fun handleFavouriteClick(it: StatefulData<BackendResponseDomain>) {
-        when(it){
+        when (it) {
             is StatefulData.Error -> {
                 Timber.d(it.message)
+                showDialog(it.message)
             }
             StatefulData.Loading -> {
                 Timber.d("Loading")
             }
             is StatefulData.Success -> {
                 Timber.d("Success")
+                setFavouriteId(it.result.)
             }
         }
     }
 
+    // TODO: сделать state где для возврата ошибкт будет исполльзован общий класс BackEndResponse,
+    // для успешного ответа свой класс
     private fun handleVoteStateNew(state: StateVote<VoteResponseDomain>) {
         when (state) {
             StateVote.Empty -> Timber.d("Empty")
@@ -206,15 +210,17 @@ class MainFragment : Fragment() {
     }
 
     private fun showDialog(message: String) {
-        context?.let {
-            MaterialAlertDialogBuilder(it)
-                .setTitle(resources.getString(R.string.title))
-                .setMessage(message)
-                .setPositiveButton(resources.getString(R.string.accept)) { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .show()
-        }
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(resources.getString(R.string.title))
+            .setMessage(message)
+            .setPositiveButton(resources.getString(R.string.accept)) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun setFavouriteId(position: Int, favouriteId: Int) {
+        catAdapter.setFavouriteId(position, favouriteId)
     }
 
     private fun setVoteButton(position: Int, vote: VotesEnum) {

@@ -63,6 +63,10 @@ class CatPagingAdapter(
         notifyItemChanged(position)
     }
 
+    fun setFavouriteId(position: Int, favouriteId: Int) {
+        this.snapshot().items[position].idFavourite = favouriteId
+    }
+
     companion object {
         private val CatComparator = object : DiffUtil.ItemCallback<CatDomain>() {
             override fun areItemsTheSame(oldItem: CatDomain, newItem: CatDomain): Boolean =

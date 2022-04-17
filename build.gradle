@@ -11,7 +11,7 @@ buildscript {
         glide = "4.13.1"
         gson = "2.9.0"
         lifecycle = '2.5.0-alpha06'
-        material = "1.6.0-beta01"
+        material = '1.7.0-alpha01'
         nav = '2.5.0-alpha04'
         okhttp = "5.0.0-alpha.6"
         paging = "3.1.1"

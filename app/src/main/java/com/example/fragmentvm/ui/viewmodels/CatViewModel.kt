@@ -74,6 +74,7 @@ class CatViewModel : ViewModel() {
             catRepository.postFavourite(apikey, favouriteRequest)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
+                    _test.value=StatefulData.Loading
                     if (it.isSuccessful) {
                         it.body()?.let { body: FavouriteResponseDto ->
                             val favouriteResponse: FavouriteResponseDomain =

@@ -11,7 +11,8 @@ class CatDtoMapper : DomainMapper<CatDto, CatDomain> {
             width = model.width,
             height = model.height,
             isLiked = false,
-            isDisliked = false
+            isDisliked = false,
+            idFavourite = null
         )
     }
 
