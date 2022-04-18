@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.fragmentvm.App
 import com.example.fragmentvm.R
 import com.example.fragmentvm.core.utils.*
+import com.example.fragmentvm.data.model.favourite.delete.FavouriteResponseDeleteDto
 import com.example.fragmentvm.data.model.favourite.post.FavoriteRequestMapper
 import com.example.fragmentvm.data.model.favourite.post.FavoriteResponseMapper
 import com.example.fragmentvm.data.model.favourite.post.FavouriteResponseDto
@@ -76,41 +77,89 @@ class CatViewModel : ViewModel() {
                                 Timber.d("Ошибка при добавление в избранное: ${response.message}")
                                 _favouriteState.value =
                                     StatefulData.ErrorUiText(UiText.StringResource(
-                                        resId = R.string.favourite_error,
+                                        resId = R.string.favourite_error_add,
                                         response.message
                                     ))
-                                // TODO: Попробовать снять лайк по ID ранее установленного лайка
                                 cat.idFavourite?.let {
                                     Timber.d("Есть возможность удалить избранное $cat.idFavourite")
-                                    /*
-                                         catRepository.deleteFavourite(apikey, cat.idFavourite!!)
-                                             .observeOn(AndroidSchedulers.mainThread())
-                                             .subscribe({
 
-                                             },{
-
-                                             })
-                                         */
+                                    catRepository.deleteFavourite(apikey, cat.idFavourite!!)
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe({ responseOnDelete ->
+                                            try {
+                                                when {
+                                                    responseOnDelete.isSuccessful -> {
+                                                        responseOnDelete.body()
+                                                            ?.let { body: FavouriteResponseDeleteDto ->
+                                                                val favouriteResponse =
+                                                                    FavouriteResponseDomain(
+                                                                        id = cat.idFavourite!!,
+                                                                        message = body.message,
+                                                                        position = null
+                                                                    )
+                                                                favouriteState.value =
+                                                                    StatefulData.Success(
+                                                                        favouriteResponse
+                                                                    )
+                                                            }
+                                                    }
+                                                    else -> {
+                                                        responseOnDelete.errorBody()
+                                                            ?.let { bodyOnDelete: ResponseBody ->
+                                                                try {
+                                                                    val errorOnDelete =
+                                                                        Util.parseBackendResponseError(
+                                                                            bodyOnDelete)
+                                                                    val resOnDelete =
+                                                                        BackendResponseDtoMapper().mapToDomainModel(
+                                                                            errorOnDelete)
+                                                                    Timber.d("Ошибка при удалении из избранного: ${resOnDelete.message}")
+                                                                    _favouriteState.value =
+                                                                        StatefulData.ErrorUiText(
+                                                                            UiText.StringResource(
+                                                                                resId = R.string.favourite_error_remove,
+                                                                                resOnDelete.message
+                                                                            ))
+                                                                } catch (e: Exception) {
+                                                                    handleException(e)
+                                                                }
+                                                            }
+                                                    }
+                                                }
+                                            } catch (e: Exception) {
+                                                handleException(e)
+                                            }
+                                        }, { _throw ->
+                                            handleObservableThrow(_throw)
+                                        })
                                 }
 
                             } catch (e: Exception) {
-                                Timber.e("Возникло исключение: $e")
-                                _favouriteState.value =
-                                    StatefulData.ErrorUiText(UiText.StringResource(
-                                        resId = R.string.exception,
-                                        e.message.toString()
-                                    ))
+                                handleException(e)
                             }
                         }
                     }
                 }, {
-                    _favouriteState.value =
-                        StatefulData.ErrorUiText(UiText.StringResource(
-                            resId = R.string.error_subscribe,
-                            it.message.toString()
-                        ))
-                    Timber.e(it)
+                    handleObservableThrow(it)
                 })
         }
+    }
+
+    private fun handleObservableThrow(_throw: Throwable) {
+        _favouriteState.value =
+            StatefulData.ErrorUiText(UiText.StringResource(
+                resId = R.string.error_subscribe,
+                _throw.message.toString()
+            ))
+        Timber.e(_throw)
+    }
+
+    private fun handleException(e: Exception) {
+        Timber.e("Возникло исключение: $e")
+        _favouriteState.value =
+            StatefulData.ErrorUiText(UiText.StringResource(
+                resId = R.string.exception,
+                e.message.toString()
+            ))
     }
 }
