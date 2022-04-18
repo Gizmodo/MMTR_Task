@@ -6,5 +6,5 @@ data class FavouritesListItem(
     val image: Image,
     val image_id: String,
     val sub_id: String,
-    val user_id: String
+    val user_id: String,
 )

@@ -7,5 +7,5 @@ data class CatDomain(
     var height: Int,
     var isLiked: Boolean = false,
     var isDisliked: Boolean = false,
-    var idFavourite: Int?
+    var idFavourite: Int?,
 )

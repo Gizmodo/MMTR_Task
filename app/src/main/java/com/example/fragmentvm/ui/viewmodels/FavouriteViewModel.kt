@@ -15,9 +15,9 @@ class FavouriteViewModel : ViewModel() {
     val loading: LiveData<Boolean>
         get() = _loading
 
-   /* private var _usersLiveData = MutableLiveData<UsersList>()
-    val usersLiveData: LiveData<UsersList>
-        get() = _usersLiveData*/
+    /* private var _usersLiveData = MutableLiveData<UsersList>()
+     val usersLiveData: LiveData<UsersList>
+         get() = _usersLiveData*/
 
     var job: Job? = null
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
