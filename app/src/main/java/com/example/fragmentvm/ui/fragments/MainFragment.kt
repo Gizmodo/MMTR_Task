@@ -17,7 +17,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.fragmentvm.R
 import com.example.fragmentvm.core.utils.StatefulData
 import com.example.fragmentvm.databinding.MainFragmentBinding
-import com.example.fragmentvm.domain.model.BackendResponseDomain
+import com.example.fragmentvm.domain.model.favourite.FavouriteResponseDomain
 import com.example.fragmentvm.domain.model.vote.VoteResponseDomain
 import com.example.fragmentvm.ui.adapter.CatPagingAdapter
 import com.example.fragmentvm.ui.utils.StateMain
@@ -47,8 +47,8 @@ class MainFragment : Fragment() {
             viewModel.vote(cat, vote, position)
         }, { cat ->
             catViewModel.setCat(cat)
-        }, { cat ->
-            catViewModel.setFavourite(cat)
+        }, { cat, position ->
+            catViewModel.setFavourite(cat, position)
         }
     )
 
@@ -89,33 +89,6 @@ class MainFragment : Fragment() {
             viewModel.catsFlow.collectLatest {
                 catAdapter.submitData(it)
             }
-            catViewModel.getStateUI().collectLatest {
-                when (it) {
-                    StateVote.Empty -> TODO()
-                    is StateVote.Error -> TODO()
-                    StateVote.Finished -> TODO()
-                    StateVote.Loading -> TODO()
-                    is StateVote.Success -> {
-                        Timber.d("Success")
-                    }
-                    is StateVote.UnSuccess -> {
-                        Timber.d(it.data.message)
-                    }
-                }
-            }
-            catViewModel.getStatefulData().collectLatest {
-                when (it) {
-                    is StatefulData.Error -> {
-                        Timber.d(it.message)
-                    }
-                    StatefulData.Loading -> {
-                        Timber.d("Loading")
-                    }
-                    is StatefulData.Success -> {
-                        Timber.d("Success")
-                    }
-                }
-            }
         }
 
         catViewModel.getCat().observe(viewLifecycleOwner) { cat ->
@@ -139,38 +112,44 @@ class MainFragment : Fragment() {
 
         viewModel.getStateUIVote()
             .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
-            .onEach { handleVoteStateNew(it) }
+            .onEach { handleVoteState(it) }
             .launchIn(viewLifecycleOwner.lifecycleScope)
 
-        catViewModel.test
+        catViewModel.favouriteState
             .flowWithLifecycle(
                 viewLifecycleOwner.lifecycle,
                 Lifecycle.State.STARTED
             )
-            .onEach { handleFavouriteClick(it) }
+            .onEach { handleFavouriteState(it) }
             .launchIn(viewLifecycleOwner.lifecycleScope)
 
     }
 
-    private fun handleFavouriteClick(it: StatefulData<BackendResponseDomain>) {
+    private fun handleFavouriteState(it: StatefulData<FavouriteResponseDomain>) {
         when (it) {
             is StatefulData.Error -> {
                 Timber.d(it.message)
-                showDialog(it.message)
             }
             StatefulData.Loading -> {
                 Timber.d("Loading")
             }
             is StatefulData.Success -> {
                 Timber.d("Success")
-                setFavouriteId(it.result.)
+                with(it.result) {
+                    setFavouriteId(position, id)
+                    catViewModel.resetFavouriteState()
+                }
+            }
+            is StatefulData.ErrorUiText -> {
+                showDialog(it.message.asString(requireContext()))
+                Timber.d("ErrorUiText " + it.message.asString(requireContext()))
             }
         }
     }
 
     // TODO: сделать state где для возврата ошибкт будет исполльзован общий класс BackEndResponse,
     // для успешного ответа свой класс
-    private fun handleVoteStateNew(state: StateVote<VoteResponseDomain>) {
+    private fun handleVoteState(state: StateVote<VoteResponseDomain>) {
         when (state) {
             StateVote.Empty -> Timber.d("Empty")
             is StateVote.Error -> Timber.d("Error")
@@ -219,7 +198,7 @@ class MainFragment : Fragment() {
             .show()
     }
 
-    private fun setFavouriteId(position: Int, favouriteId: Int) {
+    private fun setFavouriteId(position: Int?, favouriteId: Int) {
         catAdapter.setFavouriteId(position, favouriteId)
     }
 

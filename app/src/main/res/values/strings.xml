@@ -5,7 +5,7 @@
     <string name="description">Description</string>
     <string name="apikey">api key</string>
     <string name="btnNext">Next</string>
-    <string name="title">Error</string>
+    <string name="title">Ошибка</string>
     <string name="accept">OK</string>
     <string name="back">Back</string>
     <string name="like">Like</string>
@@ -14,4 +14,7 @@
     <string name="error">Ошибка</string>
     <string name="cat_image">Cat image</string>
     <string name="favourite">Favourite</string>
+    <string name="favourite_error">Ошибка при добавлении в избранное: %s</string>
+    <string name="exception">Возникло исключение: %s</string>
+    <string name="error_subscribe">Возникла ошибка в Subscribe: %s</string>
 </resources>

@@ -4,25 +4,20 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fragmentvm.App
-import com.example.fragmentvm.core.utils.Constants
-import com.example.fragmentvm.core.utils.SingleLiveEvent
-import com.example.fragmentvm.core.utils.StatefulData
-import com.example.fragmentvm.core.utils.Util
+import com.example.fragmentvm.R
+import com.example.fragmentvm.core.utils.*
 import com.example.fragmentvm.data.model.favourite.post.FavoriteRequestMapper
 import com.example.fragmentvm.data.model.favourite.post.FavoriteResponseMapper
 import com.example.fragmentvm.data.model.favourite.post.FavouriteResponseDto
 import com.example.fragmentvm.data.model.response.BackendResponseDtoMapper
 import com.example.fragmentvm.data.repository.CatRepository
 import com.example.fragmentvm.domain.DataStoreInterface
-import com.example.fragmentvm.domain.model.BackendResponseDomain
 import com.example.fragmentvm.domain.model.cat.CatDomain
 import com.example.fragmentvm.domain.model.favourite.FavouriteRequestDomain
 import com.example.fragmentvm.domain.model.favourite.FavouriteResponseDomain
-import com.example.fragmentvm.ui.utils.StateVote
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody
@@ -43,18 +38,10 @@ class CatViewModel : ViewModel() {
     @Inject
     lateinit var catRepository: CatRepository
 
-    private val _stateUI = MutableStateFlow<StateVote<BackendResponseDomain>>(StateVote.Empty)
-    fun getStateUI(): StateFlow<StateVote<BackendResponseDomain>> = _stateUI
-
-    private val _stateFulData =
-        MutableStateFlow<StatefulData<BackendResponseDomain>>(StatefulData.Loading)
-
-    fun getStatefulData(): StateFlow<StatefulData<BackendResponseDomain>> = _stateFulData
-
-    private val _test =
-        MutableStateFlow<StatefulData<BackendResponseDomain>>(StatefulData.Loading)
-    val test: MutableStateFlow<StatefulData<BackendResponseDomain>>
-        get() = _test
+    private val _favouriteState =
+        MutableStateFlow<StatefulData<FavouriteResponseDomain>>(StatefulData.Loading)
+    val favouriteState: MutableStateFlow<StatefulData<FavouriteResponseDomain>>
+        get() = _favouriteState
 
     private val _catModel = SingleLiveEvent<CatDomain>()
     fun getCat(): LiveData<CatDomain> = _catModel
@@ -62,40 +49,66 @@ class CatViewModel : ViewModel() {
         _catModel.value = item
     }
 
-    fun setFavourite(cat: CatDomain) {
+    fun resetFavouriteState() {
+        _favouriteState.value = StatefulData.Loading
+    }
+
+    fun setFavourite(cat: CatDomain, position: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             val favouriteRequest = FavoriteRequestMapper()
-                .mapFromDomainModel(
-                    FavouriteRequestDomain(
-                        cat.id,
-                        "demo-440b14"
-                    )
-                )
+                .mapFromDomainModel(FavouriteRequestDomain(cat.id, "demo-440b14"))
             catRepository.postFavourite(apikey, favouriteRequest)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    _test.value=StatefulData.Loading
+                    _favouriteState.value = StatefulData.Loading
                     if (it.isSuccessful) {
                         it.body()?.let { body: FavouriteResponseDto ->
                             val favouriteResponse: FavouriteResponseDomain =
                                 FavoriteResponseMapper().mapToDomainModel(body)
+                            favouriteResponse.position = position
+                            favouriteState.value = StatefulData.Success(favouriteResponse)
                         }
                     } else {
                         it.errorBody()?.let { body: ResponseBody ->
                             try {
                                 val error = Util.parseBackendResponseError(body)
                                 val response = BackendResponseDtoMapper().mapToDomainModel(error)
-                                Timber.d("Ошибка при добавление в избранное ${response.message}")
-                                _test.value = StatefulData.Error(response.message)
-                                _stateUI.value = StateVote.UnSuccess(response)
-                                _stateFulData.value = StatefulData.Error(response.message)
+                                Timber.d("Ошибка при добавление в избранное: ${response.message}")
+                                _favouriteState.value =
+                                    StatefulData.ErrorUiText(UiText.StringResource(
+                                        resId = R.string.favourite_error,
+                                        response.message
+                                    ))
+                                // TODO: Попробовать снять лайк по ID ранее установленного лайка
+                                cat.idFavourite?.let {
+                                    Timber.d("Есть возможность удалить избранное $cat.idFavourite")
+                                    /*
+                                         catRepository.deleteFavourite(apikey, cat.idFavourite!!)
+                                             .observeOn(AndroidSchedulers.mainThread())
+                                             .subscribe({
+
+                                             },{
+
+                                             })
+                                         */
+                                }
+
                             } catch (e: Exception) {
-                                Timber.e(e)
+                                Timber.e("Возникло исключение: $e")
+                                _favouriteState.value =
+                                    StatefulData.ErrorUiText(UiText.StringResource(
+                                        resId = R.string.exception,
+                                        e.message.toString()
+                                    ))
                             }
                         }
                     }
                 }, {
-                    _stateUI.value = StateVote.Error(it)
+                    _favouriteState.value =
+                        StatefulData.ErrorUiText(UiText.StringResource(
+                            resId = R.string.error_subscribe,
+                            it.message.toString()
+                        ))
                     Timber.e(it)
                 })
         }

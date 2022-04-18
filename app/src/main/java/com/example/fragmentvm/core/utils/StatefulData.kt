@@ -8,12 +8,14 @@ import kotlinx.coroutines.flow.transform
 sealed class StatefulData<out T : Any> {
     data class Success<T : Any>(val result: T) : StatefulData<T>()
     data class Error(val message: String) : StatefulData<Nothing>()
+    data class ErrorUiText(val message: UiText) : StatefulData<Nothing>()
     object Loading : StatefulData<Nothing>()
 
     inline fun <R : Any> map(transform: (T) -> R): StatefulData<R> {
         return when (this) {
             is Loading -> Loading
             is Error -> Error(this.message)
+            is ErrorUiText -> ErrorUiText(this.message)
             is Success -> Success(transform(this.result))
         }
     }
@@ -22,13 +24,14 @@ sealed class StatefulData<out T : Any> {
         return when (this) {
             is Loading -> Loading
             is Error -> Error(this.message)
+            is ErrorUiText -> ErrorUiText(this.message)
             is Success -> Success(transform(this.result))
         }
     }
 }
 
 fun <T : Any> Flow<T>.asStatefulData(): Flow<StatefulData<T>> = wrapWithStatefulData().catch {
-    emit(StatefulData.Error(it.message ?: "There was an error"))
+    emit(StatefulData.Error(it.message ?: "Возникла ошибка"))
 }
 
 fun <T : Any> Flow<T>.wrapWithStatefulData(): Flow<StatefulData<T>> = transform { value ->

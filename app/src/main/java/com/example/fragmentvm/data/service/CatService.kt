@@ -1,6 +1,7 @@
 package com.example.fragmentvm.data.service
 
 import com.example.fragmentvm.data.model.cat.CatDto
+import com.example.fragmentvm.data.model.favourite.delete.FavouriteResponseDeleteDto
 import com.example.fragmentvm.data.model.favourite.get.FavouritesList
 import com.example.fragmentvm.data.model.favourite.post.FavoriteRequestDto
 import com.example.fragmentvm.data.model.favourite.post.FavouriteResponseDto
@@ -53,6 +54,6 @@ interface CatService {
     @DELETE("favourites/:favourite_id")
     fun deleteFavourite(
         @Header("x-api-key") apiKey: String,
-        @Query("favourite_id") favourite_id: String
-    )
+        @Query("favourite_id") favourite_id: Int,
+    ): Observable<Response<FavouriteResponseDeleteDto>>
 }

@@ -7,7 +7,8 @@ class FavoriteResponseMapper : DomainMapper<FavouriteResponseDto, FavouriteRespo
     override fun mapToDomainModel(model: FavouriteResponseDto): FavouriteResponseDomain {
         return FavouriteResponseDomain(
             id = model.id,
-            message = model.message
+            message = model.message,
+            position = null
         )
     }
 

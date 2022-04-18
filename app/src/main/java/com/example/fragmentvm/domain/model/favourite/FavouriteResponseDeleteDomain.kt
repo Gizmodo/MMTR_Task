@@ -1,7 +1,5 @@
 package com.example.fragmentvm.domain.model.favourite
 
-class FavouriteResponseDomain(
-    val id: Int,
+class FavouriteResponseDeleteDomain(
     val message: String,
-    var position: Int?
 )
