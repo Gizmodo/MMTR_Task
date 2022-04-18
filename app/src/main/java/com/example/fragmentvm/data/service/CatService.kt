@@ -51,9 +51,9 @@ interface CatService {
     ): Observable<Response<FavouritesList>>
 
     //Delete the Favourite with the ID passed if it belongs to your Account.
-    @DELETE("favourites/:favourite_id")
+    @DELETE("favourites/{favourite_id}")
     fun deleteFavourite(
         @Header("x-api-key") apiKey: String,
-        @Query("favourite_id") favourite_id: Int,
+        @Path("favourite_id") favourite_id: Int,
     ): Observable<Response<FavouriteResponseDeleteDto>>
 }
