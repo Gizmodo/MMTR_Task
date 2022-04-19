@@ -2,5 +2,5 @@ package com.example.fragmentvm.domain.model.favourite
 
 data class FavouriteRequestDomain(
     val imageId: String,
-    val subId: String,
+    val subId: String = "demo-440b14",
 )
