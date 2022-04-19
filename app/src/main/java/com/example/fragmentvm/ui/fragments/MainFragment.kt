@@ -136,7 +136,7 @@ class MainFragment : Fragment() {
             is StatefulData.Success -> {
                 Timber.d("Success")
                 with(it.result) {
-                    setFavouriteId(position, id)
+                    setFavouriteId(adapterPosition, id)
                     catViewModel.resetFavouriteState()
                 }
             }
@@ -147,8 +147,6 @@ class MainFragment : Fragment() {
         }
     }
 
-    // TODO: сделать state где для возврата ошибкт будет исполльзован общий класс BackEndResponse,
-    // для успешного ответа свой класс
     private fun handleVoteState(state: StateVote<VoteResponseDomain>) {
         when (state) {
             StateVote.Empty -> Timber.d("Empty")
@@ -198,7 +196,7 @@ class MainFragment : Fragment() {
             .show()
     }
 
-    private fun setFavouriteId(position: Int?, favouriteId: Int) {
+    private fun setFavouriteId(position: Int?, favouriteId: Int?) {
         catAdapter.setFavouriteId(position, favouriteId)
     }
 

@@ -54,7 +54,7 @@ class CatViewModel : ViewModel() {
         _favouriteState.value = StatefulData.Loading
     }
 
-    fun setFavourite(cat: CatDomain, position: Int) {
+    fun setFavourite(cat: CatDomain, adapterPosition: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             val favouriteRequest = FavoriteRequestMapper()
                 .mapFromDomainModel(FavouriteRequestDomain(cat.id))
@@ -66,7 +66,7 @@ class CatViewModel : ViewModel() {
                         it.body()?.let { body: FavouriteResponseDto ->
                             val favouriteResponse: FavouriteResponseDomain =
                                 FavoriteResponseMapper().mapToDomainModel(body)
-                            favouriteResponse.position = position
+                            favouriteResponse.adapterPosition = adapterPosition
                             favouriteState.value = StatefulData.Success(favouriteResponse)
                         }
                     } else {
@@ -85,8 +85,6 @@ class CatViewModel : ViewModel() {
                                     }
                                     false -> {
                                         cat.idFavourite?.let {
-                                            Timber.d("Есть возможность удалить избранное $cat.idFavourite")
-
                                             catRepository.deleteFavourite(apikey, cat.idFavourite!!)
                                                 .observeOn(AndroidSchedulers.mainThread())
                                                 .subscribe({ responseOnDelete ->
@@ -97,9 +95,9 @@ class CatViewModel : ViewModel() {
                                                                     ?.let { body: FavouriteResponseDeleteDto ->
                                                                         val favouriteResponse =
                                                                             FavouriteResponseDomain(
-                                                                                id = cat.idFavourite!!,
+                                                                                id = null,
                                                                                 message = body.message,
-                                                                                position = null
+                                                                                adapterPosition = adapterPosition
                                                                             )
                                                                         favouriteState.value =
                                                                             StatefulData.Success(

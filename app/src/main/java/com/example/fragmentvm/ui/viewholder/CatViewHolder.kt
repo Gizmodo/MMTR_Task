@@ -11,7 +11,6 @@ import com.example.fragmentvm.core.utils.GlideImpl
 import com.example.fragmentvm.databinding.RvItemCatBinding
 import com.example.fragmentvm.domain.model.cat.CatDomain
 import com.example.fragmentvm.ui.utils.VotesEnum
-import timber.log.Timber
 
 class CatViewHolder(
     private val binding: RvItemCatBinding,
@@ -27,7 +26,7 @@ class CatViewHolder(
             imgView.setOnClickListener {
                 onItemClicked(model)
             }
-            Timber.d("------> ${model.id}: ${model.idFavourite}")
+
             btnFavourite.isChecked = model.idFavourite != null
             btnFavourite.setOnClickListener {
                 onFavouriteClicked(model, adapterPosition)

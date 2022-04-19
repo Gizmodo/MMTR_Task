@@ -63,7 +63,7 @@ class CatPagingAdapter(
         notifyItemChanged(position)
     }
 
-    fun setFavouriteId(position: Int?, favouriteId: Int) {
+    fun setFavouriteId(position: Int?, favouriteId: Int?) {
         position?.let {
             this.snapshot().items[position].idFavourite = favouriteId
         }

@@ -8,13 +8,13 @@ class FavoriteResponseMapper : DomainMapper<FavouriteResponseDto, FavouriteRespo
         return FavouriteResponseDomain(
             id = model.id,
             message = model.message,
-            position = null
+            adapterPosition = null
         )
     }
 
     override fun mapFromDomainModel(domainModel: FavouriteResponseDomain): FavouriteResponseDto {
         return FavouriteResponseDto(
-            id = domainModel.id,
+            id = domainModel.id ?: 0,
             message = domainModel.message
         )
     }
