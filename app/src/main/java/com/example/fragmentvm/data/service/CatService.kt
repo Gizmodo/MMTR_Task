@@ -2,7 +2,7 @@ package com.example.fragmentvm.data.service
 
 import com.example.fragmentvm.data.model.cat.CatDto
 import com.example.fragmentvm.data.model.favourite.delete.FavouriteResponseDeleteDto
-import com.example.fragmentvm.data.model.favourite.get.FavouritesList
+import com.example.fragmentvm.data.model.favourite.get.FavCatDto
 import com.example.fragmentvm.data.model.favourite.post.FavoriteRequestDto
 import com.example.fragmentvm.data.model.favourite.post.FavouriteResponseDto
 import com.example.fragmentvm.data.model.login.LoginDto
@@ -20,6 +20,14 @@ interface CatService {
         @Query("page") page: Int,
         @Query("limit") itemsPerPage: Int = 10,
     ): List<CatDto>
+
+    //Get the Favourites belonging to your account, with the option to filter by ‘sub_id’ used when creating them.
+    @GET("favourites")
+    suspend fun getFavouriteCats(
+        @Header("x-api-key") apiKey: String,
+        @Query("page") page: Int,
+        @Query("limit") itemsPerPage: Int = 10,
+    ): List<FavCatDto>
 
     @POST("user/passwordlesssignup")
     fun signUp(
@@ -43,12 +51,6 @@ interface CatService {
         @Header("x-api-key") apiKey: String,
         @Body document: FavoriteRequestDto,
     ): Observable<Response<FavouriteResponseDto>>
-
-    //Get the Favourites belonging to your account, with the option to filter by ‘sub_id’ used when creating them.
-    @GET("favourites")
-    fun getFavourites(
-        @Header("x-api-key") apiKey: String,
-    ): Observable<Response<FavouritesList>>
 
     //Delete the Favourite with the ID passed if it belongs to your Account.
     @DELETE("favourites/{favourite_id}")

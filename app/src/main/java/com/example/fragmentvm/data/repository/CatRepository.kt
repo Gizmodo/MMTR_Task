@@ -3,6 +3,7 @@ package com.example.fragmentvm.data.repository
 import com.example.fragmentvm.core.utils.RxUtils
 import com.example.fragmentvm.data.model.cat.CatDto
 import com.example.fragmentvm.data.model.favourite.delete.FavouriteResponseDeleteDto
+import com.example.fragmentvm.data.model.favourite.get.FavCatDto
 import com.example.fragmentvm.data.model.favourite.post.FavoriteRequestDto
 import com.example.fragmentvm.data.model.favourite.post.FavouriteResponseDto
 import com.example.fragmentvm.data.model.login.LoginDto
@@ -21,6 +22,10 @@ class CatRepository @Inject constructor(
 ) {
     suspend fun getCats(key: String, page: Int, itemsPerPage: Int): List<CatDto> {
         return apiService.getCats(apiKey = key, page = page, itemsPerPage = itemsPerPage)
+    }
+
+    suspend fun getFavouriteCats(apiKey: String, page: Int, itemsPerPage: Int): List<FavCatDto> {
+        return apiService.getFavouriteCats(apiKey,page,itemsPerPage)
     }
 
     fun postSignUp(loginDto: LoginDto): @NonNull Observable<BackendResponseDto> {

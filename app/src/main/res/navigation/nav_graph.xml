@@ -18,6 +18,9 @@
             app:destination="@id/mainFragment"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_loginFragment_to_favouriteFragment"
+            app:destination="@id/favouriteFragment" />
     </fragment>
     <fragment
         android:id="@+id/apiFragment"

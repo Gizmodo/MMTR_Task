@@ -31,7 +31,9 @@ class MainActivity : AppCompatActivity() {
                 when (it) {
                     true -> {
                         navHostFragment.findNavController()
-                            .navigate(LoginFragmentDirections.actionLoginFragmentToMainFragment())
+                            .navigate(LoginFragmentDirections.actionLoginFragmentToFavouriteFragment())
+                        // TODO: Remove temp navigation to Favourite fragment
+//                            .navigate(LoginFragmentDirections.actionLoginFragmentToMainFragment())
                     }
                     else -> Timber.i("NoAction")
                 }
