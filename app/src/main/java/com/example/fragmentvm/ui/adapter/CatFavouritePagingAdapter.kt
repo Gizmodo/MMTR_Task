@@ -20,7 +20,6 @@ class CatFavouritePagingAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavCatViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        // TODO: Сделать другой layout для списка с избранным
         val binding = RvItemCatBinding.inflate(inflater, parent, false)
         return FavCatViewHolder(binding, onFavouriteClicked)
     }

@@ -20,28 +20,11 @@ class FavCatViewHolder(
     private val transitionOptions = DrawableTransitionOptions().crossFade()
     fun bind(model: FavCatDomain) {
         with(binding) {
-            imgView.setOnClickListener {
-//                onItemClicked(model)
-            }
 
-//            btnFavourite.isChecked = model.idFavourite != null
+            btnFavourite.isChecked = true
             btnFavourite.setOnClickListener {
                 onFavouriteClicked(model, adapterPosition)
             }
-
-          /*  with(btnVoteDown) {
-                isChecked = model.isDisliked
-                setOnClickListener {
-                    onVoteClicked(model, adapterPosition, VotesEnum.DOWN)
-                }
-            }
-
-            with(btnVoteUp) {
-                isChecked = model.isLiked
-                setOnClickListener {
-                    onVoteClicked(model, adapterPosition, VotesEnum.UP)
-                }
-            }*/
 
             Glide.with(itemView.context)
                 .addDefaultRequestListener(GlideImpl.OnCompleted {
