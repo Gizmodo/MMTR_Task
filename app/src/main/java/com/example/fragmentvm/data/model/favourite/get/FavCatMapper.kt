@@ -1,6 +1,6 @@
 package com.example.fragmentvm.data.model.favourite.get
 
-import com.example.fragmentvm.domain.model.favourite.list.FavCatDomain
+import com.example.fragmentvm.domain.model.favourite.FavCatDomain
 import com.example.fragmentvm.domain.utils.DomainMapper
 
 class FavCatMapper : DomainMapper<

@@ -8,7 +8,7 @@ import com.example.fragmentvm.data.model.favourite.get.FavCatDto
 import com.example.fragmentvm.data.model.favourite.get.FavCatMapper
 import com.example.fragmentvm.data.repository.CatRepository
 import com.example.fragmentvm.domain.DataStoreInterface
-import com.example.fragmentvm.domain.model.favourite.list.FavCatDomain
+import com.example.fragmentvm.domain.model.favourite.FavCatDomain
 import kotlinx.coroutines.runBlocking
 import retrofit2.HttpException
 import java.io.IOException

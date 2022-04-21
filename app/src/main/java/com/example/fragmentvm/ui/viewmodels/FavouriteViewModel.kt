@@ -12,13 +12,19 @@ import com.example.fragmentvm.core.utils.Constants
 import com.example.fragmentvm.data.datasource.FavCatPagingSource
 import com.example.fragmentvm.data.repository.CatRepository
 import com.example.fragmentvm.domain.DataStoreInterface
-import com.example.fragmentvm.domain.model.favourite.list.FavCatDomain
+import com.example.fragmentvm.domain.model.favourite.FavCatDomain
+import com.example.fragmentvm.ui.utils.StateMain
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 class FavouriteViewModel : ViewModel() {
+    private val _stateUIMain = MutableStateFlow<StateMain>(StateMain.Empty)
+    fun getStateUIMain(): StateFlow<StateMain> = _stateUIMain
+
     private var _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String>
         get() = _errorMessage
@@ -49,11 +55,13 @@ class FavouriteViewModel : ViewModel() {
     }
 
 
-    val favCats = Pager(PagingConfig(pageSize = 10, initialLoadSize = 10))
+    val catsFavFlow = Pager(PagingConfig(pageSize = 10, initialLoadSize = 10))
     { FavCatPagingSource() }
         .flow
         .cachedIn(viewModelScope)
-
+    fun setState(state: StateMain) {
+        _stateUIMain.value = state
+    }
     /*private fun loadUsers() {
         job?.cancel()
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -77,5 +85,9 @@ class FavouriteViewModel : ViewModel() {
     override fun onCleared() {
         super.onCleared()
         job?.cancel()
+    }
+
+    fun onFavClicked(favCat: FavCatDomain, position: Int) {
+        TODO("Not yet implemented")
     }
 }

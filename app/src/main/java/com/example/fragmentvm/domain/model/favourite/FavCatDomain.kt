@@ -1,4 +1,4 @@
-package com.example.fragmentvm.domain.model.favourite.list
+package com.example.fragmentvm.domain.model.favourite
 
 data class FavCatDomain(
     val createdAt: String, // 2022-04-19T11:20:13.000Z
