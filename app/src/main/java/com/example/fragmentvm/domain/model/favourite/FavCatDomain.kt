@@ -7,4 +7,6 @@ data class FavCatDomain(
     val imageId: String, // md
     val subId: String, // demo-440b14
     val userId: String, // dxjh4r
+    var isLiked: Boolean = false,
+    var isDisliked: Boolean = false,
 )

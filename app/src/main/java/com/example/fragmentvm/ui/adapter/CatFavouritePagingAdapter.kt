@@ -6,9 +6,12 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import com.example.fragmentvm.databinding.RvItemCatBinding
 import com.example.fragmentvm.domain.model.favourite.FavCatDomain
+import com.example.fragmentvm.ui.utils.VotesEnum
 import com.example.fragmentvm.ui.viewholder.FavCatViewHolder
 
 class CatFavouritePagingAdapter(
+    private val onVoteClicked: (FavCatDomain, Int, VotesEnum) -> Unit,
+    private val onItemClicked: (FavCatDomain) -> Unit,
     private val onFavouriteClicked: (FavCatDomain, Int) -> Unit,
 ) : PagingDataAdapter<FavCatDomain, FavCatViewHolder>(FavCatComparator) {
     override fun onBindViewHolder(holder: FavCatViewHolder, position: Int) {
@@ -21,7 +24,7 @@ class CatFavouritePagingAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavCatViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = RvItemCatBinding.inflate(inflater, parent, false)
-        return FavCatViewHolder(binding, onFavouriteClicked)
+        return FavCatViewHolder(binding,onItemClicked,onVoteClicked, onFavouriteClicked)
     }
 
     companion object {

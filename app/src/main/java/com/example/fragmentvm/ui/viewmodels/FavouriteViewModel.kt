@@ -16,11 +16,14 @@ import com.example.fragmentvm.core.utils.Util
 import com.example.fragmentvm.data.datasource.FavCatPagingSource
 import com.example.fragmentvm.data.model.favourite.delete.FavouriteResponseDeleteDto
 import com.example.fragmentvm.data.model.response.BackendResponseDtoMapper
+import com.example.fragmentvm.data.model.vote.request.VoteRequestMapper
 import com.example.fragmentvm.data.repository.CatRepository
 import com.example.fragmentvm.domain.DataStoreInterface
 import com.example.fragmentvm.domain.model.favourite.FavCatDomain
 import com.example.fragmentvm.domain.model.favourite.FavouriteResponseDomain
+import com.example.fragmentvm.domain.model.vote.VoteRequestDomain
 import com.example.fragmentvm.ui.utils.StateMain
+import com.example.fragmentvm.ui.utils.VotesEnum
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -170,5 +173,22 @@ class FavouriteViewModel : ViewModel() {
                 resId = R.string.exception,
                 e.message.toString()
             ))
+    }
+
+    fun vote(cat: FavCatDomain, vote: VotesEnum, position: Int) {
+        Timber.d("Vote clicked")
+        // TODO: Сделать голосовалку
+        viewModelScope.launch(Dispatchers.IO) {
+            val voteRequest = VoteRequestMapper()
+                .mapFromDomainModel(VoteRequestDomain(cat.imageId, vote))
+            catRepository.postVote(apikey, voteRequest)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({}, {})
+            
+        }
+    }
+
+    fun showCat(favCat: FavCatDomain) {
+
     }
 }

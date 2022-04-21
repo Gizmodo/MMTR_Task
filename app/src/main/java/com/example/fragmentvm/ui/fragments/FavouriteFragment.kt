@@ -32,10 +32,11 @@ class FavouriteFragment : Fragment(R.layout.favourite_fragment) {
     private val viewModel: FavouriteViewModel by lazy {
         getViewModel { FavouriteViewModel() }
     }
-    private var favCatsAdapter = CatFavouritePagingAdapter { favCat, position ->
-        viewModel.onFavClicked(favCat,
-            position)
-    }
+    private var favCatsAdapter = CatFavouritePagingAdapter(
+        { favCat, position, vote -> viewModel.vote(favCat, vote, position) },
+        { favCat -> viewModel.showCat(favCat) },
+        { favCat, position -> viewModel.onFavClicked(favCat, position) },
+    )
     private lateinit var swipe: SwipeRefreshLayout
     private lateinit var progressBar: CircularProgressIndicator
     private lateinit var rv: RecyclerView
