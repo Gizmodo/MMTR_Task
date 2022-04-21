@@ -1,9 +1,7 @@
 package com.example.fragmentvm.ui.fragments
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -14,16 +12,20 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.fragmentvm.R
+import com.example.fragmentvm.core.utils.StatefulData
 import com.example.fragmentvm.core.utils.getViewModel
 import com.example.fragmentvm.core.utils.viewBindingWithBinder
 import com.example.fragmentvm.databinding.FavouriteFragmentBinding
+import com.example.fragmentvm.domain.model.favourite.FavouriteResponseDomain
 import com.example.fragmentvm.ui.adapter.CatFavouritePagingAdapter
 import com.example.fragmentvm.ui.utils.StateMain
 import com.example.fragmentvm.ui.viewmodels.FavouriteViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import timber.log.Timber
 
 class FavouriteFragment : Fragment(R.layout.favourite_fragment) {
     private val binding by viewBindingWithBinder(FavouriteFragmentBinding::bind)
@@ -80,6 +82,28 @@ class FavouriteFragment : Fragment(R.layout.favourite_fragment) {
             .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
             .onEach { handleUIState(it) }
             .launchIn(viewLifecycleOwner.lifecycleScope)
+
+        viewModel.favState.flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
+            .onEach { handleFavStateChange(it) }
+            .launchIn(viewLifecycleOwner.lifecycleScope)
+    }
+
+    private fun handleFavStateChange(state: StatefulData<FavouriteResponseDomain>) {
+        when (state) {
+            is StatefulData.Error -> {
+                Timber.d(state.message)
+            }
+            StatefulData.Loading -> {
+                Timber.d("Loading")
+            }
+            is StatefulData.ErrorUiText -> {
+                showDialog(state.message.asString(requireContext()))
+                Timber.d("ErrorUiText " + state.message.asString(requireContext()))
+            }
+            is StatefulData.Success -> {
+                favCatsAdapter.refresh()
+            }
+        }
     }
 
     private fun handleUIState(state: StateMain) {
@@ -101,5 +125,15 @@ class FavouriteFragment : Fragment(R.layout.favourite_fragment) {
                 swipe.isEnabled = true
             }
         }
+    }
+
+    private fun showDialog(message: String) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(resources.getString(R.string.title))
+            .setMessage(message)
+            .setPositiveButton(resources.getString(R.string.accept)) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 }

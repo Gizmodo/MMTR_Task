@@ -8,17 +8,25 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.example.fragmentvm.App
+import com.example.fragmentvm.R
 import com.example.fragmentvm.core.utils.Constants
+import com.example.fragmentvm.core.utils.StatefulData
+import com.example.fragmentvm.core.utils.UiText
+import com.example.fragmentvm.core.utils.Util
 import com.example.fragmentvm.data.datasource.FavCatPagingSource
+import com.example.fragmentvm.data.model.favourite.delete.FavouriteResponseDeleteDto
+import com.example.fragmentvm.data.model.response.BackendResponseDtoMapper
 import com.example.fragmentvm.data.repository.CatRepository
 import com.example.fragmentvm.domain.DataStoreInterface
 import com.example.fragmentvm.domain.model.favourite.FavCatDomain
+import com.example.fragmentvm.domain.model.favourite.FavouriteResponseDomain
 import com.example.fragmentvm.ui.utils.StateMain
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.Job
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.runBlocking
+import okhttp3.ResponseBody
+import timber.log.Timber
 import javax.inject.Inject
 
 class FavouriteViewModel : ViewModel() {
@@ -38,6 +46,10 @@ class FavouriteViewModel : ViewModel() {
         get() = _favouriteImagesLiveData
 
     private var apikey: String
+    private val _favState =
+        MutableStateFlow<StatefulData<FavouriteResponseDomain>>(StatefulData.Loading)
+    val favState: StateFlow<StatefulData<FavouriteResponseDomain>>
+        get() = _favState
 
     init {
         App.instance().appGraph.embed(this)
@@ -45,7 +57,7 @@ class FavouriteViewModel : ViewModel() {
     }
 
     @Inject
-    lateinit var repository: CatRepository
+    lateinit var catRepository: CatRepository
 
     @Inject
     lateinit var ds: DataStoreInterface
@@ -59,6 +71,7 @@ class FavouriteViewModel : ViewModel() {
     { FavCatPagingSource() }
         .flow
         .cachedIn(viewModelScope)
+
     fun setState(state: StateMain) {
         _stateUIMain.value = state
     }
@@ -88,6 +101,74 @@ class FavouriteViewModel : ViewModel() {
     }
 
     fun onFavClicked(favCat: FavCatDomain, position: Int) {
-        TODO("Not yet implemented")
+        viewModelScope.launch(Dispatchers.IO) {
+            catRepository.deleteFavourite(apikey, favCat.id)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ responseOnDelete ->
+                    try {
+                        when {
+                            responseOnDelete.isSuccessful -> {
+                                responseOnDelete.body()
+                                    ?.let { body: FavouriteResponseDeleteDto ->
+                                        val favouriteResponse =
+                                            FavouriteResponseDomain(
+                                                id = null,
+                                                message = body.message,
+                                                adapterPosition = position
+                                            )
+                                        _favState.value =
+                                            StatefulData.Success(
+                                                favouriteResponse
+                                            )
+                                    }
+                            }
+                            else -> {
+                                responseOnDelete.errorBody()
+                                    ?.let { bodyOnDelete: ResponseBody ->
+                                        try {
+                                            val errorOnDelete =
+                                                Util.parseBackendResponseError(
+                                                    bodyOnDelete)
+                                            val resOnDelete =
+                                                BackendResponseDtoMapper().mapToDomainModel(
+                                                    errorOnDelete)
+                                            Timber.d("Ошибка при удалении из избранного: ${resOnDelete.message}")
+                                            _favState.value =
+                                                StatefulData.ErrorUiText(
+                                                    UiText.StringResource(
+                                                        resId = R.string.favourite_error_remove,
+                                                        resOnDelete.message
+                                                    ))
+                                        } catch (e: Exception) {
+                                            handleException(e)
+                                        }
+                                    }
+                            }
+                        }
+                    } catch (e: Exception) {
+                        handleException(e)
+                    }
+                }, { _throw ->
+                    handleObservableThrow(_throw)
+                })
+        }
+    }
+
+    private fun handleObservableThrow(_throw: Throwable) {
+        _favState.value =
+            StatefulData.ErrorUiText(UiText.StringResource(
+                resId = R.string.error_subscribe,
+                _throw.message.toString()
+            ))
+        Timber.e(_throw)
+    }
+
+    private fun handleException(e: Exception) {
+        Timber.e("Возникло исключение: $e")
+        _favState.value =
+            StatefulData.ErrorUiText(UiText.StringResource(
+                resId = R.string.exception,
+                e.message.toString()
+            ))
     }
 }
