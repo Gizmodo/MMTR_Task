@@ -9,7 +9,10 @@ import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.example.fragmentvm.App
 import com.example.fragmentvm.R
-import com.example.fragmentvm.core.utils.*
+import com.example.fragmentvm.core.utils.Constants
+import com.example.fragmentvm.core.utils.StatefulData
+import com.example.fragmentvm.core.utils.UiText
+import com.example.fragmentvm.core.utils.Util
 import com.example.fragmentvm.data.datasource.FavCatPagingSource
 import com.example.fragmentvm.data.model.favourite.delete.FavouriteResponseDeleteDto
 import com.example.fragmentvm.data.model.response.BackendResponseDtoMapper
@@ -25,7 +28,6 @@ import com.example.fragmentvm.ui.utils.StateMain
 import com.example.fragmentvm.ui.utils.VotesEnum
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -51,17 +53,9 @@ class FavouriteViewModel : ViewModel() {
     val voteState: StateFlow<StatefulData<VoteResponseDomain>>
         get() = _voteState
 
-    private var _errorMessage = MutableLiveData<String>()
-    val errorMessage: LiveData<String>
-        get() = _errorMessage
-
     private var _loading = MutableLiveData<Boolean>()
     val loading: LiveData<Boolean>
         get() = _loading
-
-    /*private var _favouriteImagesLiveData = MutableLiveData<FavCatDomain>()
-    val favouriteImagesLiveData: LiveData<FavCatDomain>
-        get() = _favouriteImagesLiveData*/
 
     private var apikey: String
 
@@ -75,11 +69,10 @@ class FavouriteViewModel : ViewModel() {
 
     @Inject
     lateinit var ds: DataStoreInterface
-    var job: Job? = null
 
-
-    val catsFavFlow = Pager(PagingConfig(pageSize = 10, initialLoadSize = 10))
-    { FavCatPagingSource() }
+    val catsFavFlow = Pager(PagingConfig(pageSize = 10, initialLoadSize = 10)) {
+        FavCatPagingSource()
+    }
         .flow
         .cachedIn(viewModelScope)
 
@@ -141,16 +134,16 @@ class FavouriteViewModel : ViewModel() {
                                                         resOnDelete.message
                                                     ))
                                         } catch (e: Exception) {
-                                            handleExceptionNew(e,_favState)
+                                            handleException(e, _favState)
                                         }
                                     }
                             }
                         }
                     } catch (e: Exception) {
-                        handleExceptionNew(e,_favState)
+                        handleException(e, _favState)
                     }
                 }, { _throw ->
-                    handleFavThrow(_throw, _favState)
+                    handleThrow(_throw, _favState)
                 })
         }
     }
@@ -189,15 +182,13 @@ class FavouriteViewModel : ViewModel() {
                                     ))
                             } catch (e: Exception) {
                                 // DONE: сменить на свой собственный Handle
-                                handleExceptionNew(e,_voteState)
-
+                                handleException(e, _voteState)
                             }
                         }
                     }
                 }, { _throw ->
-                    handleVoteThrow(_throw, _voteState)
+                    handleThrow(_throw, _voteState)
                 })
-
         }
     }
 
@@ -205,68 +196,27 @@ class FavouriteViewModel : ViewModel() {
 // TODO: Отобразить кота при клике по нему
     }
 
-    private fun handleVoteThrow(
-        _throw: Throwable,
-        stateHolder: MutableStateFlow<StatefulData<VoteResponseDomain>>,
+    private fun <T : Any> handleThrow(
+        throwable: Throwable,
+        stateHolder: MutableStateFlow<StatefulData<T>>,
     ) {
+        Timber.e("Возникло исключение: $throwable")
         stateHolder.value =
             StatefulData.ErrorUiText(UiText.StringResource(
-                resId = R.string.error_subscribe,
-                _throw.message.toString()
+                R.string.exception,
+                throwable.message.toString()
             ))
-        Timber.e(_throw)
     }
 
-    private fun handleFavThrow(
-        _throw: Throwable,
-        stateHolder: MutableStateFlow<StatefulData<FavouriteResponseDomain>>,
-    ) {
-        stateHolder.value =
-            StatefulData.ErrorUiText(UiText.StringResource(
-                resId = R.string.error_subscribe,
-                _throw.message.toString()
-            ))
-        Timber.e(_throw)
-    }
-
-    private inline fun <reified T : Any> handleExceptionNew(
+    private fun <T : Any> handleException(
         e: Exception,
         stateHolder: MutableStateFlow<StatefulData<T>>,
     ) {
         Timber.e("Возникло исключение: $e")
-        if (Generic<T>().checkType(FavouriteResponseDomain(1, "", 1))) {
-            // TODO: Может и не нужен T  ???
-            stateHolder.value =
-                StatefulData.ErrorUiText(UiText.StringResource(
-                    R.string.exception,
-                    e.message.toString()
-                ))
-        }
-        if (Generic<T>().checkType(VoteResponseDomain(-1, "", 0, VotesEnum.DOWN))) {
-            stateHolder.value =
-                StatefulData.ErrorUiText(UiText.StringResource(
-                     R.string.exception,
-                    e.message.toString()
-                ))
-        }
-    }
-
-    private fun handleException(e: Exception) {
-        Timber.e("Возникло исключение: $e")
-        _favState.value =
+        stateHolder.value =
             StatefulData.ErrorUiText(UiText.StringResource(
-                resId = R.string.exception,
+                R.string.exception,
                 e.message.toString()
             ))
-    }
-
-    private fun onError(message: String) {
-        _errorMessage.postValue(message)
-        _loading.postValue(true)
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        job?.cancel()
     }
 }
