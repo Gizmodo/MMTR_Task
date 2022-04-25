@@ -142,7 +142,7 @@ class MainFragment : Fragment() {
             }
             is StatefulData.ErrorUiText -> {
                 showDialog(it.message.asString(requireContext()))
-                Timber.d("ErrorUiText " + it.message.asString(requireContext()))
+                Timber.d(it.message.asString(requireContext()))
             }
         }
     }

@@ -17,8 +17,10 @@ import com.example.fragmentvm.core.utils.getViewModel
 import com.example.fragmentvm.core.utils.viewBindingWithBinder
 import com.example.fragmentvm.databinding.FavouriteFragmentBinding
 import com.example.fragmentvm.domain.model.favourite.FavouriteResponseDomain
+import com.example.fragmentvm.domain.model.vote.VoteResponseDomain
 import com.example.fragmentvm.ui.adapter.CatFavouritePagingAdapter
 import com.example.fragmentvm.ui.utils.StateMain
+import com.example.fragmentvm.ui.utils.VotesEnum
 import com.example.fragmentvm.ui.viewmodels.FavouriteViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.CircularProgressIndicator
@@ -34,7 +36,7 @@ class FavouriteFragment : Fragment(R.layout.favourite_fragment) {
     }
     private var favCatsAdapter = CatFavouritePagingAdapter(
         { favCat, position, vote -> viewModel.vote(favCat, vote, position) },
-        { favCat -> viewModel.showCat(favCat) },
+        { favCat -> viewModel.setCat(favCat) },
         { favCat, position -> viewModel.onFavClicked(favCat, position) },
     )
     private lateinit var swipe: SwipeRefreshLayout
@@ -87,6 +89,49 @@ class FavouriteFragment : Fragment(R.layout.favourite_fragment) {
         viewModel.favState.flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
             .onEach { handleFavStateChange(it) }
             .launchIn(viewLifecycleOwner.lifecycleScope)
+
+        viewModel.voteState.flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
+            .onEach { handleVoteStateChange(it) }
+            .launchIn(viewLifecycleOwner.lifecycleScope)
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.evenFlow.collect {
+                when (it) {
+                    is StatefulData.Error -> TODO()
+                    is StatefulData.ErrorUiText -> {
+                        showDialog(it.message.asString(requireContext()))
+                    }
+                    StatefulData.Loading -> {
+
+                    }
+                    is StatefulData.Success -> {
+                        it.result.image_url?.let { url ->
+                            val bottomSheet = DetailBottomSheet.instance(url)
+                            bottomSheet.show(parentFragmentManager, bottomSheet.toString())
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun handleVoteStateChange(state: StatefulData<VoteResponseDomain>) {
+        when (state) {
+            is StatefulData.Error -> Timber.d("Error")
+            is StatefulData.ErrorUiText -> {
+                showDialog(state.message.asString(requireContext()))
+                viewModel.resetState()
+            }
+            StatefulData.Loading -> Timber.d("Loading")
+            is StatefulData.Success -> {
+                setVoteButtonState(state.result.position, state.result.vote)
+                viewModel.resetState()
+            }
+        }
+    }
+
+    private fun setVoteButtonState(position: Int, vote: VotesEnum) {
+        favCatsAdapter.setToggle(position, vote)
     }
 
     private fun handleFavStateChange(state: StatefulData<FavouriteResponseDomain>) {

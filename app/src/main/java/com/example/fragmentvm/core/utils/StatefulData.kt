@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.transform
 
 sealed class StatefulData<out T : Any> {
     data class Success<T : Any>(val result: T) : StatefulData<T>()
+
+    // TODO: Waste it!
     data class Error(val message: String) : StatefulData<Nothing>()
     data class ErrorUiText(val message: UiText) : StatefulData<Nothing>()
     object Loading : StatefulData<Nothing>()

@@ -24,7 +24,42 @@ class CatFavouritePagingAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavCatViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = RvItemCatBinding.inflate(inflater, parent, false)
-        return FavCatViewHolder(binding,onItemClicked,onVoteClicked, onFavouriteClicked)
+        return FavCatViewHolder(binding, onItemClicked, onVoteClicked, onFavouriteClicked)
+    }
+
+    fun setToggle(position: Int, vote: VotesEnum) {
+        if (
+            isVoteDownAgain(position, vote) ||
+            isVoteUpAgain(position, vote)
+        ) {
+            dismissVote(position)
+        } else if (vote.value == VotesEnum.UP.value) {
+            setVoteUp(position)
+        } else if (vote.value == VotesEnum.DOWN.value) {
+            setVoteDown(position)
+        }
+        notifyItemChanged(position)
+    }
+
+    private fun isVoteDownAgain(position: Int, vote: VotesEnum): Boolean =
+        (vote.value == VotesEnum.DOWN.value && this.snapshot().items[position].isDisliked)
+
+    private fun isVoteUpAgain(position: Int, vote: VotesEnum): Boolean =
+        (vote.value == VotesEnum.UP.value && this.snapshot().items[position].isLiked)
+
+    private fun dismissVote(position: Int) {
+        this.snapshot().items[position].isDisliked = false
+        this.snapshot().items[position].isLiked = false
+    }
+
+    private fun setVoteUp(position: Int) {
+        this.snapshot().items[position].isLiked = true
+        this.snapshot().items[position].isDisliked = false
+    }
+
+    private fun setVoteDown(position: Int) {
+        this.snapshot().items[position].isLiked = false
+        this.snapshot().items[position].isDisliked = true
     }
 
     companion object {

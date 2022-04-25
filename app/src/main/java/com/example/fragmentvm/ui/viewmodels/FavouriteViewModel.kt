@@ -28,8 +28,10 @@ import com.example.fragmentvm.ui.utils.StateMain
 import com.example.fragmentvm.ui.utils.VotesEnum
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody
@@ -37,9 +39,6 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class FavouriteViewModel : ViewModel() {
-    /***
-     * States
-     * ***/
     private val _stateUIMain = MutableStateFlow<StateMain>(StateMain.Empty)
     fun getStateUIMain(): StateFlow<StateMain> = _stateUIMain
 
@@ -56,6 +55,24 @@ class FavouriteViewModel : ViewModel() {
     private var _loading = MutableLiveData<Boolean>()
     val loading: LiveData<Boolean>
         get() = _loading
+
+    private val eventChannel = Channel<StatefulData<FavCatDomain>>()
+    val evenFlow = eventChannel.receiveAsFlow()
+
+    fun setCat(cat: FavCatDomain) {
+        viewModelScope.launch {
+            if (cat.image_url != null) {
+                eventChannel.send(StatefulData.Success(cat))
+            } else {
+                eventChannel.send(StatefulData.ErrorUiText(
+                    UiText.StringResource(
+                        R.string.favourite_error_set_cat,
+                        cat.imageId
+                    )
+                ))
+            }
+        }
+    }
 
     private var apikey: String
 
@@ -79,20 +96,6 @@ class FavouriteViewModel : ViewModel() {
     fun setState(state: StateMain) {
         _stateUIMain.value = state
     }
-    /*private fun loadUsers() {
-        job?.cancel()
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val response = settingsApi.getUsersSuspend()
-            withContext(Dispatchers.Main) {
-                if (response.isSuccessful) {
-                    _usersLiveData.postValue(response.body())
-                    _loading.value = false
-                } else {
-                    onError("Error : ${response.message()} ")
-                }
-            }
-        }
-    }*/
 
     fun onFavClicked(favCat: FavCatDomain, position: Int) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -150,7 +153,6 @@ class FavouriteViewModel : ViewModel() {
 
     fun vote(cat: FavCatDomain, vote: VotesEnum, position: Int) {
         Timber.d("Vote clicked ${vote.name} $position")
-        // TODO: Сделать голосовалку
         viewModelScope.launch(Dispatchers.IO) {
             val voteRequest = VoteRequestMapper()
                 .mapFromDomainModel(VoteRequestDomain(cat.imageId, vote))
@@ -170,18 +172,12 @@ class FavouriteViewModel : ViewModel() {
                             try {
                                 val error = Util.parseBackendResponseError(body)
                                 val parsed = BackendResponseDtoMapper().mapToDomainModel(error)
-                                val voteResponse = VoteResponseDomain(
-                                    position = position,
-                                    vote = vote,
-                                    message = parsed.message,
-                                )
                                 _voteState.value = StatefulData.ErrorUiText(
                                     UiText.StringResource(
                                         resId = R.string.vote_error_add,
                                         parsed.message
                                     ))
                             } catch (e: Exception) {
-                                // DONE: сменить на свой собственный Handle
                                 handleException(e, _voteState)
                             }
                         }
@@ -190,10 +186,6 @@ class FavouriteViewModel : ViewModel() {
                     handleThrow(_throw, _voteState)
                 })
         }
-    }
-
-    fun showCat(favCat: FavCatDomain) {
-// TODO: Отобразить кота при клике по нему
     }
 
     private fun <T : Any> handleThrow(
@@ -218,5 +210,9 @@ class FavouriteViewModel : ViewModel() {
                 R.string.exception,
                 e.message.toString()
             ))
+    }
+
+    fun resetState() {
+        _voteState.value = StatefulData.Loading
     }
 }

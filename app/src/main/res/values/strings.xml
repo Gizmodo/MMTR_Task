@@ -16,6 +16,7 @@
     <string name="favourite">Favourite</string>
     <string name="favourite_error_add">Ошибка при добавлении в избранное: %s</string>
     <string name="favourite_error_remove">Ошибка при удалении из избранного: %s</string>
+    <string name="favourite_error_set_cat">Ошибка открытия изображения ID: %s</string>
     <string name="vote_error_add">Ошибка установки отметки "Понравилось": %s</string>
     <string name="exception">Возникло исключение: %s</string>
     <string name="error_subscribe">Возникла ошибка в Subscribe: %s</string>
