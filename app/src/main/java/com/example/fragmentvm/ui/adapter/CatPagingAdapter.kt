@@ -12,12 +12,13 @@ import com.example.fragmentvm.ui.viewholder.CatViewHolder
 class CatPagingAdapter(
     private val onVoteClicked: (CatDomain, Int, VotesEnum) -> Unit,
     private val onItemClicked: (CatDomain) -> Unit,
+    private val onFavouriteClicked: (CatDomain, Int) -> Unit,
 ) : PagingDataAdapter<CatDomain, CatViewHolder>(CatComparator) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CatViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = RvItemCatBinding.inflate(inflater, parent, false)
-        return CatViewHolder(binding, onItemClicked, onVoteClicked)
+        return CatViewHolder(binding, onItemClicked, onVoteClicked, onFavouriteClicked)
     }
 
     override fun onBindViewHolder(holder: CatViewHolder, position: Int) {
@@ -60,6 +61,12 @@ class CatPagingAdapter(
             setVoteDown(position)
         }
         notifyItemChanged(position)
+    }
+
+    fun setFavouriteId(position: Int?, favouriteId: Int?) {
+        position?.let {
+            this.snapshot().items[position].idFavourite = favouriteId
+        }
     }
 
     companion object {

@@ -4,17 +4,17 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.fragmentvm.App
 import com.example.fragmentvm.core.utils.Constants
-import com.example.fragmentvm.data.model.cat.CatDto
-import com.example.fragmentvm.data.model.cat.CatDtoMapper
+import com.example.fragmentvm.data.model.favourite.get.FavCatDto
+import com.example.fragmentvm.data.model.favourite.get.FavCatMapper
 import com.example.fragmentvm.data.repository.CatRepository
 import com.example.fragmentvm.domain.DataStoreInterface
-import com.example.fragmentvm.domain.model.cat.CatDomain
+import com.example.fragmentvm.domain.model.favourite.FavCatDomain
 import kotlinx.coroutines.runBlocking
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
-class CatPagingSource : PagingSource<Int, CatDomain>() {
+class FavCatPagingSource : PagingSource<Int, FavCatDomain>() {
     private var apikey: String
     override val keyReuseSupported: Boolean
         get() = true
@@ -30,11 +30,20 @@ class CatPagingSource : PagingSource<Int, CatDomain>() {
     @Inject
     lateinit var ds: DataStoreInterface
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, CatDomain> {
+    override fun getRefreshKey(state: PagingState<Int, FavCatDomain>): Int? {
+
+        return state.anchorPosition?.let { anchorPosition ->
+            state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
+                ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
+        }
+    }
+
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, FavCatDomain> {
         return try {
             val nextPage = params.key ?: 0
-            val response: List<CatDto> = catRepository.getCats(apikey, nextPage, params.loadSize)
-            val repos: List<CatDomain> = CatDtoMapper().toDomainList(response)
+            val response: List<FavCatDto> = catRepository
+                .getFavouriteCats(apikey, nextPage, params.loadSize)
+            val repos: List<FavCatDomain> = FavCatMapper().toDomainList(response)
             LoadResult.Page(
                 data = repos,
                 prevKey = if (nextPage == 0) null else nextPage - 1,
@@ -44,13 +53,6 @@ class CatPagingSource : PagingSource<Int, CatDomain>() {
             return LoadResult.Error(exception)
         } catch (exception: HttpException) {
             return LoadResult.Error(exception)
-        }
-    }
-
-    override fun getRefreshKey(state: PagingState<Int, CatDomain>): Int? {
-        return state.anchorPosition?.let { anchorPosition ->
-            state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
-                ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
         }
     }
 }

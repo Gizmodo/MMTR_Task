@@ -15,7 +15,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.fragmentvm.R
+import com.example.fragmentvm.core.utils.StatefulData
 import com.example.fragmentvm.databinding.MainFragmentBinding
+import com.example.fragmentvm.domain.model.favourite.FavouriteResponseDomain
 import com.example.fragmentvm.domain.model.vote.VoteResponseDomain
 import com.example.fragmentvm.ui.adapter.CatPagingAdapter
 import com.example.fragmentvm.ui.utils.StateMain
@@ -45,7 +47,10 @@ class MainFragment : Fragment() {
             viewModel.vote(cat, vote, position)
         }, { cat ->
             catViewModel.setCat(cat)
-        })
+        }, { cat, position ->
+            catViewModel.setFavourite(cat, position)
+        }
+    )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -62,7 +67,7 @@ class MainFragment : Fragment() {
         binding = MainFragmentBinding.inflate(inflater, container, false)
         swipe = binding.swipeLayout!!
         rv = binding.recyclerview!!
-
+//        this.findNavController()            .navigate(MainFragmentDirections.actionMainFragmentToFavouriteFragment())
         with(rv) {
             val animator = itemAnimator
             if (animator is SimpleItemAnimator) {
@@ -85,6 +90,7 @@ class MainFragment : Fragment() {
                 catAdapter.submitData(it)
             }
         }
+
         catViewModel.getCat().observe(viewLifecycleOwner) { cat ->
             val bottomSheet = DetailBottomSheet.instance(cat.url)
             bottomSheet.show(parentFragmentManager, bottomSheet.toString())
@@ -106,11 +112,42 @@ class MainFragment : Fragment() {
 
         viewModel.getStateUIVote()
             .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
-            .onEach { handleVoteStateNew(it) }
+            .onEach { handleVoteState(it) }
             .launchIn(viewLifecycleOwner.lifecycleScope)
+
+        catViewModel.favouriteState
+            .flowWithLifecycle(
+                viewLifecycleOwner.lifecycle,
+                Lifecycle.State.STARTED
+            )
+            .onEach { handleFavouriteState(it) }
+            .launchIn(viewLifecycleOwner.lifecycleScope)
+
     }
 
-    private fun handleVoteStateNew(state: StateVote<VoteResponseDomain>) {
+    private fun handleFavouriteState(it: StatefulData<FavouriteResponseDomain>) {
+        when (it) {
+            is StatefulData.Error -> {
+                Timber.d(it.message)
+            }
+            StatefulData.Loading -> {
+                Timber.d("Loading")
+            }
+            is StatefulData.Success -> {
+                Timber.d("Success")
+                with(it.result) {
+                    setFavouriteId(adapterPosition, id)
+                    catViewModel.resetFavouriteState()
+                }
+            }
+            is StatefulData.ErrorUiText -> {
+                showDialog(it.message.asString(requireContext()))
+                Timber.d(it.message.asString(requireContext()))
+            }
+        }
+    }
+
+    private fun handleVoteState(state: StateVote<VoteResponseDomain>) {
         when (state) {
             StateVote.Empty -> Timber.d("Empty")
             is StateVote.Error -> Timber.d("Error")
@@ -150,15 +187,17 @@ class MainFragment : Fragment() {
     }
 
     private fun showDialog(message: String) {
-        context?.let {
-            MaterialAlertDialogBuilder(it)
-                .setTitle(resources.getString(R.string.title))
-                .setMessage(message)
-                .setPositiveButton(resources.getString(R.string.accept)) { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .show()
-        }
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(resources.getString(R.string.title))
+            .setMessage(message)
+            .setPositiveButton(resources.getString(R.string.accept)) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun setFavouriteId(position: Int?, favouriteId: Int?) {
+        catAdapter.setFavouriteId(position, favouriteId)
     }
 
     private fun setVoteButton(position: Int, vote: VotesEnum) {
