@@ -30,11 +30,8 @@ class App : Application() {
 }
 
 internal class LineNumberDebugTree : Timber.DebugTree() {
-    var str: String = ""
     override fun createStackElementTag(element: StackTraceElement): String {
         return makeClickableLineNumber(element)
-        str = "${element.fileName}:${element.lineNumber}"
-        return str
     }
 
     private fun makeClickableLineNumber(
