@@ -44,9 +44,6 @@ class MainActivity : AppCompatActivity() {
                     true -> {
                         navHostFragment.findNavController()
                             .navigate(LoginFragmentDirections.actionLoginFragmentToMainFragment())
-                        /*Переход к экрану с Избранным списком котов
-                            .navigate(LoginFragmentDirections.actionLoginFragmentToFavouriteFragment())
-                         */
                     }
                     else -> Timber.i("NoAction")
                 }

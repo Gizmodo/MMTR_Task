@@ -46,5 +46,10 @@
         android:id="@+id/navigation_favourites"
         android:name="com.example.fragmentvm.ui.fragments.FavouriteFragment"
         android:label="favourite_fragment"
-        tools:layout="@layout/favourite_fragment" />
+        tools:layout="@layout/favourite_fragment" >
+        <action
+            android:id="@+id/action_navigation_favourites_to_navigation_main"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>

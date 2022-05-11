@@ -64,12 +64,14 @@ class FavouriteViewModel : ViewModel() {
             if (cat.image_url != null) {
                 eventChannel.send(StatefulData.Success(cat))
             } else {
-                eventChannel.send(StatefulData.ErrorUiText(
-                    UiText.StringResource(
-                        R.string.favourite_error_set_cat,
-                        cat.imageId
+                eventChannel.send(
+                    StatefulData.ErrorUiText(
+                        UiText.StringResource(
+                            R.string.favourite_error_set_cat,
+                            cat.imageId
+                        )
                     )
-                ))
+                )
             }
         }
     }
@@ -125,17 +127,20 @@ class FavouriteViewModel : ViewModel() {
                                         try {
                                             val errorOnDelete =
                                                 Util.parseBackendResponseError(
-                                                    bodyOnDelete)
+                                                    bodyOnDelete
+                                                )
                                             val resOnDelete =
                                                 BackendResponseDtoMapper().mapToDomainModel(
-                                                    errorOnDelete)
+                                                    errorOnDelete
+                                                )
                                             Timber.d("Ошибка при удалении из избранного: ${resOnDelete.message}")
                                             _favState.value =
                                                 StatefulData.ErrorUiText(
                                                     UiText.StringResource(
                                                         R.string.favourite_error_remove,
                                                         resOnDelete.message
-                                                    ))
+                                                    )
+                                                )
                                         } catch (e: Exception) {
                                             handleException(e, _favState)
                                         }
@@ -176,7 +181,8 @@ class FavouriteViewModel : ViewModel() {
                                     UiText.StringResource(
                                         resId = R.string.vote_error_add,
                                         parsed.message
-                                    ))
+                                    )
+                                )
                             } catch (e: Exception) {
                                 handleException(e, _voteState)
                             }
@@ -194,10 +200,12 @@ class FavouriteViewModel : ViewModel() {
     ) {
         Timber.e("Возникло исключение: $throwable")
         stateHolder.value =
-            StatefulData.ErrorUiText(UiText.StringResource(
-                R.string.exception,
-                throwable.message.toString()
-            ))
+            StatefulData.ErrorUiText(
+                UiText.StringResource(
+                    R.string.exception,
+                    throwable.message.toString()
+                )
+            )
     }
 
     private fun <T : Any> handleException(
@@ -206,10 +214,12 @@ class FavouriteViewModel : ViewModel() {
     ) {
         Timber.e("Возникло исключение: $e")
         stateHolder.value =
-            StatefulData.ErrorUiText(UiText.StringResource(
-                R.string.exception,
-                e.message.toString()
-            ))
+            StatefulData.ErrorUiText(
+                UiText.StringResource(
+                    R.string.exception,
+                    e.message.toString()
+                )
+            )
     }
 
     fun resetState() {

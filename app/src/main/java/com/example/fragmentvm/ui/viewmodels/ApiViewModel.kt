@@ -63,8 +63,10 @@ class ApiViewModel : ViewModel() {
             }, {
                 _isSuccessRequest.postValue(false)
                 if (it is HttpException) {
-                    parseBackendResponseError(it.response()
-                        ?.errorBody()).let { error: BackendResponseDto ->
+                    parseBackendResponseError(
+                        it.response()
+                            ?.errorBody()
+                    ).let { error: BackendResponseDto ->
                         _errorLiveData.postValue(BackendResponseDtoMapper().mapToDomainModel(error))
                     }
                 }
