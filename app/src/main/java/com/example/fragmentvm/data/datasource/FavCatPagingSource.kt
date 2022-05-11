@@ -40,14 +40,14 @@ class FavCatPagingSource : PagingSource<Int, FavCatDomain>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, FavCatDomain> {
         return try {
-            val nextPage = params.key ?: 1
+            val nextPage = params.key ?: 0
             val response: List<FavCatDto> = catRepository
                 .getFavouriteCats(apikey, nextPage, params.loadSize)
             val repos: List<FavCatDomain> = FavCatMapper().toDomainList(response)
             LoadResult.Page(
                 data = repos,
-                prevKey = if (nextPage == 1) null else nextPage - 1,
-                nextKey = nextPage + 1
+                prevKey = if (nextPage == 0) null else nextPage - 1,
+                nextKey = if (response.isEmpty()) null else nextPage + 1
             )
         } catch (exception: IOException) {
             return LoadResult.Error(exception)

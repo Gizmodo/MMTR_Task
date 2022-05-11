@@ -32,13 +32,13 @@ class CatPagingSource : PagingSource<Int, CatDomain>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, CatDomain> {
         return try {
-            val nextPage = params.key ?: 1
+            val nextPage = params.key ?: 0
             val response: List<CatDto> = catRepository.getCats(apikey, nextPage, params.loadSize)
             val repos: List<CatDomain> = CatDtoMapper().toDomainList(response)
             LoadResult.Page(
                 data = repos,
-                prevKey = if (nextPage == 1) null else nextPage - 1,
-                nextKey = nextPage + 1
+                prevKey = if (nextPage == 0) null else nextPage - 1,
+                nextKey = if (response.isEmpty()) null else nextPage + 1
             )
         } catch (exception: IOException) {
             return LoadResult.Error(exception)
