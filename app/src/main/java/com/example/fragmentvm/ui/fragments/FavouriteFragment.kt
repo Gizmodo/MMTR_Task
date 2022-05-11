@@ -3,6 +3,7 @@ package com.example.fragmentvm.ui.fragments
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
@@ -41,6 +42,7 @@ class FavouriteFragment : Fragment(R.layout.favourite_fragment) {
     )
     private lateinit var swipe: SwipeRefreshLayout
     private lateinit var progressBar: CircularProgressIndicator
+    private lateinit var layoutEmpty: ConstraintLayout
     private lateinit var rv: RecyclerView
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -50,6 +52,7 @@ class FavouriteFragment : Fragment(R.layout.favourite_fragment) {
 
     private fun initUI() {
         progressBar = binding.progressBar
+        layoutEmpty = binding.layoutEmpty
         swipe = binding.swipeLayout
         swipe.setOnRefreshListener {
             swipe.isRefreshing = false
@@ -67,13 +70,28 @@ class FavouriteFragment : Fragment(R.layout.favourite_fragment) {
 
         lifecycleScope.launchWhenCreated {
             favCatsAdapter.addLoadStateListener { loadState ->
-                if (loadState.source.refresh is LoadState.Loading) {
-                    viewModel.setState(StateMain.Loading)
+                when (loadState.source.refresh) {
+                    is LoadState.Loading -> {
+                        viewModel.setState(StateMain.Loading)
+                    }
+                    is LoadState.NotLoading -> {
+                        viewModel.setState(StateMain.Finished)
+                    }
+                    is LoadState.Error -> {
+                        viewModel.setState(StateMain.Finished)
+                    }
                 }
-                if (loadState.source.refresh is LoadState.NotLoading) {
-                    viewModel.setState(StateMain.Finished)
+
+                when {
+                    loadState.append is LoadState.NotLoading && loadState.append.endOfPaginationReached -> {
+                        when {
+                            favCatsAdapter.itemCount < 1 -> viewModel.setState(StateMain.Empty)
+                            else -> viewModel.setState(StateMain.Finished)
+                        }
+                    }
                 }
             }
+
             viewModel.catsFavFlow.collectLatest {
                 favCatsAdapter.submitData(it)
             }
@@ -156,6 +174,7 @@ class FavouriteFragment : Fragment(R.layout.favourite_fragment) {
         when (state) {
             StateMain.Empty -> {
                 progressBar.visibility = View.GONE
+                layoutEmpty.visibility = View.VISIBLE
                 swipe.isEnabled = true
             }
             is StateMain.Error -> {
@@ -164,10 +183,12 @@ class FavouriteFragment : Fragment(R.layout.favourite_fragment) {
             }
             StateMain.Loading -> {
                 progressBar.visibility = View.VISIBLE
+                layoutEmpty.visibility = View.GONE
                 swipe.isEnabled = false
             }
             StateMain.Finished -> {
                 progressBar.visibility = View.GONE
+                layoutEmpty.visibility = View.GONE
                 swipe.isEnabled = true
             }
         }

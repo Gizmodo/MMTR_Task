@@ -15,12 +15,9 @@
             app:destination="@id/apiFragment" />
         <action
             android:id="@+id/action_loginFragment_to_mainFragment"
-            app:destination="@id/mainFragment"
+            app:destination="@id/navigation_main"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_loginFragment_to_favouriteFragment"
-            app:destination="@id/favouriteFragment" />
     </fragment>
     <fragment
         android:id="@+id/apiFragment"
@@ -29,7 +26,7 @@
         tools:layout="@layout/api_fragment">
         <action
             android:id="@+id/action_apiFragment_to_mainFragment"
-            app:destination="@id/mainFragment"
+            app:destination="@id/navigation_main"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
         <action
@@ -37,7 +34,7 @@
             app:destination="@id/loginFragment" />
     </fragment>
     <fragment
-        android:id="@+id/mainFragment"
+        android:id="@+id/navigation_main"
         android:name="com.example.fragmentvm.ui.fragments.MainFragment"
         android:label="main_fragment"
         tools:layout="@layout/main_fragment">
@@ -46,7 +43,7 @@
             app:destination="@id/detailFragment" />
         <action
             android:id="@+id/action_mainFragment_to_favouriteFragment"
-            app:destination="@id/favouriteFragment" />
+            app:destination="@id/navigation_favourites" />
     </fragment>
     <fragment
         android:id="@+id/detailFragment"
@@ -58,7 +55,7 @@
             app:argType="string" />
     </fragment>
     <fragment
-        android:id="@+id/favouriteFragment"
+        android:id="@+id/navigation_favourites"
         android:name="com.example.fragmentvm.ui.fragments.FavouriteFragment"
         android:label="favourite_fragment"
         tools:layout="@layout/favourite_fragment" />

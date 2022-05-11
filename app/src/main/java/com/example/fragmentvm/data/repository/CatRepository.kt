@@ -25,7 +25,7 @@ class CatRepository @Inject constructor(
     }
 
     suspend fun getFavouriteCats(apiKey: String, page: Int, itemsPerPage: Int): List<FavCatDto> {
-        return apiService.getFavouriteCats(apiKey,page,itemsPerPage)
+        return apiService.getFavouriteCats(apiKey, page, itemsPerPage)
     }
 
     fun postSignUp(loginDto: LoginDto): @NonNull Observable<BackendResponseDto> {
