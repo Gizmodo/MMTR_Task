@@ -27,7 +27,7 @@ class FavCatViewHolder(
                 onItemClicked(model)
             }
 
-            with(btnFavourite){
+            with(btnFavourite) {
                 isChecked = true
                 setOnClickListener {
                     onFavouriteClicked(model, adapterPosition)

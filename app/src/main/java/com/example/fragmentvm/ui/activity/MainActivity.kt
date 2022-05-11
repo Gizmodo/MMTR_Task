@@ -1,6 +1,7 @@
 package com.example.fragmentvm.ui.activity
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
@@ -26,11 +27,17 @@ class MainActivity : AppCompatActivity() {
         val model: MainActivityViewModel by viewModels()
         binding = MainActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navView: BottomNavigationView = binding.navView
-//        val navController = findNavController(R.id.nav_host_fragment)
-//        val navController= Navigation.findNavController(this,R.id.nav_graph )
         navView.setupWithNavController(navHostFragment.findNavController())
+        navHostFragment.findNavController().addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.loginFragment -> hideBottomNav()
+                R.id.apiFragment -> hideBottomNav()
+                else -> showBottomNav()
+            }
+        }
         if (savedInstanceState == null) {
             model.getIsAlreadyRegistered().observe(this) {
                 when (it) {
@@ -45,5 +52,15 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun showBottomNav() {
+        binding.navView.visibility = View.VISIBLE
+
+    }
+
+    private fun hideBottomNav() {
+        binding.navView.visibility = View.GONE
+
     }
 }
