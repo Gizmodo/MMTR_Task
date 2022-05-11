@@ -9,27 +9,29 @@ import com.bumptech.glide.request.RequestOptions
 import com.example.fragmentvm.R
 import com.example.fragmentvm.core.utils.GlideImpl
 import com.example.fragmentvm.databinding.RvItemCatBinding
-import com.example.fragmentvm.domain.model.cat.CatDomain
+import com.example.fragmentvm.domain.model.favourite.FavCatDomain
 import com.example.fragmentvm.ui.utils.VotesEnum
 
-class CatViewHolder(
+class FavCatViewHolder(
     private val binding: RvItemCatBinding,
-    private val onItemClicked: (CatDomain) -> Unit,
-    private val onVoteClicked: (CatDomain, Int, VotesEnum) -> Unit,
-    private val onFavouriteClicked: (CatDomain, Int) -> Unit,
+    private val onItemClicked: (FavCatDomain) -> Unit,
+    private val onVoteClicked: (FavCatDomain, Int, VotesEnum) -> Unit,
+    private val onFavouriteClicked: (FavCatDomain, Int) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private val requestOptions = RequestOptions().error(R.drawable.ic_error_placeholder)
     private val transitionOptions = DrawableTransitionOptions().crossFade()
-    fun bind(model: CatDomain) {
+    fun bind(model: FavCatDomain) {
         with(binding) {
             imgView.setOnClickListener {
                 onItemClicked(model)
             }
 
-            btnFavourite.isChecked = model.idFavourite != null
-            btnFavourite.setOnClickListener {
-                onFavouriteClicked(model, adapterPosition)
+            with(btnFavourite) {
+                isChecked = true
+                setOnClickListener {
+                    onFavouriteClicked(model, adapterPosition)
+                }
             }
 
             with(btnVoteDown) {
@@ -51,7 +53,7 @@ class CatViewHolder(
                     setProgressBarVisibility(View.GONE)
                 })
                 .applyDefaultRequestOptions(requestOptions)
-                .load(model.url)
+                .load(model.image_url)
                 .thumbnail()
                 .centerCrop()
                 .diskCacheStrategy(DiskCacheStrategy.ALL)

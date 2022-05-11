@@ -5,6 +5,7 @@ plugins {
     id "scabbard.gradle" version "0.5.0"
     id 'androidx.navigation.safeargs'
     id 'io.gitlab.arturbosch.detekt'
+    id "org.jlleitschuh.gradle.ktlint"
 }
 
 ext.versionMajor = 1
@@ -87,6 +88,10 @@ detekt {
     parallel = true
     setSource(files(projectDir))
 }
+ktlint {
+    android.set(true)
+    outputColorName.set("RED")
+}
 dependencies {
     implementation "androidx.activity:activity-ktx:$activity_ktx"
     implementation "androidx.appcompat:appcompat:$appcompat"
@@ -108,7 +113,6 @@ dependencies {
     implementation "androidx.paging:paging-compose:1.0.0-alpha14"
     implementation "androidx.paging:paging-guava:$paging"
     implementation "androidx.paging:paging-runtime:$paging"
-    implementation "androidx.paging:paging-runtime:$paging"
     implementation "androidx.paging:paging-rxjava2:$paging"
     implementation "androidx.paging:paging-rxjava3:$paging"
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:$swiperefreshlayout"
@@ -128,6 +132,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutines"
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     kapt "com.github.bumptech.glide:compiler:$glide"
     kapt "com.google.dagger:dagger-compiler:$dagger"
     testImplementation "androidx.paging:paging-common:$paging"

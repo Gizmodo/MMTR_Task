@@ -30,12 +30,31 @@ class App : Application() {
 }
 
 internal class LineNumberDebugTree : Timber.DebugTree() {
-
+    var str: String = ""
     override fun createStackElementTag(element: StackTraceElement): String {
-        return "(${element.fileName}:${element.lineNumber}) #${element.methodName}"
+        return makeClickableLineNumber(element)
+        str = "${element.fileName}:${element.lineNumber}"
+        return str
     }
 
-    override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
-        super.log(priority, "MMTR_$tag", message, t)
+    private fun makeClickableLineNumber(
+        element: StackTraceElement,
+    ): String {
+        val className = element.fileName
+        val methodName = element.methodName
+        val lineNumber = element.lineNumber
+        val fileName = element.fileName
+        val stringBuilder = StringBuilder(className)
+            .append(".")
+            .append(methodName)
+            .append(" (")
+            .append(fileName)
+            .append(":")
+            .append(lineNumber)
+            .append(")  ")
+        return stringBuilder.toString()
     }
+    /*override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
+        super.log(priority, tag, "111 $str $message", t)
+    }*/
 }
