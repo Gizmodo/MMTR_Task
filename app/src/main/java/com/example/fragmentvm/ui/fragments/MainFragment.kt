@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -35,8 +36,8 @@ class MainFragment : Fragment() {
     companion object {
         fun instance() = MainFragment()
     }
-
-    private val viewModel: MainViewModel by lazy { getViewModel { MainViewModel() } }
+    val viewModel: MainViewModel by viewModels()
+//    private val viewModel: MainViewModel by lazy { getViewModel { MainViewModel() } }
     private val catViewModel: CatViewModel by lazy { getViewModel { CatViewModel() } }
     private lateinit var binding: MainFragmentBinding
     private lateinit var swipe: SwipeRefreshLayout

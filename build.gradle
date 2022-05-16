@@ -21,19 +21,22 @@ buildscript {
         sdk = 32
         swiperefreshlayout = "1.2.0-alpha01"
         timber = "5.0.1"
+        kotlin_version = '1.7.0-Beta'
     }
     repositories {
         google()
+        mavenCentral()
     }
     dependencies {
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav"
-        classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.19.0"
+        classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.20.0"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.0-Beta"
     }
 }
 plugins {
-    id 'com.android.application' version '7.1.0' apply false
-    id 'com.android.library' version '7.1.0' apply false
-    id 'org.jetbrains.kotlin.android' version '1.6.21' apply false
+    id 'com.android.application' version '7.2.0' apply false
+    id 'com.android.library' version '7.2.0' apply false
+    id 'org.jetbrains.kotlin.android' version "$kotlin_version" apply false
     id "org.jlleitschuh.gradle.ktlint" version "10.2.1"
 }
 
