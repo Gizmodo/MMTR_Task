@@ -50,6 +50,10 @@ class FavouriteFragment : Fragment(R.layout.favourite_fragment) {
         observeUIStates()
     }
 
+    private val userID by lazy {
+        arguments!!["USERID"]
+    }
+
     private fun initUI() {
         progressBar = binding.progressBar
         layoutEmpty = binding.layoutEmpty
