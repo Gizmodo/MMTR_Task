@@ -58,8 +58,10 @@ class LoginViewModel : ViewModel() {
                 _signUpLiveData.value = BackendResponseDtoMapper().mapToDomainModel(it)
             }, {
                 if (it is HttpException) {
-                    parseBackendResponseError(it.response()
-                        ?.errorBody()).let { error: BackendResponseDto ->
+                    parseBackendResponseError(
+                        it.response()
+                            ?.errorBody()
+                    ).let { error: BackendResponseDto ->
                         _signUpLiveData.value = BackendResponseDtoMapper().mapToDomainModel(error)
                     }
                 }

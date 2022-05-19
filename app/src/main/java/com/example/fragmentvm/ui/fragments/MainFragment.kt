@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.fragmentvm.R
 import com.example.fragmentvm.core.utils.StatefulData
+import com.example.fragmentvm.core.utils.getViewModel
 import com.example.fragmentvm.databinding.MainFragmentBinding
 import com.example.fragmentvm.domain.model.favourite.FavouriteResponseDomain
 import com.example.fragmentvm.domain.model.vote.VoteResponseDomain
@@ -35,9 +36,9 @@ class MainFragment : Fragment() {
     companion object {
         fun instance() = MainFragment()
     }
-
-    private lateinit var viewModel: MainViewModel
-    private lateinit var catViewModel: CatViewModel
+    val viewModel: MainViewModel by viewModels()
+//    private val viewModel: MainViewModel by lazy { getViewModel { MainViewModel() } }
+    private val catViewModel: CatViewModel by lazy { getViewModel { CatViewModel() } }
     private lateinit var binding: MainFragmentBinding
     private lateinit var swipe: SwipeRefreshLayout
     private lateinit var rv: RecyclerView
@@ -62,12 +63,9 @@ class MainFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-        catViewModel = ViewModelProvider(this)[CatViewModel::class.java]
         binding = MainFragmentBinding.inflate(inflater, container, false)
         swipe = binding.swipeLayout!!
         rv = binding.recyclerview!!
-//        this.findNavController()            .navigate(MainFragmentDirections.actionMainFragmentToFavouriteFragment())
         with(rv) {
             val animator = itemAnimator
             if (animator is SimpleItemAnimator) {
