@@ -1,6 +1,5 @@
 package com.example.fragmentvm.ui.viewmodels
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
@@ -33,9 +32,7 @@ import okhttp3.ResponseBody
 import timber.log.Timber
 import javax.inject.Inject
 
-class MainViewModel(
-    private val state: SavedStateHandle,
-) : ViewModel() {
+class MainViewModel : ViewModel() {
 
     private val _stateUIMain = MutableStateFlow<StateMain>(StateMain.Empty)
     fun getStateUIMain(): StateFlow<StateMain> = _stateUIMain

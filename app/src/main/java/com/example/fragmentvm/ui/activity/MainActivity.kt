@@ -4,16 +4,15 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.fragmentvm.App
 import com.example.fragmentvm.R
+import com.example.fragmentvm.core.utils.findFragmentContainerNavController
 import com.example.fragmentvm.databinding.MainActivityBinding
 import com.example.fragmentvm.ui.fragments.LoginFragmentDirections
-import com.example.fragmentvm.ui.fragments.MainFragment
 import com.example.fragmentvm.ui.fragments.MainFragmentDirections
 import com.example.fragmentvm.ui.viewmodels.MainActivityViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -25,11 +24,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var binding: MainActivityBinding
-    private fun replaceFragment(fragment: Fragment) {
-        val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.nav_host_fragment, fragment)
-        transaction.commit()
+
+    private val navController: NavController by lazy {
+        findFragmentContainerNavController(R.id.nav_host_fragment)
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,28 +37,34 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        val nav = navHostFragment.findNavController()
         val navView: BottomNavigationView = binding.navView
-        navView.setupWithNavController(nav)
-        nav.addOnDestinationChangedListener { _, destination, _ ->
-            Timber.d(destination.displayName)
+        navView.setupWithNavController(navController)
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.loginFragment -> hideBottomNav()
                 R.id.apiFragment -> hideBottomNav()
                 else -> showBottomNav()
             }
         }
+
         navView.setOnItemSelectedListener {
-            if (it.itemId == R.id.favourites) {
-//                replaceFragment(FavouriteFragment())
-                val arg = Bundle().apply { putString("USERID", "SOME DATA") }
-                val action = MainFragmentDirections.actionMainFragmentToFavouriteFragment()
-                nav.navigate(action)
+            when (it.itemId) {
+                R.id.favourites -> {
+                    Timber.d(navController.currentDestination.toString())
+                    if (navController.currentDestination?.id != R.id.navigation_favourites) {
+                        navController.navigate(MainFragmentDirections.actionMainFragmentToFavouriteFragment())
+                    }
+                    true
+                }
+                R.id.main -> {
+                    navController.currentDestination?.let { dest ->
+                        navController.popBackStack(dest.id, true)
+                    }
+                    true
+                }
+                else -> false
             }
-            if (it.itemId == R.id.main) {
-                replaceFragment(MainFragment())
-            }
-            true
         }
 
         if (savedInstanceState == null) {
@@ -77,11 +82,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun showBottomNav() {
         binding.navView.visibility = View.VISIBLE
-
     }
 
     private fun hideBottomNav() {
         binding.navView.visibility = View.GONE
-
     }
 }
