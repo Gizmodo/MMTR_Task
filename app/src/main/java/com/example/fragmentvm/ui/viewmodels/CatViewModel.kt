@@ -78,10 +78,12 @@ class CatViewModel : ViewModel() {
                                     true -> {
                                         Timber.d("Ошибка при добавление в избранное: ${response.message}")
                                         _favouriteState.value =
-                                            StatefulData.ErrorUiText(UiText.StringResource(
-                                                resId = R.string.favourite_error_add,
-                                                response.message
-                                            ))
+                                            StatefulData.ErrorUiText(
+                                                UiText.StringResource(
+                                                    resId = R.string.favourite_error_add,
+                                                    response.message
+                                                )
+                                            )
                                     }
                                     false -> {
                                         cat.idFavourite?.let {
@@ -111,17 +113,20 @@ class CatViewModel : ViewModel() {
                                                                         try {
                                                                             val errorOnDelete =
                                                                                 Util.parseBackendResponseError(
-                                                                                    bodyOnDelete)
+                                                                                    bodyOnDelete
+                                                                                )
                                                                             val resOnDelete =
                                                                                 BackendResponseDtoMapper().mapToDomainModel(
-                                                                                    errorOnDelete)
+                                                                                    errorOnDelete
+                                                                                )
                                                                             Timber.d("Ошибка при удалении из избранного: ${resOnDelete.message}")
                                                                             _favouriteState.value =
                                                                                 StatefulData.ErrorUiText(
                                                                                     UiText.StringResource(
                                                                                         resId = R.string.favourite_error_remove,
                                                                                         resOnDelete.message
-                                                                                    ))
+                                                                                    )
+                                                                                )
                                                                         } catch (e: Exception) {
                                                                             handleException(e)
                                                                         }
@@ -150,19 +155,23 @@ class CatViewModel : ViewModel() {
 
     private fun handleObservableThrow(_throw: Throwable) {
         _favouriteState.value =
-            StatefulData.ErrorUiText(UiText.StringResource(
-                resId = R.string.error_subscribe,
-                _throw.message.toString()
-            ))
+            StatefulData.ErrorUiText(
+                UiText.StringResource(
+                    resId = R.string.error_subscribe,
+                    _throw.message.toString()
+                )
+            )
         Timber.e(_throw)
     }
 
     private fun handleException(e: Exception) {
         Timber.e("Возникло исключение: $e")
         _favouriteState.value =
-            StatefulData.ErrorUiText(UiText.StringResource(
-                resId = R.string.exception,
-                e.message.toString()
-            ))
+            StatefulData.ErrorUiText(
+                UiText.StringResource(
+                    resId = R.string.exception,
+                    e.message.toString()
+                )
+            )
     }
 }

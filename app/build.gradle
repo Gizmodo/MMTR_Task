@@ -37,8 +37,8 @@ def generateVersionName() {
 
 android {
     compileSdk sdk
-    buildToolsVersion '33.0.0 rc2'
-
+    buildToolsVersion '33.0.0 rc3'
+    compileSdkPreview "Tiramisu"
     defaultConfig {
         applicationId "com.example.fragmentvm"
         minSdk 21
