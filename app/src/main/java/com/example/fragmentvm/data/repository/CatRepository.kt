@@ -7,10 +7,14 @@ import com.example.fragmentvm.data.model.favourite.get.FavCatDto
 import com.example.fragmentvm.data.model.favourite.post.FavoriteRequestDto
 import com.example.fragmentvm.data.model.favourite.post.FavouriteResponseDto
 import com.example.fragmentvm.data.model.login.LoginDto
+import com.example.fragmentvm.data.model.login.LoginDtoMapper
 import com.example.fragmentvm.data.model.response.BackendResponseDto
+import com.example.fragmentvm.data.model.response.BackendResponseDtoMapper
 import com.example.fragmentvm.data.model.vote.request.VoteRequestDto
 import com.example.fragmentvm.data.model.vote.response.VoteResponseDto
 import com.example.fragmentvm.data.service.CatService
+import com.example.fragmentvm.domain.model.BackendResponseDomain
+import com.example.fragmentvm.domain.model.login.LoginDomain
 import io.reactivex.rxjava3.annotations.NonNull
 import io.reactivex.rxjava3.core.Observable
 import org.jetbrains.annotations.NotNull
@@ -31,6 +35,13 @@ class CatRepository @Inject constructor(
     fun postSignUp(loginDto: LoginDto): @NonNull Observable<BackendResponseDto> {
         return apiService.signUp(loginDto)
             .compose(RxUtils.applySubscriberScheduler())
+    }
+
+    fun postSignUp2(login: LoginDomain): @NonNull Observable<BackendResponseDomain> {
+        val loginModel = LoginDtoMapper().mapFromDomainModel(login)
+        return apiService.signUp(loginModel).map {
+            BackendResponseDtoMapper().mapToDomainModel(it)
+        }.compose(RxUtils.applySubscriberScheduler())
     }
 
     fun sendApiKey(apikey: String): @NonNull Observable<List<BackendResponseDto>> {
