@@ -46,7 +46,7 @@
         android:id="@+id/navigation_favourites"
         android:name="com.example.fragmentvm.ui.fragments.FavouriteFragment"
         android:label="favourite_fragment"
-        tools:layout="@layout/favourite_fragment" >
-       />
+        tools:layout="@layout/favourite_fragment">
+        />
     </fragment>
 </navigation>

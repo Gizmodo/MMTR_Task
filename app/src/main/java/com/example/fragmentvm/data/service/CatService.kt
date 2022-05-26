@@ -37,7 +37,7 @@ interface CatService {
     @GET("favourites")
     fun getApiKey(
         @Query("api_key") apiKey: String,
-    ): Observable<List<BackendResponseDto>>
+    ): Observable<List<FavCatDto>>
 
     @POST("votes")
     fun vote(

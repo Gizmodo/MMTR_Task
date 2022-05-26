@@ -19,4 +19,12 @@ class BackendResponseDtoMapper : DomainMapper<BackendResponseDto, BackendRespons
             level = domainModel.level
         )
     }
+
+    fun toDomainList(initial: List<BackendResponseDto>): List<BackendResponseDomain> {
+        return initial.map { mapToDomainModel(it) }
+    }
+
+    fun fromDomainList(initial: List<BackendResponseDomain>): List<BackendResponseDto> {
+        return initial.map { mapFromDomainModel(it) }
+    }
 }

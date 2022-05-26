@@ -50,7 +50,7 @@ class LoginViewModel : ViewModel() {
         val desc = runBlocking { ds.getString(KEY_DESCRIPTION) }
         val eml = runBlocking { ds.getString(KEY_EMAIL) }
         val loginModel = LoginDomain(desc.toString(), eml.toString())
-        catRepository.postSignUp2(loginModel)
+        catRepository.postSignUp(loginModel)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 _signUpLiveData.value = it

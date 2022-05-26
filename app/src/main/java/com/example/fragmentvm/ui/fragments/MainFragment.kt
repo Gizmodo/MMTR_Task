@@ -36,8 +36,10 @@ class MainFragment : Fragment() {
     companion object {
         fun instance() = MainFragment()
     }
+
     val viewModel: MainViewModel by viewModels()
-//    private val viewModel: MainViewModel by lazy { getViewModel { MainViewModel() } }
+
+    //    private val viewModel: MainViewModel by lazy { getViewModel { MainViewModel() } }
     private val catViewModel: CatViewModel by lazy { getViewModel { CatViewModel() } }
     private lateinit var binding: MainFragmentBinding
     private lateinit var swipe: SwipeRefreshLayout
