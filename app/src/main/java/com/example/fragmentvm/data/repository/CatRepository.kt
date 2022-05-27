@@ -1,7 +1,7 @@
 package com.example.fragmentvm.data.repository
 
 import com.example.fragmentvm.core.utils.RxUtils
-import com.example.fragmentvm.data.model.cat.CatDto
+import com.example.fragmentvm.data.model.cat.CatDtoMapper
 import com.example.fragmentvm.data.model.favourite.delete.FavouriteResponseDeleteDto
 import com.example.fragmentvm.data.model.favourite.get.FavCatDto
 import com.example.fragmentvm.data.model.favourite.get.FavCatMapper
@@ -13,6 +13,7 @@ import com.example.fragmentvm.data.model.vote.request.VoteRequestDto
 import com.example.fragmentvm.data.model.vote.response.VoteResponseDto
 import com.example.fragmentvm.data.service.CatService
 import com.example.fragmentvm.domain.model.BackendResponseDomain
+import com.example.fragmentvm.domain.model.cat.CatDomain
 import com.example.fragmentvm.domain.model.favourite.FavCatDomain
 import com.example.fragmentvm.domain.model.login.LoginDomain
 import io.reactivex.rxjava3.annotations.NonNull
@@ -24,8 +25,11 @@ import javax.inject.Inject
 class CatRepository @Inject constructor(
     private val apiService: CatService,
 ) {
-    suspend fun getCats(key: String, page: Int, itemsPerPage: Int): List<CatDto> {
+    suspend fun getCats(key: String, page: Int, itemsPerPage: Int): List<CatDomain> {
         return apiService.getCats(apiKey = key, page = page, itemsPerPage = itemsPerPage)
+            .map {
+                CatDtoMapper().mapToDomainModel(it)
+            }
     }
 
     suspend fun getFavouriteCats(apiKey: String, page: Int, itemsPerPage: Int): List<FavCatDto> {
