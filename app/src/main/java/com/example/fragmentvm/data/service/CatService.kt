@@ -45,6 +45,12 @@ interface CatService {
         @Body document: VoteRequestDto,
     ): Observable<Response<VoteResponseDto>>
 
+    @POST("votes")
+    fun voteSuspend(
+        @Header("x-api-key") apiKey: String,
+        @Body document: VoteRequestDto,
+    ): Response<VoteResponseDto>
+
     //Save an Image as a Favourite to your Account
     @POST("favourites")
     fun postFavourite(
