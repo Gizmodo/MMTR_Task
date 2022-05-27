@@ -3,7 +3,6 @@ package com.example.fragmentvm.data.repository
 import com.example.fragmentvm.core.utils.RxUtils
 import com.example.fragmentvm.data.model.cat.CatDtoMapper
 import com.example.fragmentvm.data.model.favourite.delete.FavouriteResponseDeleteDto
-import com.example.fragmentvm.data.model.favourite.get.FavCatDto
 import com.example.fragmentvm.data.model.favourite.get.FavCatMapper
 import com.example.fragmentvm.data.model.favourite.post.FavoriteRequestDto
 import com.example.fragmentvm.data.model.favourite.post.FavouriteResponseDto
@@ -32,8 +31,11 @@ class CatRepository @Inject constructor(
             }
     }
 
-    suspend fun getFavouriteCats(apiKey: String, page: Int, itemsPerPage: Int): List<FavCatDto> {
+    suspend fun getFavouriteCats(apiKey: String, page: Int, itemsPerPage: Int): List<FavCatDomain> {
         return apiService.getFavouriteCats(apiKey, page, itemsPerPage)
+            .map {
+                FavCatMapper().mapToDomainModel(it)
+            }
     }
 
     fun postSignUp(login: LoginDomain): @NonNull Observable<BackendResponseDomain> {
