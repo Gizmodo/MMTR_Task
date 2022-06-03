@@ -5,6 +5,8 @@ import com.example.fragmentvm.data.service.CatService
 import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
+import java.util.concurrent.TimeUnit
+import javax.inject.Singleton
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -13,8 +15,6 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
-import javax.inject.Singleton
 
 @Module
 class RetrofitModule {
@@ -29,7 +29,7 @@ class RetrofitModule {
     @Provides
     fun provideRetrofitInstance(): Retrofit {
         val logging = HttpLoggingInterceptor { message -> Timber.d(message) }
-        logging.setLevel(HttpLoggingInterceptor.Level.BASIC)
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY)
 
         val gson = GsonBuilder().setLenient().create()
 

@@ -3,7 +3,6 @@ package com.example.fragmentvm.data.model.vote.response
 import com.example.fragmentvm.domain.model.vote.VoteResponseDomain
 import com.example.fragmentvm.domain.utils.DomainMapper
 import com.example.fragmentvm.ui.utils.VotesEnum
-import retrofit2.Response
 
 class VoteResponseMapper : DomainMapper<VoteResponseDto, VoteResponseDomain> {
     override fun mapToDomainModel(model: VoteResponseDto): VoteResponseDomain {
@@ -22,9 +21,9 @@ class VoteResponseMapper : DomainMapper<VoteResponseDto, VoteResponseDomain> {
         )
     }
 
-    fun convertResponseToDomain(model: Response<VoteResponseDto>): Response<VoteResponseDomain> {
+   /* fun convertResponseToDomain(model: Response<VoteResponseDto>): Response<VoteResponseDomain> {
         val result: Response<VoteResponseDomain>
         mapToDomainModel(model.body()).also { result.body = it }
         return mapToDomainModel(model)
-    }
+    }*/
 }

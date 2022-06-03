@@ -5,7 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fragmentvm.App
 import com.example.fragmentvm.R
-import com.example.fragmentvm.core.utils.*
+import com.example.fragmentvm.core.utils.Constants
+import com.example.fragmentvm.core.utils.SingleLiveEvent
+import com.example.fragmentvm.core.utils.StatefulData
+import com.example.fragmentvm.core.utils.UiText
+import com.example.fragmentvm.core.utils.Util
 import com.example.fragmentvm.data.model.favourite.delete.FavouriteResponseDeleteDto
 import com.example.fragmentvm.data.model.favourite.post.FavoriteRequestMapper
 import com.example.fragmentvm.data.model.favourite.post.FavoriteResponseMapper
@@ -17,13 +21,13 @@ import com.example.fragmentvm.domain.model.cat.CatDomain
 import com.example.fragmentvm.domain.model.favourite.FavouriteRequestDomain
 import com.example.fragmentvm.domain.model.favourite.FavouriteResponseDomain
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.ResponseBody
 import timber.log.Timber
-import javax.inject.Inject
 
 class CatViewModel : ViewModel() {
     private var apikey: String
@@ -76,7 +80,10 @@ class CatViewModel : ViewModel() {
                                 val response = BackendResponseDtoMapper().mapToDomainModel(error)
                                 when (cat.idFavourite == null) {
                                     true -> {
-                                        Timber.d("Ошибка при добавление в избранное: ${response.message}")
+                                        Timber.d(
+                                            "Ошибка при добавление в избранное:" +
+                                                " ${response.message}"
+                                        )
                                         _favouriteState.value =
                                             StatefulData.ErrorUiText(
                                                 UiText.StringResource(
@@ -87,7 +94,8 @@ class CatViewModel : ViewModel() {
                                     }
                                     false -> {
                                         cat.idFavourite?.let {
-                                            catRepository.deleteFavourite(apikey, cat.idFavourite!!)
+                                            catRepository
+                                                .deleteFavourite(apikey, cat.idFavourite!!)
                                                 .observeOn(AndroidSchedulers.mainThread())
                                                 .subscribe({ responseOnDelete ->
                                                     try {

@@ -7,10 +7,10 @@ import com.example.fragmentvm.core.utils.Constants
 import com.example.fragmentvm.data.repository.CatRepository
 import com.example.fragmentvm.domain.DataStoreInterface
 import com.example.fragmentvm.domain.model.cat.CatDomain
-import kotlinx.coroutines.runBlocking
-import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
+import kotlinx.coroutines.runBlocking
+import retrofit2.HttpException
 
 class CatPagingSource : PagingSource<Int, CatDomain>() {
     private var apikey: String

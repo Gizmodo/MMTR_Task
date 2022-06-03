@@ -2,13 +2,17 @@ package com.example.fragmentvm.data.repository
 
 import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.*
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.fragmentvm.domain.DataStoreInterface
-import kotlinx.coroutines.flow.first
-import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.flow.first
+import timber.log.Timber
 
 @Singleton
 class DataStoreRepository @Inject constructor(private val context: Context) :
@@ -18,7 +22,7 @@ class DataStoreRepository @Inject constructor(private val context: Context) :
     }
 
     private val Context.dataStore: DataStore<Preferences>
-            by preferencesDataStore(name = PREFERENCES_NAME)
+        by preferencesDataStore(name = PREFERENCES_NAME)
 
     override suspend fun putString(key: String, value: String) {
         val preferencesKey = stringPreferencesKey(key)

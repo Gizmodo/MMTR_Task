@@ -10,9 +10,7 @@ import com.example.fragmentvm.data.model.favourite.post.FavoriteRequestDto
 import com.example.fragmentvm.data.model.favourite.post.FavouriteResponseDto
 import com.example.fragmentvm.data.model.login.LoginDtoMapper
 import com.example.fragmentvm.data.model.response.BackendResponseDtoMapper
-import com.example.fragmentvm.data.model.vote.request.VoteRequestDto
 import com.example.fragmentvm.data.model.vote.request.VoteRequestMapper
-import com.example.fragmentvm.data.model.vote.response.VoteResponseDto
 import com.example.fragmentvm.data.model.vote.response.VoteResponseMapper
 import com.example.fragmentvm.data.service.CatService
 import com.example.fragmentvm.domain.model.BackendResponseDomain
@@ -57,44 +55,18 @@ class CatRepository @Inject constructor(
             .compose(RxUtils.applySubscriberScheduler())
     }
 
-    fun postVote(
-        apiKey: String,
-        vote: VoteRequestDto,
-    ): @NotNull Observable<Response<VoteResponseDto>> {
-        return apiService.vote(apiKey, vote)
-            .compose(RxUtils.applySubscriberScheduler())
-    }
-
-    suspend fun postVoteSuspend(
+    suspend fun postVote(
         apiKey: String,
         vote: VoteRequestDomain,
     ): NetworkResult<VoteResponseDomain> {
-        val data: VoteRequestDto = VoteRequestMapper().mapFromDomainModel(vote)
-        val response = api { apiService.voteSuspend(apiKey, data) }
-        val newResult : NetworkResult<VoteResponseDomain>
-
-        when(response){
-            is NetworkResult.Error -> {}
-            is NetworkResult.Exception -> {}
-            is NetworkResult.Success -> {
-                val mapped: VoteResponseDomain = VoteResponseMapper().mapToDomainModel(response.data)
-            }
+        return api(
+            VoteResponseMapper()
+        ) {
+            apiService.vote(
+                apiKey,
+                VoteRequestMapper().mapFromDomainModel(vote)
+            )
         }
-        return response
-    }
-
-    fun postVote2(
-        apiKey: String,
-        vote: VoteRequestDomain,
-    ): @NotNull Observable<Response<VoteResponseDomain>> {
-        val data: VoteRequestDto = VoteRequestMapper().mapFromDomainModel(vote)
-        val temp: Response<VoteResponseDomain>
-        return apiService.vote(apiKey, data)
-            .map {
-                VoteResponseMapper().mapToDomainModel(it.body()!!)
-                temp = Response<>
-            }
-            .compose(RxUtils.applySubscriberScheduler())
     }
 
     fun postFavourite(

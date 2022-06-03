@@ -11,7 +11,13 @@ import com.example.fragmentvm.data.model.vote.request.VoteRequestDto
 import com.example.fragmentvm.data.model.vote.response.VoteResponseDto
 import io.reactivex.rxjava3.core.Observable
 import retrofit2.Response
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.DELETE
+import retrofit2.http.GET
+import retrofit2.http.Header
+import retrofit2.http.POST
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface CatService {
     @GET("images/search")
@@ -21,7 +27,7 @@ interface CatService {
         @Query("limit") itemsPerPage: Int = 10,
     ): List<CatDto>
 
-    //Get the Favourites belonging to your account, with the option to filter by ‘sub_id’ used when creating them.
+    // Get the Favourites belonging to your account, with the option to filter by ‘sub_id’ used when creating them.
     @GET("favourites")
     suspend fun getFavouriteCats(
         @Header("x-api-key") apiKey: String,
@@ -40,25 +46,19 @@ interface CatService {
     ): Observable<List<FavCatDto>>
 
     @POST("votes")
-    fun vote(
-        @Header("x-api-key") apiKey: String,
-        @Body document: VoteRequestDto,
-    ): Observable<Response<VoteResponseDto>>
-
-    @POST("votes")
-    fun voteSuspend(
+    suspend fun vote(
         @Header("x-api-key") apiKey: String,
         @Body document: VoteRequestDto,
     ): Response<VoteResponseDto>
 
-    //Save an Image as a Favourite to your Account
+    // Save an Image as a Favourite to your Account
     @POST("favourites")
     fun postFavourite(
         @Header("x-api-key") apiKey: String,
         @Body document: FavoriteRequestDto,
     ): Observable<Response<FavouriteResponseDto>>
 
-    //Delete the Favourite with the ID passed if it belongs to your Account.
+    // Delete the Favourite with the ID passed if it belongs to your Account.
     @DELETE("favourites/{favourite_id}")
     fun deleteFavourite(
         @Header("x-api-key") apiKey: String,

@@ -29,7 +29,6 @@ class MainActivity : AppCompatActivity() {
         findFragmentContainerNavController(R.id.nav_host_fragment)
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val model: MainActivityViewModel by viewModels()

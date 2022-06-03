@@ -120,7 +120,6 @@ class FavouriteFragment : Fragment(R.layout.favourite_fragment) {
                         showDialog(it.message.asString(requireContext()))
                     }
                     StatefulData.Loading -> {
-
                     }
                     is StatefulData.Success -> {
                         it.result.image_url?.let { url ->

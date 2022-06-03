@@ -10,14 +10,13 @@ import androidx.paging.cachedIn
 import com.example.fragmentvm.App
 import com.example.fragmentvm.R
 import com.example.fragmentvm.core.utils.Constants
+import com.example.fragmentvm.core.utils.NetworkResult
 import com.example.fragmentvm.core.utils.StatefulData
 import com.example.fragmentvm.core.utils.UiText
 import com.example.fragmentvm.core.utils.Util
 import com.example.fragmentvm.data.datasource.FavCatPagingSource
 import com.example.fragmentvm.data.model.favourite.delete.FavouriteResponseDeleteDto
 import com.example.fragmentvm.data.model.response.BackendResponseDtoMapper
-import com.example.fragmentvm.data.model.vote.request.VoteRequestMapper
-import com.example.fragmentvm.data.model.vote.response.VoteResponseMapper
 import com.example.fragmentvm.data.repository.CatRepository
 import com.example.fragmentvm.domain.DataStoreInterface
 import com.example.fragmentvm.domain.model.favourite.FavCatDomain
@@ -27,6 +26,7 @@ import com.example.fragmentvm.domain.model.vote.VoteResponseDomain
 import com.example.fragmentvm.ui.utils.StateMain
 import com.example.fragmentvm.ui.utils.VotesEnum
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -88,6 +88,18 @@ class FavouriteViewModel : ViewModel() {
 
     @Inject
     lateinit var ds: DataStoreInterface
+
+    private var _exceptionMessage = MutableLiveData<String>()
+    val exceptionMessage: LiveData<String> get() = _exceptionMessage
+
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        onException(throwable)
+    }
+
+    private fun onException(throwable: Throwable) {
+        Timber.e(throwable)
+        _exceptionMessage.postValue(throwable.message)
+    }
 
     val catsFavFlow = Pager(PagingConfig(pageSize = 10, initialLoadSize = 10)) {
         FavCatPagingSource()
@@ -158,39 +170,27 @@ class FavouriteViewModel : ViewModel() {
 
     fun vote(cat: FavCatDomain, vote: VotesEnum, position: Int) {
         Timber.d("Vote clicked ${vote.name} $position")
-        viewModelScope.launch(Dispatchers.IO) {
-            val voteRequest = VoteRequestMapper()
-                .mapFromDomainModel(VoteRequestDomain(cat.imageId, vote))
-            catRepository.postVote(apikey, voteRequest)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    if (it.isSuccessful) {
-                        it.body()?.let { body ->
-                            val voteResponse = VoteResponseMapper()
-                                .mapToDomainModel(body)
-                            voteResponse.position = position
-                            voteResponse.vote = vote
-                            _voteState.value = StatefulData.Success(voteResponse)
-                        }
-                    } else {
-                        it.errorBody()?.let { body ->
-                            try {
-                                val error = Util.parseBackendResponseError(body)
-                                val parsed = BackendResponseDtoMapper().mapToDomainModel(error)
-                                _voteState.value = StatefulData.ErrorUiText(
-                                    UiText.StringResource(
-                                        resId = R.string.vote_error_add,
-                                        parsed.message
-                                    )
-                                )
-                            } catch (e: Exception) {
-                                handleException(e, _voteState)
-                            }
-                        }
-                    }
-                }, { _throw ->
-                    handleThrow(_throw, _voteState)
-                })
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            when (
+                val response =
+                    catRepository.postVote(apikey, VoteRequestDomain(cat.imageId, vote))
+            ) {
+                is NetworkResult.Error -> {
+                    _voteState.value = StatefulData.ErrorUiText(
+                        UiText.StringResource(
+                            resId = R.string.vote_error_add,
+                            response.message.toString()
+                        )
+                    )
+                }
+                is NetworkResult.Exception -> {
+                    Timber.e(response.e)
+                }
+                is NetworkResult.Success -> {
+                    val payload = response.data.copy(position = position, vote = vote)
+                    _voteState.value = StatefulData.Success(payload)
+                }
+            }
         }
     }
 
