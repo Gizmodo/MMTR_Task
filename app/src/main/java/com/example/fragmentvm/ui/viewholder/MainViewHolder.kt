@@ -41,9 +41,11 @@ class MainViewHolder(
             }
 
             Glide.with(itemView.context)
-                .addDefaultRequestListener(GlideImpl.OnCompleted {
-                    setProgressBarVisibility(View.GONE)
-                })
+                .addDefaultRequestListener(
+                    GlideImpl.OnCompleted {
+                        setProgressBarVisibility(View.GONE)
+                    }
+                )
                 .applyDefaultRequestOptions(requestOptions)
                 .load(model.url)
                 .thumbnail()

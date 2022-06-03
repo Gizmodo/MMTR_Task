@@ -3,7 +3,12 @@ package com.example.fragmentvm.core.di
 import com.example.fragmentvm.data.datasource.CatPagingSource
 import com.example.fragmentvm.data.datasource.FavCatPagingSource
 import com.example.fragmentvm.ui.activity.MainActivity
-import com.example.fragmentvm.ui.viewmodels.*
+import com.example.fragmentvm.ui.viewmodels.ApiViewModel
+import com.example.fragmentvm.ui.viewmodels.CatViewModel
+import com.example.fragmentvm.ui.viewmodels.FavouriteViewModel
+import com.example.fragmentvm.ui.viewmodels.LoginViewModel
+import com.example.fragmentvm.ui.viewmodels.MainActivityViewModel
+import com.example.fragmentvm.ui.viewmodels.MainViewModel
 import dagger.Component
 import javax.inject.Singleton
 

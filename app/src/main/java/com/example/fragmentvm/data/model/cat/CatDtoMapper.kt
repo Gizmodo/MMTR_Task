@@ -24,12 +24,4 @@ class CatDtoMapper : DomainMapper<CatDto, CatDomain> {
             height = domainModel.height
         )
     }
-
-    fun toDomainList(initial: List<CatDto>): List<CatDomain> {
-        return initial.map { mapToDomainModel(it) }
-    }
-
-    fun fromDomainList(initial: List<CatDomain>): List<CatDto> {
-        return initial.map { mapFromDomainModel(it) }
-    }
 }

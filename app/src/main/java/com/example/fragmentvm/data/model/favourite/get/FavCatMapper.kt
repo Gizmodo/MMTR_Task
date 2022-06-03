@@ -3,10 +3,7 @@ package com.example.fragmentvm.data.model.favourite.get
 import com.example.fragmentvm.domain.model.favourite.FavCatDomain
 import com.example.fragmentvm.domain.utils.DomainMapper
 
-class FavCatMapper : DomainMapper<
-        FavCatDto,
-        FavCatDomain
-        > {
+class FavCatMapper : DomainMapper<FavCatDto, FavCatDomain> {
     override fun mapToDomainModel(model: FavCatDto): FavCatDomain {
         return FavCatDomain(
             createdAt = model.createdAt,
@@ -31,9 +28,5 @@ class FavCatMapper : DomainMapper<
 
     fun toDomainList(initial: List<FavCatDto>): List<FavCatDomain> {
         return initial.map { mapToDomainModel(it) }
-    }
-
-    fun fromDomainList(initial: List<FavCatDomain>): List<FavCatDto> {
-        return initial.map { mapFromDomainModel(it) }
     }
 }

@@ -18,12 +18,4 @@ class LoginDtoMapper : DomainMapper<LoginDto, LoginDomain> {
             appDescription = domainModel.appDescription
         )
     }
-
-    fun toDomainList(initial: List<LoginDto>): List<LoginDomain> {
-        return initial.map { mapToDomainModel(it) }
-    }
-
-    fun fromDomainList(initial: List<LoginDomain>): List<LoginDto> {
-        return initial.map { mapFromDomainModel(it) }
-    }
 }
