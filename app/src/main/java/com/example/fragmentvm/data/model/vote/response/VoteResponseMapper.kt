@@ -20,10 +20,4 @@ class VoteResponseMapper : DomainMapper<VoteResponseDto, VoteResponseDomain> {
             message = domainModel.message
         )
     }
-
-   /* fun convertResponseToDomain(model: Response<VoteResponseDto>): Response<VoteResponseDomain> {
-        val result: Response<VoteResponseDomain>
-        mapToDomainModel(model.body()).also { result.body = it }
-        return mapToDomainModel(model)
-    }*/
 }

@@ -13,10 +13,7 @@ import com.example.fragmentvm.core.utils.Constants
 import com.example.fragmentvm.core.utils.NetworkResult
 import com.example.fragmentvm.core.utils.StatefulData
 import com.example.fragmentvm.core.utils.UiText
-import com.example.fragmentvm.core.utils.Util
 import com.example.fragmentvm.data.datasource.FavCatPagingSource
-import com.example.fragmentvm.data.model.favourite.delete.FavouriteResponseDeleteDto
-import com.example.fragmentvm.data.model.response.BackendResponseDtoMapper
 import com.example.fragmentvm.data.repository.CatRepository
 import com.example.fragmentvm.domain.DataStoreInterface
 import com.example.fragmentvm.domain.model.favourite.FavCatDomain
@@ -25,7 +22,6 @@ import com.example.fragmentvm.domain.model.vote.VoteRequestDomain
 import com.example.fragmentvm.domain.model.vote.VoteResponseDomain
 import com.example.fragmentvm.ui.utils.StateMain
 import com.example.fragmentvm.ui.utils.VotesEnum
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -34,7 +30,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import okhttp3.ResponseBody
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -61,17 +56,17 @@ class FavouriteViewModel : ViewModel() {
 
     fun setCat(cat: FavCatDomain) {
         viewModelScope.launch {
-            if (cat.image_url != null) {
-                eventChannel.send(StatefulData.Success(cat))
-            } else {
-                eventChannel.send(
-                    StatefulData.ErrorUiText(
-                        UiText.StringResource(
-                            R.string.favourite_error_set_cat,
-                            cat.imageId
+            when {
+                cat.image_url != null -> {
+                    eventChannel.send(StatefulData.Success(cat))
+                }
+                else -> {
+                    eventChannel.send(
+                        StatefulData.ErrorUiText(
+                            UiText.StringResource(R.string.favourite_error_set_cat, cat.imageId)
                         )
                     )
-                )
+                }
             }
         }
     }
@@ -112,59 +107,31 @@ class FavouriteViewModel : ViewModel() {
     }
 
     fun onFavClicked(favCat: FavCatDomain, position: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            catRepository.deleteFavourite(apikey, favCat.id)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ responseOnDelete ->
-                    try {
-                        when {
-                            responseOnDelete.isSuccessful -> {
-                                responseOnDelete.body()
-                                    ?.let { body: FavouriteResponseDeleteDto ->
-                                        val favouriteResponse =
-                                            FavouriteResponseDomain(
-                                                id = null,
-                                                message = body.message,
-                                                adapterPosition = position
-                                            )
-                                        _favState.value =
-                                            StatefulData.Success(
-                                                favouriteResponse
-                                            )
-                                    }
-                            }
-                            else -> {
-                                responseOnDelete.errorBody()
-                                    ?.let { bodyOnDelete: ResponseBody ->
-                                        try {
-                                            val errorOnDelete =
-                                                Util.parseBackendResponseError(
-                                                    bodyOnDelete
-                                                )
-                                            val resOnDelete =
-                                                BackendResponseDtoMapper().mapToDomainModel(
-                                                    errorOnDelete
-                                                )
-                                            Timber.d("Ошибка при удалении из избранного: ${resOnDelete.message}")
-                                            _favState.value =
-                                                StatefulData.ErrorUiText(
-                                                    UiText.StringResource(
-                                                        R.string.favourite_error_remove,
-                                                        resOnDelete.message
-                                                    )
-                                                )
-                                        } catch (e: Exception) {
-                                            handleException(e, _favState)
-                                        }
-                                    }
-                            }
-                        }
-                    } catch (e: Exception) {
-                        handleException(e, _favState)
-                    }
-                }, { _throw ->
-                    handleThrow(_throw, _favState)
-                })
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            when (val response = catRepository.deleteFavourite(apikey, favCat.id)) {
+                is NetworkResult.Error -> {
+                    Timber.d("Ошибка при удалении из избранного: ${response.message}")
+                    _favState.value =
+                        StatefulData.ErrorUiText(
+                            UiText.StringResource(
+                                resId = R.string.favourite_error_remove,
+                                response.message.toString()
+                            )
+                        )
+                }
+                is NetworkResult.Exception -> {
+                    Timber.e(response.e)
+                }
+                is NetworkResult.Success -> {
+                    val favouriteResponse =
+                        FavouriteResponseDomain(
+                            id = null,
+                            message = response.data.message,
+                            adapterPosition = position
+                        )
+                    _favState.value = StatefulData.Success(favouriteResponse)
+                }
+            }
         }
     }
 
@@ -192,34 +159,6 @@ class FavouriteViewModel : ViewModel() {
                 }
             }
         }
-    }
-
-    private fun <T : Any> handleThrow(
-        throwable: Throwable,
-        stateHolder: MutableStateFlow<StatefulData<T>>,
-    ) {
-        Timber.e("Возникло исключение: $throwable")
-        stateHolder.value =
-            StatefulData.ErrorUiText(
-                UiText.StringResource(
-                    R.string.exception,
-                    throwable.message.toString()
-                )
-            )
-    }
-
-    private fun <T : Any> handleException(
-        e: Exception,
-        stateHolder: MutableStateFlow<StatefulData<T>>,
-    ) {
-        Timber.e("Возникло исключение: $e")
-        stateHolder.value =
-            StatefulData.ErrorUiText(
-                UiText.StringResource(
-                    R.string.exception,
-                    e.message.toString()
-                )
-            )
     }
 
     fun resetState() {

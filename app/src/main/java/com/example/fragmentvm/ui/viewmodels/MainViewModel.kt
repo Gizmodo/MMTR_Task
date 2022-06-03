@@ -19,7 +19,6 @@ import com.example.fragmentvm.domain.model.vote.VoteResponseDomain
 import com.example.fragmentvm.ui.utils.StateMain
 import com.example.fragmentvm.ui.utils.StateVote
 import com.example.fragmentvm.ui.utils.VotesEnum
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +26,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
+import javax.inject.Inject
 
 class MainViewModel : ViewModel() {
     private val _stateUIMain = MutableStateFlow<StateMain>(StateMain.Empty)
@@ -83,7 +83,8 @@ class MainViewModel : ViewModel() {
                     Timber.e(response.e)
                 }
                 is NetworkResult.Success -> {
-                    val payload = response.data.copy(position = position, vote = vote)
+                    val payload: VoteResponseDomain =
+                        response.data.copy(position = position, vote = vote)
                     _stateUIVote.value = StateVote.Success(payload)
                 }
             }

@@ -16,10 +16,10 @@ import com.example.fragmentvm.data.repository.CatRepository
 import com.example.fragmentvm.domain.DataStoreInterface
 import com.example.fragmentvm.domain.model.BackendResponseDomain
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import javax.inject.Inject
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import retrofit2.HttpException
+import javax.inject.Inject
 
 class ApiViewModel : ViewModel() {
     private var _isSuccessRequest = MutableLiveData(false)

@@ -3,7 +3,7 @@ package com.example.fragmentvm.data.service
 import com.example.fragmentvm.data.model.cat.CatDto
 import com.example.fragmentvm.data.model.favourite.delete.FavouriteResponseDeleteDto
 import com.example.fragmentvm.data.model.favourite.get.FavCatDto
-import com.example.fragmentvm.data.model.favourite.post.FavoriteRequestDto
+import com.example.fragmentvm.data.model.favourite.post.FavouriteRequestDto
 import com.example.fragmentvm.data.model.favourite.post.FavouriteResponseDto
 import com.example.fragmentvm.data.model.login.LoginDto
 import com.example.fragmentvm.data.model.response.BackendResponseDto
@@ -51,17 +51,15 @@ interface CatService {
         @Body document: VoteRequestDto,
     ): Response<VoteResponseDto>
 
-    // Save an Image as a Favourite to your Account
     @POST("favourites")
-    fun postFavourite(
+    suspend fun postFavourite(
         @Header("x-api-key") apiKey: String,
-        @Body document: FavoriteRequestDto,
-    ): Observable<Response<FavouriteResponseDto>>
+        @Body document: FavouriteRequestDto,
+    ): Response<FavouriteResponseDto>
 
-    // Delete the Favourite with the ID passed if it belongs to your Account.
     @DELETE("favourites/{favourite_id}")
-    fun deleteFavourite(
+    suspend fun deleteFavourite(
         @Header("x-api-key") apiKey: String,
         @Path("favourite_id") favourite_id: Int,
-    ): Observable<Response<FavouriteResponseDeleteDto>>
+    ): Response<FavouriteResponseDeleteDto>
 }

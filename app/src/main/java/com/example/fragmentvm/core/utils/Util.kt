@@ -11,8 +11,8 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
 import io.reactivex.rxjava3.core.Observable
-import java.util.concurrent.TimeUnit
 import okhttp3.ResponseBody
+import java.util.concurrent.TimeUnit
 
 object Util {
     private const val TIMEOUT_KEYBOARD: Long = 50

@@ -5,8 +5,8 @@ import com.example.fragmentvm.App
 import com.example.fragmentvm.core.utils.Constants.DataStore.KEY_FLAGREG
 import com.example.fragmentvm.core.utils.SingleLiveEvent
 import com.example.fragmentvm.domain.DataStoreInterface
-import javax.inject.Inject
 import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
 
 class MainActivityViewModel : ViewModel() {
     @Inject

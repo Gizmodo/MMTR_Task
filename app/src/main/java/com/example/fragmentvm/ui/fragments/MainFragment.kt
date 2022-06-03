@@ -46,13 +46,9 @@ class MainFragment : Fragment() {
     private lateinit var rv: RecyclerView
 
     private var catAdapter = CatPagingAdapter(
-        { cat, position, vote ->
-            viewModel.vote(cat, vote, position)
-        }, { cat ->
-        catViewModel.setCat(cat)
-    }, { cat, position ->
-        catViewModel.setFavourite(cat, position)
-    }
+        { cat, position, vote -> viewModel.vote(cat, vote, position) },
+        { cat -> catViewModel.setCat(cat) },
+        { cat, position -> catViewModel.setFavourite(cat, position) }
     )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -124,6 +120,11 @@ class MainFragment : Fragment() {
             .launchIn(viewLifecycleOwner.lifecycleScope)
 
         viewModel.exceptionMessage.observe(viewLifecycleOwner) {
+            Timber.e(it)
+            fancyException { it }
+        }
+
+        catViewModel.exceptionMessage.observe(viewLifecycleOwner) {
             Timber.e(it)
             fancyException { it }
         }
