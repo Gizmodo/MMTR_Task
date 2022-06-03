@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.fragmentvm.R
 import com.example.fragmentvm.core.utils.StatefulData
+import com.example.fragmentvm.core.utils.fancyException
 import com.example.fragmentvm.core.utils.getViewModel
 import com.example.fragmentvm.core.utils.viewBindingWithBinder
 import com.example.fragmentvm.databinding.FavouriteFragmentBinding
@@ -112,6 +113,11 @@ class FavouriteFragment : Fragment(R.layout.favourite_fragment) {
             .onEach { handleVoteStateChange(it) }
             .launchIn(viewLifecycleOwner.lifecycleScope)
 
+        viewModel.exceptionMessage.observe(viewLifecycleOwner) {
+            Timber.e(it)
+            fancyException { it }
+        }
+
         lifecycleScope.launchWhenStarted {
             viewModel.evenFlow.collect {
                 when (it) {
@@ -120,7 +126,6 @@ class FavouriteFragment : Fragment(R.layout.favourite_fragment) {
                         showDialog(it.message.asString(requireContext()))
                     }
                     StatefulData.Loading -> {
-
                     }
                     is StatefulData.Success -> {
                         it.result.image_url?.let { url ->

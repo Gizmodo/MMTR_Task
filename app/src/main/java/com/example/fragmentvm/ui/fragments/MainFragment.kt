@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.fragmentvm.R
 import com.example.fragmentvm.core.utils.StatefulData
+import com.example.fragmentvm.core.utils.fancyException
 import com.example.fragmentvm.core.utils.getViewModel
 import com.example.fragmentvm.databinding.MainFragmentBinding
 import com.example.fragmentvm.domain.model.favourite.FavouriteResponseDomain
@@ -36,21 +37,18 @@ class MainFragment : Fragment() {
     companion object {
         fun instance() = MainFragment()
     }
+
     val viewModel: MainViewModel by viewModels()
-//    private val viewModel: MainViewModel by lazy { getViewModel { MainViewModel() } }
+
     private val catViewModel: CatViewModel by lazy { getViewModel { CatViewModel() } }
     private lateinit var binding: MainFragmentBinding
     private lateinit var swipe: SwipeRefreshLayout
     private lateinit var rv: RecyclerView
 
     private var catAdapter = CatPagingAdapter(
-        { cat, position, vote ->
-            viewModel.vote(cat, vote, position)
-        }, { cat ->
-            catViewModel.setCat(cat)
-        }, { cat, position ->
-            catViewModel.setFavourite(cat, position)
-        }
+        { cat, position, vote -> viewModel.vote(cat, vote, position) },
+        { cat -> catViewModel.setCat(cat) },
+        { cat, position -> catViewModel.setFavourite(cat, position) }
     )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -64,8 +62,8 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         binding = MainFragmentBinding.inflate(inflater, container, false)
-        swipe = binding.swipeLayout!!
-        rv = binding.recyclerview!!
+        swipe = binding.swipeLayout
+        rv = binding.recyclerview
         with(rv) {
             val animator = itemAnimator
             if (animator is SimpleItemAnimator) {
@@ -121,6 +119,15 @@ class MainFragment : Fragment() {
             .onEach { handleFavouriteState(it) }
             .launchIn(viewLifecycleOwner.lifecycleScope)
 
+        viewModel.exceptionMessage.observe(viewLifecycleOwner) {
+            Timber.e(it)
+            fancyException { it }
+        }
+
+        catViewModel.exceptionMessage.observe(viewLifecycleOwner) {
+            Timber.e(it)
+            fancyException { it }
+        }
     }
 
     private fun handleFavouriteState(it: StatefulData<FavouriteResponseDomain>) {
@@ -166,20 +173,20 @@ class MainFragment : Fragment() {
     private fun handleUIState(state: StateMain) {
         when (state) {
             StateMain.Empty -> {
-                binding.progressBar!!.visibility = View.GONE
-                binding.swipeLayout?.isEnabled = true
+                binding.progressBar.visibility = View.GONE
+                binding.swipeLayout.isEnabled = true
             }
             is StateMain.Error -> {
                 Toast.makeText(context, state.t.message, Toast.LENGTH_LONG)
                     .show()
             }
             StateMain.Loading -> {
-                binding.progressBar!!.visibility = View.VISIBLE
-                binding.swipeLayout?.isEnabled = false
+                binding.progressBar.visibility = View.VISIBLE
+                binding.swipeLayout.isEnabled = false
             }
             StateMain.Finished -> {
-                binding.progressBar!!.visibility = View.GONE
-                binding.swipeLayout?.isEnabled = true
+                binding.progressBar.visibility = View.GONE
+                binding.swipeLayout.isEnabled = true
             }
         }
     }

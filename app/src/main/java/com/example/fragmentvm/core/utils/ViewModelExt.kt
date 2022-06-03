@@ -17,7 +17,9 @@ inline fun <reified T : ViewModel> Fragment.getViewModel(noinline creator: (() -
     }
 }
 
-inline fun <reified T : ViewModel> FragmentActivity.getViewModel(noinline creator: (() -> T)? = null): T {
+inline fun <reified T : ViewModel> FragmentActivity.getViewModel(
+    noinline creator: (() -> T)? = null
+): T {
     return if (creator == null) {
         ViewModelProvider(this)[T::class.java]
     } else {
@@ -25,7 +27,9 @@ inline fun <reified T : ViewModel> FragmentActivity.getViewModel(noinline creato
     }
 }
 
-inline fun <reified T : ViewModel> Fragment.getActivityViewModel(noinline creator: (() -> T)? = null): T {
+inline fun <reified T : ViewModel> Fragment.getActivityViewModel(
+    noinline creator: (() -> T)? = null
+): T {
     return if (creator == null) {
         ViewModelProvider(activity!!)[T::class.java]
     } else {

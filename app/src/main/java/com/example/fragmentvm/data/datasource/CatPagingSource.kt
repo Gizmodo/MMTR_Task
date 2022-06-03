@@ -4,8 +4,6 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.fragmentvm.App
 import com.example.fragmentvm.core.utils.Constants
-import com.example.fragmentvm.data.model.cat.CatDto
-import com.example.fragmentvm.data.model.cat.CatDtoMapper
 import com.example.fragmentvm.data.repository.CatRepository
 import com.example.fragmentvm.domain.DataStoreInterface
 import com.example.fragmentvm.domain.model.cat.CatDomain
@@ -33,10 +31,9 @@ class CatPagingSource : PagingSource<Int, CatDomain>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, CatDomain> {
         return try {
             val nextPage = params.key ?: 0
-            val response: List<CatDto> = catRepository.getCats(apikey, nextPage, params.loadSize)
-            val repos: List<CatDomain> = CatDtoMapper().toDomainList(response)
+            val response = catRepository.getCats(apikey, nextPage, params.loadSize)
             LoadResult.Page(
-                data = repos,
+                data = response,
                 prevKey = if (nextPage == 0) null else nextPage - 1,
                 nextKey = if (response.isEmpty()) null else nextPage + 1
             )

@@ -11,7 +11,6 @@ import com.example.fragmentvm.core.utils.Util
 import com.example.fragmentvm.core.utils.Util.isEmail
 import com.example.fragmentvm.core.utils.Util.parseBackendResponseError
 import com.example.fragmentvm.core.utils.Util.skipFirst
-import com.example.fragmentvm.data.model.login.LoginDtoMapper
 import com.example.fragmentvm.data.model.response.BackendResponseDto
 import com.example.fragmentvm.data.model.response.BackendResponseDtoMapper
 import com.example.fragmentvm.data.repository.CatRepository
@@ -50,12 +49,11 @@ class LoginViewModel : ViewModel() {
     fun postRequest() {
         val desc = runBlocking { ds.getString(KEY_DESCRIPTION) }
         val eml = runBlocking { ds.getString(KEY_EMAIL) }
-        val loginModel =
-            LoginDtoMapper().mapFromDomainModel(LoginDomain(desc.toString(), eml.toString()))
+        val loginModel = LoginDomain(desc.toString(), eml.toString())
         catRepository.postSignUp(loginModel)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                _signUpLiveData.value = BackendResponseDtoMapper().mapToDomainModel(it)
+                _signUpLiveData.value = it
             }, {
                 if (it is HttpException) {
                     parseBackendResponseError(
