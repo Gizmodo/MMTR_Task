@@ -36,9 +36,9 @@ interface CatService {
     ): List<FavCatDto>
 
     @POST("user/passwordlesssignup")
-    fun signUp(
+    suspend fun signUp(
         @Body document: LoginDto,
-    ): Observable<BackendResponseDto>
+    ): Response<BackendResponseDto>
 
     @GET("favourites")
     fun getApiKey(

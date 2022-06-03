@@ -22,11 +22,9 @@ suspend fun <T : Any, DM : Any> api(
         val response = execute()
         val body = response.body()
         if (response.isSuccessful && body != null) {
-            // val q :T = body
             val res: DM = mapper.mapToDomainModel(body)
             NetworkResult.Success(res)
         } else {
-            val error = response.errorBody()
             NetworkResult.Error(code = response.code(), message = response.message())
         }
     } catch (e: HttpException) {

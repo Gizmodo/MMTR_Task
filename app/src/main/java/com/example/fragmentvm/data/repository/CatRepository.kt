@@ -43,12 +43,10 @@ class CatRepository @Inject constructor(
             }
     }
 
-    fun postSignUp(login: LoginDomain): @NonNull Observable<BackendResponseDomain> {
-        val loginModel = LoginDtoMapper().mapFromDomainModel(login)
-        return apiService.signUp(loginModel).map {
-            BackendResponseDtoMapper().mapToDomainModel(it)
-        }.compose(RxUtils.applySubscriberScheduler())
-    }
+    suspend fun postSignUp(login: LoginDomain): NetworkResult<BackendResponseDomain> =
+        api(BackendResponseDtoMapper()) {
+            apiService.signUp(LoginDtoMapper().mapFromDomainModel(login))
+        }
 
     fun sendApiKey(apikey: String): @NonNull Observable<List<FavCatDomain>> {
         return apiService.getApiKey(apikey)
