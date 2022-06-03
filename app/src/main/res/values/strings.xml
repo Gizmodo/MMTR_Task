@@ -20,4 +20,5 @@
     <string name="vote_error_add">Ошибка установки отметки "Понравилось": %s</string>
     <string name="exception">Возникло исключение: %s</string>
     <string name="error_subscribe">Возникла ошибка в Subscribe: %s</string>
+    <string name="signup_error">Ошибка при регистрации: %s</string>
 </resources>

@@ -6,12 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.fragmentvm.R
-import com.example.fragmentvm.core.utils.Constants.Network.HTTP_CODE_400
+import com.example.fragmentvm.core.utils.StatefulData
 import com.example.fragmentvm.core.utils.Util.toObservable
+import com.example.fragmentvm.core.utils.fancyException
 import com.example.fragmentvm.databinding.LoginFragmentBinding
+import com.example.fragmentvm.domain.model.BackendResponseDomain
 import com.example.fragmentvm.ui.viewmodels.LoginViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
@@ -19,6 +24,8 @@ import com.google.android.material.textfield.TextInputLayout
 import io.reactivex.rxjava3.core.BackpressureStrategy
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
 
 class LoginFragment : Fragment() {
@@ -84,15 +91,34 @@ class LoginFragment : Fragment() {
         }
     }
 
-    private fun initViewModelObservers() {
-        viewModel
-            .signUpLiveData
-            .observe(viewLifecycleOwner) {
-                when (it.status) {
-                    HTTP_CODE_400 -> showDialog(it.message)
-                    else -> navigateNextFragment()
-                }
+    private fun handleSignUp(state: StatefulData<BackendResponseDomain>) {
+        when (state) {
+            is StatefulData.Error -> {}
+            is StatefulData.ErrorUiText -> {
+                showDialog(state.message.toString())
             }
+            StatefulData.Loading -> {}
+            is StatefulData.Success -> {
+                navigateNextFragment()
+            }
+        }
+    }
+
+    private fun initViewModelObservers() {
+        viewModel.signupStateFlow
+            .flowWithLifecycle(
+                viewLifecycleOwner.lifecycle,
+                Lifecycle.State.STARTED
+            )
+            .onEach {
+                handleSignUp(it)
+            }
+            .launchIn(viewLifecycleOwner.lifecycleScope)
+
+        viewModel.exceptionMessage.observe(viewLifecycleOwner) {
+            Timber.e(it)
+            fancyException { it }
+        }
 
         viewModel.isValidForm.observe(viewLifecycleOwner) {
             btnLogin.isEnabled = it
