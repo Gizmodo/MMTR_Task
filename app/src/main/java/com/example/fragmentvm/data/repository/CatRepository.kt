@@ -1,10 +1,10 @@
 package com.example.fragmentvm.data.repository
 
 import com.example.fragmentvm.core.utils.NetworkResult
-import com.example.fragmentvm.core.utils.RxUtils
 import com.example.fragmentvm.core.utils.api
 import com.example.fragmentvm.data.model.cat.CatDtoMapper
 import com.example.fragmentvm.data.model.favourite.delete.FavouriteResponseDeleteMapper
+import com.example.fragmentvm.data.model.favourite.get.FavCatListMapper
 import com.example.fragmentvm.data.model.favourite.get.FavCatMapper
 import com.example.fragmentvm.data.model.favourite.post.FavouriteRequestMapper
 import com.example.fragmentvm.data.model.favourite.post.FavouriteResponseMapper
@@ -16,14 +16,13 @@ import com.example.fragmentvm.data.service.CatService
 import com.example.fragmentvm.domain.model.BackendResponseDomain
 import com.example.fragmentvm.domain.model.cat.CatDomain
 import com.example.fragmentvm.domain.model.favourite.FavCatDomain
+import com.example.fragmentvm.domain.model.favourite.FavCatListDomain
 import com.example.fragmentvm.domain.model.favourite.FavouriteRequestDomain
 import com.example.fragmentvm.domain.model.favourite.FavouriteResponseDeleteDomain
 import com.example.fragmentvm.domain.model.favourite.FavouriteResponseDomain
 import com.example.fragmentvm.domain.model.login.LoginDomain
 import com.example.fragmentvm.domain.model.vote.VoteRequestDomain
 import com.example.fragmentvm.domain.model.vote.VoteResponseDomain
-import io.reactivex.rxjava3.annotations.NonNull
-import io.reactivex.rxjava3.core.Observable
 import javax.inject.Inject
 
 class CatRepository @Inject constructor(
@@ -48,11 +47,10 @@ class CatRepository @Inject constructor(
             apiService.signUp(LoginDtoMapper().mapFromDomainModel(login))
         }
 
-    fun sendApiKey(apikey: String): @NonNull Observable<List<FavCatDomain>> {
-        return apiService.getApiKey(apikey)
-            .map { FavCatMapper().toDomainList(it) }
-            .compose(RxUtils.applySubscriberScheduler())
-    }
+    suspend fun sendApiKey(apikey: String): NetworkResult<FavCatListDomain> =
+        api(FavCatListMapper()) {
+            apiService.getApiKey(apikey)
+        }
 
     suspend fun postVote(
         apiKey: String,

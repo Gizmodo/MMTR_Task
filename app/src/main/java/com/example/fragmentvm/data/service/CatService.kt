@@ -3,13 +3,13 @@ package com.example.fragmentvm.data.service
 import com.example.fragmentvm.data.model.cat.CatDto
 import com.example.fragmentvm.data.model.favourite.delete.FavouriteResponseDeleteDto
 import com.example.fragmentvm.data.model.favourite.get.FavCatDto
+import com.example.fragmentvm.data.model.favourite.get.FavCatListDto
 import com.example.fragmentvm.data.model.favourite.post.FavouriteRequestDto
 import com.example.fragmentvm.data.model.favourite.post.FavouriteResponseDto
 import com.example.fragmentvm.data.model.login.LoginDto
 import com.example.fragmentvm.data.model.response.BackendResponseDto
 import com.example.fragmentvm.data.model.vote.request.VoteRequestDto
 import com.example.fragmentvm.data.model.vote.response.VoteResponseDto
-import io.reactivex.rxjava3.core.Observable
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -41,9 +41,9 @@ interface CatService {
     ): Response<BackendResponseDto>
 
     @GET("favourites")
-    fun getApiKey(
+    suspend fun getApiKey(
         @Query("api_key") apiKey: String,
-    ): Observable<List<FavCatDto>>
+    ): Response<FavCatListDto>
 
     @POST("votes")
     suspend fun vote(

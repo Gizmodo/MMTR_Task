@@ -18,7 +18,7 @@ buildscript {
         paging = "3.1.1"
         retrofit = "2.9.0"
         rxandroid = "3.0.0"
-        rxjava = "3.1.4"
+        rxjava = '3.1.5'
         sdk = 32
         swiperefreshlayout = "1.2.0-alpha01"
         timber = "5.0.1"

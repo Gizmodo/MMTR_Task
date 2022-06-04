@@ -11,6 +11,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.example.fragmentvm.R
 import com.example.fragmentvm.core.utils.Constants.Network.HTTP_CODE_401
+import com.example.fragmentvm.core.utils.NetworkResult
 import com.example.fragmentvm.core.utils.Util.toObservable
 import com.example.fragmentvm.databinding.ApiFragmentBinding
 import com.example.fragmentvm.ui.viewmodels.ApiViewModel
@@ -78,8 +79,14 @@ class ApiFragment : Fragment() {
         }
 
         viewModel.getErrorLiveData().observe(viewLifecycleOwner) {
-            when (it.status) {
-                HTTP_CODE_401 -> showDialog(it.message)
+            when (it) {
+                is NetworkResult.Error -> {
+                    if (it.code == HTTP_CODE_401) {
+                        showDialog(it.message.toString())
+                    }
+                }
+                is NetworkResult.Exception -> {}
+                is NetworkResult.Success -> {}
             }
         }
 

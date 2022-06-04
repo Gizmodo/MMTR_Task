@@ -7,26 +7,25 @@ import androidx.lifecycle.viewModelScope
 import com.example.fragmentvm.App
 import com.example.fragmentvm.core.utils.Constants.DataStore.KEY_API
 import com.example.fragmentvm.core.utils.Constants.DataStore.KEY_FLAGREG
+import com.example.fragmentvm.core.utils.NetworkResult
 import com.example.fragmentvm.core.utils.SingleLiveEvent
-import com.example.fragmentvm.core.utils.Util.parseBackendResponseError
 import com.example.fragmentvm.core.utils.Util.skipFirst
-import com.example.fragmentvm.data.model.response.BackendResponseDto
-import com.example.fragmentvm.data.model.response.BackendResponseDtoMapper
 import com.example.fragmentvm.data.repository.CatRepository
 import com.example.fragmentvm.domain.DataStoreInterface
-import com.example.fragmentvm.domain.model.BackendResponseDomain
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import com.example.fragmentvm.domain.model.favourite.FavCatListDomain
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import retrofit2.HttpException
+import timber.log.Timber
 import javax.inject.Inject
 
 class ApiViewModel : ViewModel() {
     private var _isSuccessRequest = MutableLiveData(false)
     fun getIsSuccessRequest(): LiveData<Boolean> = _isSuccessRequest
 
-    private var _errorLiveData = SingleLiveEvent<BackendResponseDomain>()
-    fun getErrorLiveData(): SingleLiveEvent<BackendResponseDomain> = _errorLiveData
+    private var _errorLiveData = SingleLiveEvent<NetworkResult<FavCatListDomain>>()
+    fun getErrorLiveData() = _errorLiveData
 
     private var _isValidApiKey = MutableLiveData(false)
     fun getIsValidApiKey(): LiveData<Boolean> = _isValidApiKey.skipFirst()
@@ -36,6 +35,17 @@ class ApiViewModel : ViewModel() {
 
     @Inject
     lateinit var ds: DataStoreInterface
+    private var _exceptionMessage = MutableLiveData<String>()
+    val exceptionMessage: LiveData<String> get() = _exceptionMessage
+
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        onException(throwable)
+    }
+
+    private fun onException(throwable: Throwable) {
+        Timber.e(throwable)
+        _exceptionMessage.postValue(throwable.message)
+    }
 
     init {
         App.instance().appGraph.embed(this)
@@ -53,23 +63,20 @@ class ApiViewModel : ViewModel() {
 
     fun sendApiKey() {
         val apikey = runBlocking { ds.getString(KEY_API) }
-        catRepository.sendApiKey(apikey.toString())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            when (val response = catRepository.sendApiKey(
+                apikey.toString()
+            )) {
+                is NetworkResult.Error -> {
+                    _isSuccessRequest.postValue(false)
+                    _errorLiveData.postValue(response)
+                }
+                is NetworkResult.Exception -> Timber.e(response.e)
+                is NetworkResult.Success -> {
                     ds.putBool(KEY_FLAGREG, true)
+                    _isSuccessRequest.postValue(true)
                 }
-                _isSuccessRequest.postValue(true)
-            }, {
-                _isSuccessRequest.postValue(false)
-                if (it is HttpException) {
-                    parseBackendResponseError(
-                        it.response()
-                            ?.errorBody()
-                    ).let { error: BackendResponseDto ->
-                        _errorLiveData.postValue(BackendResponseDtoMapper().mapToDomainModel(error))
-                    }
-                }
-            })
+            }
+        }
     }
 }

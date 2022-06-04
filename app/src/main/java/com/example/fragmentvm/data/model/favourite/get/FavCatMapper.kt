@@ -27,6 +27,7 @@ class FavCatMapper : DomainMapper<FavCatDto, FavCatDomain> {
     }
 
     fun toDomainList(initial: List<FavCatDto>): List<FavCatDomain> {
-        return initial.map { mapToDomainModel(it) }
+        val w: List<FavCatDomain> = initial.map { mapToDomainModel(it) }
+        return w
     }
 }

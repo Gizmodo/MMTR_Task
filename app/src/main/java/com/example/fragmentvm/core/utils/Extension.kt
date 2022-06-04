@@ -1,5 +1,7 @@
 package com.example.fragmentvm.core.utils
 
+import com.example.fragmentvm.data.model.response.BackendResponseDto
+import com.example.fragmentvm.data.model.response.BackendResponseDtoMapper
 import com.example.fragmentvm.domain.utils.DomainMapper
 import retrofit2.HttpException
 import retrofit2.Response
@@ -28,7 +30,16 @@ suspend fun <T : Any, DM : Any> api(
             NetworkResult.Error(code = response.code(), message = response.message())
         }
     } catch (e: HttpException) {
-        NetworkResult.Error(code = e.code(), message = e.message())
+        var parsedMessage: String?
+        Util.parseBackendResponseError(
+            e.response()?.errorBody()
+        ).let { error: BackendResponseDto ->
+            parsedMessage = BackendResponseDtoMapper().mapToDomainModel(error).message
+        }
+        if (parsedMessage.isNullOrEmpty()) {
+            parsedMessage = e.message()
+        }
+        NetworkResult.Error(code = e.code(), message = parsedMessage)
     } catch (e: Throwable) {
         NetworkResult.Exception(e)
     }
